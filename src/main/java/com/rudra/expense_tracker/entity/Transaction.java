@@ -33,8 +33,29 @@ public class Transaction {
     public Transaction() {
     }
 
+    public Transaction(String title, BigDecimal amount, TransactionType type, String category, LocalDate date) {
+        this.title = title;
+        this.amount = amount;
+        this.type = type;
+        this.category = category;
+        this.date = date;
+    }
+
+    public Transaction(Long id, String title, BigDecimal amount, TransactionType type, String category, LocalDate date) {
+        this.id = id;
+        this.title = title;
+        this.amount = amount;
+        this.type = type;
+        this.category = category;
+        this.date = date;
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {

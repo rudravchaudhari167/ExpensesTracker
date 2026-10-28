@@ -77,10 +77,6 @@ public class TransactionController {
     // Get financial summary
     @GetMapping("/summary")
     public Map<String, BigDecimal> getSummary() {
-        return Map.of(
-                "totalIncome", service.getTotalIncome(),
-                "totalExpenses", service.getTotalExpenses(),
-                "balance", service.getBalance()
-        );
+        return service.getSummary();
     }
 }

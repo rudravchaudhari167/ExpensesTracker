@@ -11,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -25,6 +27,9 @@ public class TransactionService {
 
     // Create a new transaction
     public Transaction create(TransactionRequest request) {
+        if (request == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction request must not be null");
+        }
         Transaction transaction = new Transaction();
         copyRequestToEntity(request, transaction);
         return repository.save(transaction);
@@ -39,6 +44,9 @@ public class TransactionService {
     // Get one transaction by ID
     @Transactional(readOnly = true)
     public Transaction getById(Long id) {
+        if (id == null || id <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction ID must be a valid positive number");
+        }
         return repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -47,18 +55,24 @@ public class TransactionService {
     }
 
     // Update an existing transaction
-    public Transaction update(
-            Long id, TransactionRequest request) {
+    public Transaction update(Long id, TransactionRequest request) {
+        if (id == null || id <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction ID must be a valid positive number");
+        }
+        if (request == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction request must not be null");
+        }
 
         Transaction transaction = getById(id);
-
         copyRequestToEntity(request, transaction);
-
         return repository.save(transaction);
     }
 
     // Delete a transaction
     public void delete(Long id) {
+        if (id == null || id <= 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction ID must be a valid positive number");
+        }
         Transaction transaction = getById(id);
         repository.delete(transaction);
     }
@@ -66,47 +80,82 @@ public class TransactionService {
     // Filter transactions by type
     @Transactional(readOnly = true)
     public List<Transaction> getByType(TransactionType type) {
+        if (type == null) {
+            return List.of();
+        }
         return repository.findByType(type);
     }
 
     // Filter transactions by category
     @Transactional(readOnly = true)
     public List<Transaction> getByCategory(String category) {
-        return repository.findByCategoryIgnoreCase(category);
+        if (category == null || category.trim().isEmpty()) {
+            return List.of();
+        }
+        return repository.findByCategoryIgnoreCase(category.trim());
     }
 
-    // Calculate total income
+    // Calculate total income safely
     @Transactional(readOnly = true)
     public BigDecimal getTotalIncome() {
         return getAll().stream()
-                .filter(t -> t.getType() == TransactionType.INCOME)
-                .map(Transaction::getAmount)
+                .filter(t -> t != null && t.getType() == TransactionType.INCOME)
+                .map(t -> t.getAmount() != null ? t.getAmount() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    // Calculate total expenses
+    // Calculate total expenses safely
     @Transactional(readOnly = true)
     public BigDecimal getTotalExpenses() {
         return getAll().stream()
-                .filter(t -> t.getType() == TransactionType.EXPENSE)
-                .map(Transaction::getAmount)
+                .filter(t -> t != null && t.getType() == TransactionType.EXPENSE)
+                .map(t -> t.getAmount() != null ? t.getAmount() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    // Calculate remaining balance
+    // Calculate remaining balance safely
     @Transactional(readOnly = true)
     public BigDecimal getBalance() {
-        return getTotalIncome().subtract(getTotalExpenses());
+        BigDecimal income = getTotalIncome();
+        BigDecimal expenses = getTotalExpenses();
+        return (income != null ? income : BigDecimal.ZERO)
+                .subtract(expenses != null ? expenses : BigDecimal.ZERO);
+    }
+
+    // Optimized single-pass financial summary calculation
+    @Transactional(readOnly = true)
+    public Map<String, BigDecimal> getSummary() {
+        BigDecimal totalIncome = BigDecimal.ZERO;
+        BigDecimal totalExpenses = BigDecimal.ZERO;
+
+        for (Transaction t : getAll()) {
+            if (t == null || t.getAmount() == null) continue;
+            if (t.getType() == TransactionType.INCOME) {
+                totalIncome = totalIncome.add(t.getAmount());
+            } else if (t.getType() == TransactionType.EXPENSE) {
+                totalExpenses = totalExpenses.add(t.getAmount());
+            }
+        }
+
+        BigDecimal balance = totalIncome.subtract(totalExpenses);
+
+        Map<String, BigDecimal> summary = new LinkedHashMap<>();
+        summary.put("totalIncome", totalIncome);
+        summary.put("totalExpenses", totalExpenses);
+        summary.put("balance", balance);
+        return summary;
     }
 
     private void copyRequestToEntity(
             TransactionRequest request,
             Transaction transaction) {
-
-        transaction.setTitle(request.title().trim());
+        if (request == null || transaction == null) {
+            return;
+        }
+        transaction.setTitle(request.title() != null ? request.title().trim() : null);
         transaction.setAmount(request.amount());
         transaction.setType(request.type());
-        transaction.setCategory(request.category().trim());
+        transaction.setCategory(request.category() != null ? request.category().trim() : null);
         transaction.setDate(request.date());
     }
 }
