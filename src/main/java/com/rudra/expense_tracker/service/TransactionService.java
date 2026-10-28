@@ -98,28 +98,31 @@ public class TransactionService {
     // Calculate total income safely
     @Transactional(readOnly = true)
     public BigDecimal getTotalIncome() {
-        return getAll().stream()
-                .filter(t -> t != null && t.getType() == TransactionType.INCOME)
-                .map(t -> t.getAmount() != null ? t.getAmount() : BigDecimal.ZERO)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal total = BigDecimal.ZERO;
+        for (Transaction t : getAll()) {
+            if (t != null && t.getType() == TransactionType.INCOME && t.getAmount() != null) {
+                total = total.add(t.getAmount());
+            }
+        }
+        return total;
     }
 
     // Calculate total expenses safely
     @Transactional(readOnly = true)
     public BigDecimal getTotalExpenses() {
-        return getAll().stream()
-                .filter(t -> t != null && t.getType() == TransactionType.EXPENSE)
-                .map(t -> t.getAmount() != null ? t.getAmount() : BigDecimal.ZERO)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal total = BigDecimal.ZERO;
+        for (Transaction t : getAll()) {
+            if (t != null && t.getType() == TransactionType.EXPENSE && t.getAmount() != null) {
+                total = total.add(t.getAmount());
+            }
+        }
+        return total;
     }
 
     // Calculate remaining balance safely
     @Transactional(readOnly = true)
     public BigDecimal getBalance() {
-        BigDecimal income = getTotalIncome();
-        BigDecimal expenses = getTotalExpenses();
-        return (income != null ? income : BigDecimal.ZERO)
-                .subtract(expenses != null ? expenses : BigDecimal.ZERO);
+        return getTotalIncome().subtract(getTotalExpenses());
     }
 
     // Optimized single-pass financial summary calculation
