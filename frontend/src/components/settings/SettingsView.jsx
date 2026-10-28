@@ -12,6 +12,7 @@ import {
   Save,
   RotateCcw,
   Sparkles,
+  X,
 } from 'lucide-react';
 import { CURRENCIES } from '../../utils/currency';
 import transactionService from '../../services/transactionService';
@@ -30,11 +31,19 @@ export function SettingsView({
   const [isPinging, setIsPinging] = useState(false);
   const [customUrl, setCustomUrl] = useState(() => localStorage.getItem('pennywise_custom_api_url') || '');
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [dismissNotice, setDismissNotice] = useState(() => {
+    return localStorage.getItem('pennywise_dismiss_cloud_notice') === 'true';
+  });
 
   const isCloudHost =
     typeof window !== 'undefined' &&
     window.location.hostname !== 'localhost' &&
     window.location.hostname !== '127.0.0.1';
+
+  const handleDismissNotice = () => {
+    setDismissNotice(true);
+    localStorage.setItem('pennywise_dismiss_cloud_notice', 'true');
+  };
 
   const testConnection = async () => {
     setIsPinging(true);
@@ -79,17 +88,28 @@ export function SettingsView({
       </div>
 
       <div className="settings-grid">
-        {/* Cloud Deployment Notice Card (Shown if on Vercel or cloud host) */}
-        {isCloudHost && (
+        {/* Cloud Deployment Notice Card (Shown if on Vercel or cloud host and not dismissed) */}
+        {isCloudHost && !dismissNotice && (
           <div className="settings-card card-surface cloud-notice-card">
-            <div className="card-header-with-icon">
-              <div className="header-icon-box">
-                <Globe size={20} />
+            <div className="card-header-with-icon" style={{ justifyContent: 'space-between', width: '100%' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                <div className="header-icon-box">
+                  <Globe size={20} />
+                </div>
+                <div>
+                  <h3 className="card-heading font-serif">Cloud Hosting Architecture Notice</h3>
+                  <p className="card-subheading">Connecting your Spring Boot Backend</p>
+                </div>
               </div>
-              <div>
-                <h3 className="card-heading font-serif">Cloud Hosting Architecture Notice</h3>
-                <p className="card-subheading">Connecting your Spring Boot Backend</p>
-              </div>
+              <button
+                type="button"
+                className="btn-icon-dismiss"
+                onClick={handleDismissNotice}
+                title="Dismiss notice"
+                aria-label="Dismiss notice"
+              >
+                <X size={18} />
+              </button>
             </div>
 
             <div className="cloud-notice-content">
@@ -102,26 +122,40 @@ export function SettingsView({
               </p>
               <div className="cloud-options-box">
                 <div className="option-row">
-                  <strong>Option A:</strong> Explore in <strong>Showcase Mode</strong> (preloaded portfolio demo data).
+                  <div className="option-desc">
+                    <strong>Option A:</strong> Explore in <strong>Showcase Mode</strong> (preloaded portfolio demo data).
+                  </div>
                   <button
+                    type="button"
                     className={`btn ${isDemoMode ? 'btn-primary' : 'btn-secondary'} btn-sm`}
-                    style={{ marginLeft: '12px' }}
                     onClick={() => setDemoMode(!isDemoMode)}
                   >
                     <Sparkles size={14} />
                     <span>{isDemoMode ? 'Showcase Mode Active' : 'Enable Showcase Mode'}</span>
                   </button>
                 </div>
-                <div className="option-row" style={{ marginTop: '8px' }}>
-                  <strong>Option B:</strong> Deploy Spring Boot & MySQL to a free cloud host like{' '}
-                  <a href="https://render.com" target="_blank" rel="noreferrer" style={{ textDecoration: 'underline', color: 'var(--color-accent)' }}>
-                    Render.com
-                  </a>{' '}
-                  or{' '}
-                  <a href="https://railway.app" target="_blank" rel="noreferrer" style={{ textDecoration: 'underline', color: 'var(--color-accent)' }}>
-                    Railway.app
-                  </a>
-                  , then enter your public URL below.
+                <div className="option-row">
+                  <div className="option-desc">
+                    <strong>Option B:</strong> Deploy Spring Boot & MySQL to a free cloud host like{' '}
+                    <a
+                      href="https://render.com"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="cloud-link"
+                    >
+                      Render.com
+                    </a>{' '}
+                    or{' '}
+                    <a
+                      href="https://railway.app"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="cloud-link"
+                    >
+                      Railway.app
+                    </a>
+                    , then enter your public URL below.
+                  </div>
                 </div>
               </div>
             </div>
@@ -188,9 +222,12 @@ export function SettingsView({
             </div>
             <div className="health-item">
               <span className="health-label">Live Connection:</span>
-              <div className={`health-badge ${isBackendHealthy ? 'online' : 'offline'}`}>
+              <div
+                className={`health-badge ${isBackendHealthy ? 'online' : 'offline'}`}
+                title={isBackendHealthy ? 'Spring Boot REST API is connected' : 'Cannot reach backend on localhost (runs locally)'}
+              >
                 <span className="dot"></span>
-                <span>{isBackendHealthy ? 'Active & Healthy' : 'Disconnected / Cloud Host'}</span>
+                <span>{isBackendHealthy ? 'Active & Healthy' : 'Disconnected'}</span>
               </div>
             </div>
           </div>

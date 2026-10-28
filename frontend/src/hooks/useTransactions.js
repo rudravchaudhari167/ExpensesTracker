@@ -108,6 +108,7 @@ export function useTransactions() {
       if (isCloudHost) {
         setTransactions(DEMO_TRANSACTIONS);
         setSummary(calculateSummary(DEMO_TRANSACTIONS));
+        setIsDemoMode(true);
       }
     } finally {
       if (!isSilent) setLoading(false);
