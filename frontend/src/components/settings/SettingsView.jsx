@@ -88,7 +88,7 @@ export function SettingsView({
               </div>
               <div>
                 <h3 className="card-heading font-serif">Cloud Hosting Architecture Notice</h3>
-                <p className="card-subheading">Why is the backend offline on Vercel?</p>
+                <p className="card-subheading">Connecting your Spring Boot Backend</p>
               </div>
             </div>
 

@@ -122,26 +122,6 @@ export function App() {
         />
 
         <main className="app-content">
-          {/* Global Backend Error Warning */}
-          {error && !isDemoMode && (
-            <div className="app-error-banner animate-slide-up" role="alert">
-              <div className="error-banner-text">
-                <strong>Backend Notice:</strong>{' '}
-                {typeof error === 'string' ? error : (error?.message || 'Cannot reach Spring Boot server.')}
-              </div>
-              <div className="error-banner-actions">
-                <button className="btn btn-secondary btn-sm" onClick={() => setDemoMode(true)}>
-                  Explore Showcase Mode
-                </button>
-                <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('settings')}>
-                  Settings
-                </button>
-                <button className="btn btn-secondary btn-sm" onClick={() => refresh()}>
-                  Retry
-                </button>
-              </div>
-            </div>
-          )}
 
           {/* Tab 1: Dashboard */}
           {activeTab === 'dashboard' && (

@@ -25,13 +25,6 @@ export function Header({
           </h1>
           <div className="header-meta">
             <span className="header-date">{todayFormatted}</span>
-            <span className="meta-separator">•</span>
-            <div className={`backend-indicator ${isBackendHealthy ? 'online' : 'offline'}`} title={isBackendHealthy ? 'Connected to Spring Boot API' : 'Backend connection unavailable'}>
-              <span className="indicator-dot"></span>
-              <span className="indicator-text">
-                {isBackendHealthy ? 'Spring Boot Online' : 'Backend Offline'}
-              </span>
-            </div>
           </div>
         </div>
       </div>
