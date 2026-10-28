@@ -1,0 +1,167 @@
+.recent-tx-card {
+  padding: var(--space-6);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.recent-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: 2px;
+}
+
+.recent-subtitle {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.btn-view-all {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+}
+
+.btn-view-all:hover {
+  background: var(--color-accent-subtle);
+}
+
+.recent-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.recent-item:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+  transform: translateX(2px);
+}
+
+.recent-item-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.recent-item-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.recent-item-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-submeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+}
+
+.recent-category-pill {
+  color: var(--color-text-secondary);
+  background: var(--color-surface-muted);
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  font-weight: 500;
+}
+
+.recent-date-text {
+  color: var(--color-text-muted);
+}
+
+.recent-item-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.recent-amount {
+  font-size: 0.975rem;
+  font-weight: 700;
+}
+
+.recent-amount.income {
+  color: var(--color-sage-dark);
+}
+
+.recent-amount.expense {
+  color: var(--color-deep-accent);
+}
+
+.recent-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.7;
+  transition: opacity var(--transition-fast);
+}
+
+.recent-item:hover .recent-actions {
+  opacity: 1;
+}
+
+.recent-action-btn {
+  padding: 6px;
+  border-radius: var(--radius-xs);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.recent-action-btn.edit:hover {
+  background: var(--color-surface-muted);
+  color: var(--color-accent);
+}
+
+.recent-action-btn.delete:hover {
+  background: var(--color-danger-subtle);
+  color: var(--color-danger);
+}
+
+/* Empty state */
+.recent-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+}
