@@ -133,6 +133,117 @@
   font-size: 1rem;
 }
 
+.amount-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-1);
+}
+
+.amount-currency-label {
+  font-size: 0.725rem;
+  color: var(--color-text-secondary);
+}
+
+.amount-currency-label strong {
+  color: var(--color-accent);
+}
+
+.amount-input-composite {
+  display: flex;
+  align-items: stretch;
+  position: relative;
+  width: 100%;
+}
+
+.currency-selector-addon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  border-top-left-radius: var(--radius-md);
+  border-bottom-left-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-right: none;
+  transition: all var(--transition-fast);
+}
+
+.currency-selector-addon:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-hover);
+}
+
+.currency-addon-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 10px 24px 10px 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  cursor: pointer;
+  z-index: 1;
+}
+
+.currency-addon-arrow {
+  position: absolute;
+  right: 7px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.composite-amount-input {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  padding-left: 12px !important;
+}
+
+.currency-chips-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 5px;
+}
+
+.currency-chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: var(--color-surface-muted);
+  color: var(--color-text-secondary);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.currency-chip-btn:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-main);
+  border-color: var(--color-border);
+}
+
+.currency-chip-btn.active {
+  background: var(--color-accent-subtle);
+  color: var(--color-deep-accent);
+  border-color: rgba(232, 121, 82, 0.4);
+}
+
+.chip-symbol {
+  font-weight: 700;
+}
+
+.chip-code {
+  font-size: 0.65rem;
+  opacity: 0.85;
+}
+
 .form-input {
   width: 100%;
   padding: 10px 14px 10px 42px;
