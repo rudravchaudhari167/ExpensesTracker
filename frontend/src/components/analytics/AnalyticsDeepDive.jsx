@@ -199,7 +199,7 @@ export function AnalyticsDeepDive({ transactions = [], summary = {}, currency = 
           <h3 className="empty-title font-serif">No Analytics Available Yet</h3>
           <p className="empty-desc">
             We compute genuine analytics only from verified transactions in your Spring Boot & MySQL ledger.
-            Record transactions to begin visualizing your spending patterns and rhythm.
+            Add transactions to begin visualizing your spending patterns and rhythm.
           </p>
         </div>
       )}

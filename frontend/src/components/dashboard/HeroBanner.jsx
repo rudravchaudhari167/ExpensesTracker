@@ -1,9 +1,9 @@
 import React from 'react';
-import { Plus, Sparkles, TrendingUp, Compass } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { getCurrentMonthFormatted } from '../../utils/date';
 import './HeroBanner.css';
 
-export function HeroBanner({ onOpenAddModal, totalTransactions = 0, balance = 0, currency = 'USD' }) {
+export function HeroBanner({ totalTransactions = 0, balance = 0, currency = 'USD' }) {
   const currentMonth = getCurrentMonthFormatted();
 
   return (
@@ -23,20 +23,9 @@ export function HeroBanner({ onOpenAddModal, totalTransactions = 0, balance = 0,
 
         <p className="hero-subtitle">
           {totalTransactions === 0
-            ? 'Your ledger is clean and ready. Add your first transaction to start mapping your spending rhythm.'
+            ? 'Your ledger is clean and ready. Use the "+ Add transaction" button in the header to start mapping your spending rhythm.'
             : `Tracking ${totalTransactions} verified entries against your Spring Boot & MySQL ledger.`}
         </p>
-
-        <div className="hero-actions">
-          <button
-            id="btn-hero-add-transaction"
-            className="btn btn-primary hero-cta-btn"
-            onClick={onOpenAddModal}
-          >
-            <Plus size={18} strokeWidth={2.4} />
-            <span>Record transaction</span>
-          </button>
-        </div>
       </div>
 
       <div className="hero-banner-graphic" aria-hidden="true">

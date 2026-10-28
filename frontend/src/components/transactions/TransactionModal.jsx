@@ -171,7 +171,7 @@ export function TransactionModal({
         <div className="tx-modal-header">
           <div>
             <h3 className="tx-modal-title font-serif">
-              {isEditing ? 'Edit Transaction' : 'Record Transaction'}
+              {isEditing ? 'Edit Transaction' : 'Add Transaction'}
             </h3>
             <p className="tx-modal-subtitle">
               {isEditing

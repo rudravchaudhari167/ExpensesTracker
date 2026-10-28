@@ -127,7 +127,6 @@ export function App() {
           {activeTab === 'dashboard' && (
             <div className="tab-dashboard animate-fade-in">
               <HeroBanner
-                onOpenAddModal={handleOpenAddModal}
                 totalTransactions={transactions.length}
                 balance={summary.balance}
                 currency={currency}

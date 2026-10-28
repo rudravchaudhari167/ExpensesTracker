@@ -65,19 +65,7 @@
   font-size: 0.95rem;
   color: var(--color-text-secondary);
   line-height: 1.5;
-  margin-bottom: var(--space-6);
-}
-
-.hero-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.hero-cta-btn {
-  padding: 11px 24px;
-  font-size: 0.95rem;
-  box-shadow: var(--shadow-accent);
+  margin-bottom: 0;
 }
 
 .hero-banner-graphic {
