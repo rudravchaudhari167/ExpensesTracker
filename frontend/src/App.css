@@ -1,7 +1,7 @@
 .app-error-banner {
-  background: var(--color-danger-subtle);
-  border: 1px solid rgba(217, 72, 59, 0.25);
-  color: var(--color-danger);
+  background: #FFF5F2;
+  border: 1px solid rgba(232, 121, 82, 0.35);
+  color: var(--color-deep-accent);
   padding: 12px 18px;
   border-radius: var(--radius-md);
   margin-bottom: var(--space-5);
@@ -10,10 +10,20 @@
   justify-content: space-between;
   gap: var(--space-4);
   font-size: 0.85rem;
+  flex-wrap: wrap;
 }
 
-.error-banner-text strong {
-  font-weight: 700;
+.error-banner-text {
+  flex: 1;
+  min-width: 260px;
+  line-height: 1.45;
+}
+
+.error-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .dashboard-charts-grid {

@@ -272,3 +272,44 @@
   font-weight: 600;
   border: 1px solid var(--color-border);
 }
+
+.cloud-notice-card {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #FFF9F5 0%, #FDF3EC 100%);
+  border: 1px solid rgba(232, 121, 82, 0.3);
+}
+
+.cloud-notice-content {
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cloud-options-box {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-top: var(--space-2);
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 0.825rem;
+  color: var(--color-text-main);
+}
+
+.custom-url-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px dashed var(--color-border);
+}
+

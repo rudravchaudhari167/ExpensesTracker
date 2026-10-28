@@ -8,17 +8,33 @@ import {
   CheckCircle2,
   AlertCircle,
   GraduationCap,
-  Code,
-  Database,
-  ExternalLink,
+  Globe,
+  Save,
+  RotateCcw,
+  Sparkles,
 } from 'lucide-react';
 import { CURRENCIES } from '../../utils/currency';
 import transactionService from '../../services/transactionService';
+import { getBaseUrl, setCustomApiUrl } from '../../services/api';
 import './SettingsView.css';
 
-export function SettingsView({ currency, onCurrencyChange, isBackendHealthy }) {
+export function SettingsView({
+  currency,
+  onCurrencyChange,
+  isBackendHealthy,
+  isDemoMode,
+  setDemoMode,
+  onRefresh,
+}) {
   const [pingStatus, setPingStatus] = useState(null);
   const [isPinging, setIsPinging] = useState(false);
+  const [customUrl, setCustomUrl] = useState(() => localStorage.getItem('pennywise_custom_api_url') || '');
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const isCloudHost =
+    typeof window !== 'undefined' &&
+    window.location.hostname !== 'localhost' &&
+    window.location.hostname !== '127.0.0.1';
 
   const testConnection = async () => {
     setIsPinging(true);
@@ -33,6 +49,22 @@ export function SettingsView({ currency, onCurrencyChange, isBackendHealthy }) {
     }
   };
 
+  const handleSaveCustomUrl = (e) => {
+    e.preventDefault();
+    setCustomApiUrl(customUrl);
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 2500);
+    if (onRefresh) onRefresh();
+  };
+
+  const handleResetUrl = () => {
+    setCustomUrl('');
+    setCustomApiUrl('');
+    setSaveSuccess(true);
+    setTimeout(() => setSaveSuccess(false), 2500);
+    if (onRefresh) onRefresh();
+  };
+
   return (
     <div className="settings-container animate-fade-in">
       <div className="settings-hero card-surface">
@@ -42,11 +74,60 @@ export function SettingsView({ currency, onCurrencyChange, isBackendHealthy }) {
         </div>
         <h2 className="settings-title font-serif">Preferences & System Health</h2>
         <p className="settings-subtitle">
-          Configure interface formatting and test connection with your Spring Boot and MySQL instance.
+          Configure interface formatting, custom cloud backend URLs, and verify Spring Boot connectivity.
         </p>
       </div>
 
       <div className="settings-grid">
+        {/* Cloud Deployment Notice Card (Shown if on Vercel or cloud host) */}
+        {isCloudHost && (
+          <div className="settings-card card-surface cloud-notice-card">
+            <div className="card-header-with-icon">
+              <div className="header-icon-box">
+                <Globe size={20} />
+              </div>
+              <div>
+                <h3 className="card-heading font-serif">Cloud Hosting Architecture Notice</h3>
+                <p className="card-subheading">Why is the backend offline on Vercel?</p>
+              </div>
+            </div>
+
+            <div className="cloud-notice-content">
+              <p>
+                <strong>Vercel hosts the static frontend only</strong> (HTML/CSS/JS). Your Java Spring Boot REST API
+                and MySQL database are currently running on your local machine (<code>localhost:8080</code>).
+              </p>
+              <p>
+                Because Vercel runs in the cloud, it cannot access your computer's <code>localhost</code> over the public internet.
+              </p>
+              <div className="cloud-options-box">
+                <div className="option-row">
+                  <strong>Option A:</strong> Explore in <strong>Showcase Mode</strong> (preloaded portfolio demo data).
+                  <button
+                    className={`btn ${isDemoMode ? 'btn-primary' : 'btn-secondary'} btn-sm`}
+                    style={{ marginLeft: '12px' }}
+                    onClick={() => setDemoMode(!isDemoMode)}
+                  >
+                    <Sparkles size={14} />
+                    <span>{isDemoMode ? 'Showcase Mode Active' : 'Enable Showcase Mode'}</span>
+                  </button>
+                </div>
+                <div className="option-row" style={{ marginTop: '8px' }}>
+                  <strong>Option B:</strong> Deploy Spring Boot & MySQL to a free cloud host like{' '}
+                  <a href="https://render.com" target="_blank" rel="noreferrer" style={{ textDecoration: 'underline', color: 'var(--color-accent)' }}>
+                    Render.com
+                  </a>{' '}
+                  or{' '}
+                  <a href="https://railway.app" target="_blank" rel="noreferrer" style={{ textDecoration: 'underline', color: 'var(--color-accent)' }}>
+                    Railway.app
+                  </a>
+                  , then enter your public URL below.
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Currency Preference Card */}
         <div className="settings-card card-surface">
           <div className="card-header-with-icon">
@@ -94,25 +175,56 @@ export function SettingsView({ currency, onCurrencyChange, isBackendHealthy }) {
 
           <div className="health-details-list">
             <div className="health-item">
-              <span className="health-label">API Port:</span>
+              <span className="health-label">Active API Base URL:</span>
+              <span className="health-val font-mono">{getBaseUrl()}</span>
+            </div>
+            <div className="health-item">
+              <span className="health-label">Local Default:</span>
               <span className="health-val font-mono">http://localhost:8080</span>
             </div>
             <div className="health-item">
-              <span className="health-label">Database:</span>
+              <span className="health-label">Database Target:</span>
               <span className="health-val font-mono">MySQL (expense_tracker on 3306)</span>
-            </div>
-            <div className="health-item">
-              <span className="health-label">Proxy Route:</span>
-              <span className="health-val font-mono">Vite Server Proxy (/api → :8080)</span>
             </div>
             <div className="health-item">
               <span className="health-label">Live Connection:</span>
               <div className={`health-badge ${isBackendHealthy ? 'online' : 'offline'}`}>
                 <span className="dot"></span>
-                <span>{isBackendHealthy ? 'Active & Healthy' : 'Disconnected'}</span>
+                <span>{isBackendHealthy ? 'Active & Healthy' : 'Disconnected / Cloud Host'}</span>
               </div>
             </div>
           </div>
+
+          {/* Custom Backend URL input */}
+          <form onSubmit={handleSaveCustomUrl} className="custom-url-form">
+            <label className="form-label" style={{ fontSize: '0.8rem', fontWeight: 600 }}>
+              Custom Cloud Backend URL (Optional)
+            </label>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <input
+                type="url"
+                className="form-input"
+                style={{ padding: '8px 12px', fontSize: '0.85rem' }}
+                placeholder="e.g. https://my-backend.onrender.com/api"
+                value={customUrl}
+                onChange={(e) => setCustomUrl(e.target.value)}
+              />
+              <button type="submit" className="btn btn-primary btn-sm" title="Save URL">
+                <Save size={15} />
+                <span>Save</span>
+              </button>
+              {customUrl && (
+                <button type="button" className="btn btn-secondary btn-sm" onClick={handleResetUrl} title="Reset to default">
+                  <RotateCcw size={15} />
+                </button>
+              )}
+            </div>
+            {saveSuccess && (
+              <span style={{ fontSize: '0.75rem', color: 'var(--color-sage-dark)', fontWeight: 600 }}>
+                API URL updated! Reloading connection...
+              </span>
+            )}
+          </form>
 
           <div className="ping-test-box">
             <button

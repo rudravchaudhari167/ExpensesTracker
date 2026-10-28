@@ -32,6 +32,8 @@ export function App() {
     loading,
     error,
     isBackendHealthy,
+    isDemoMode,
+    setDemoMode,
     currency,
     setCurrency,
     refresh,
@@ -121,14 +123,23 @@ export function App() {
 
         <main className="app-content">
           {/* Global Backend Error Warning */}
-          {error && (
+          {error && !isDemoMode && (
             <div className="app-error-banner animate-slide-up" role="alert">
               <div className="error-banner-text">
-                <strong>Backend Connection Notice:</strong> {error}
+                <strong>Backend Notice:</strong>{' '}
+                {typeof error === 'string' ? error : (error?.message || 'Cannot reach Spring Boot server.')}
               </div>
-              <button className="btn btn-secondary btn-sm" onClick={() => refresh()}>
-                Retry Connection
-              </button>
+              <div className="error-banner-actions">
+                <button className="btn btn-secondary btn-sm" onClick={() => setDemoMode(true)}>
+                  Explore Showcase Mode
+                </button>
+                <button className="btn btn-secondary btn-sm" onClick={() => setActiveTab('settings')}>
+                  Settings
+                </button>
+                <button className="btn btn-secondary btn-sm" onClick={() => refresh()}>
+                  Retry
+                </button>
+              </div>
             </div>
           )}
 
@@ -228,6 +239,9 @@ export function App() {
                 currency={currency}
                 onCurrencyChange={setCurrency}
                 isBackendHealthy={isBackendHealthy}
+                isDemoMode={isDemoMode}
+                setDemoMode={setDemoMode}
+                onRefresh={refresh}
               />
             </div>
           )}
