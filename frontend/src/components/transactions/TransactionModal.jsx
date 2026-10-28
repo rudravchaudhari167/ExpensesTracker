@@ -97,6 +97,25 @@ export function TransactionModal({
     setIsCreatingCategory(false);
   };
 
+  const defaultList =
+    formData.type === 'INCOME' ? DEFAULT_INCOME_CATEGORIES : DEFAULT_EXPENSE_CATEGORIES;
+
+  // Merge default list + user custom categories (avoiding case-insensitive duplicates)
+  // Must be called unconditionally before any early returns to adhere to React Rules of Hooks
+  const popularCategories = useMemo(() => {
+    const map = new Map();
+    defaultList.forEach((c) => map.set(c.toLowerCase(), c));
+    customCategories.forEach((c) => {
+      if (c && !map.has(c.toLowerCase())) {
+        map.set(c.toLowerCase(), c);
+      }
+    });
+    if (formData.category && !map.has(formData.category.toLowerCase())) {
+      map.set(formData.category.toLowerCase(), formData.category);
+    }
+    return Array.from(map.values());
+  }, [defaultList, customCategories, formData.category]);
+
   // Sync initialData when modal opens
   useEffect(() => {
     if (initialData) {
@@ -130,8 +149,6 @@ export function TransactionModal({
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, isSubmitting, onClose]);
-
-  if (!isOpen) return null;
 
   const validate = () => {
     const newErrors = {};
@@ -215,23 +232,7 @@ export function TransactionModal({
     }
   };
 
-  const defaultList =
-    formData.type === 'INCOME' ? DEFAULT_INCOME_CATEGORIES : DEFAULT_EXPENSE_CATEGORIES;
-
-  // Merge default list + user custom categories (avoiding case-insensitive duplicates)
-  const popularCategories = useMemo(() => {
-    const map = new Map();
-    defaultList.forEach((c) => map.set(c.toLowerCase(), c));
-    customCategories.forEach((c) => {
-      if (c && !map.has(c.toLowerCase())) {
-        map.set(c.toLowerCase(), c);
-      }
-    });
-    if (formData.category && !map.has(formData.category.toLowerCase())) {
-      map.set(formData.category.toLowerCase(), formData.category);
-    }
-    return Array.from(map.values());
-  }, [defaultList, customCategories, formData.category]);
+  if (!isOpen) return null;
 
   return (
     <div className="modal-backdrop animate-fade-in" onClick={onClose} role="dialog" aria-modal="true">
