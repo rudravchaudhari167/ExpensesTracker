@@ -4,16 +4,19 @@ import {
   Plus,
   Check,
   Calendar,
+  Tag,
   DollarSign,
   FileText,
   ArrowDownLeft,
   ArrowUpRight,
   Loader2,
-  ChevronDown,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { getTodayDateString } from '../../utils/date';
-import { CURRENCIES } from '../../utils/currency';
+import {
+  DEFAULT_EXPENSE_CATEGORIES,
+  DEFAULT_INCOME_CATEGORIES,
+} from '../../utils/categoryIcons';
 import './TransactionModal.css';
 
 export function TransactionModal({
@@ -22,25 +25,8 @@ export function TransactionModal({
   onSubmit,
   initialData = null,
   currency = 'USD',
-  onCurrencyChange,
 }) {
   const isEditing = Boolean(initialData && initialData.id);
-
-  const [selectedCurrency, setSelectedCurrency] = useState(currency);
-
-  // Sync currency with external changes
-  useEffect(() => {
-    if (currency) {
-      setSelectedCurrency(currency);
-    }
-  }, [currency, isOpen]);
-
-  const handleCurrencyChange = (newCode) => {
-    setSelectedCurrency(newCode);
-    if (onCurrencyChange) {
-      onCurrencyChange(newCode);
-    }
-  };
 
   const [formData, setFormData] = useState({
     title: '',
@@ -117,6 +103,13 @@ export function TransactionModal({
       newErrors.type = 'Please select either Income or Expense';
     }
 
+    // Category validation
+    if (!formData.category || !formData.category.trim()) {
+      newErrors.category = 'Category is required';
+    } else if (formData.category.trim().length > 50) {
+      newErrors.category = 'Category cannot exceed 50 characters';
+    }
+
     // Date validation
     if (!formData.date) {
       newErrors.date = 'Date is required';
@@ -140,7 +133,7 @@ export function TransactionModal({
         title: formData.title.trim(),
         amount: parseFloat(formData.amount),
         type: formData.type,
-        category: (formData.category && formData.category.trim()) || (formData.type === 'INCOME' ? 'Income' : 'General'),
+        category: formData.category.trim(),
         date: formData.date,
       };
 
@@ -164,6 +157,9 @@ export function TransactionModal({
       setIsSubmitting(false);
     }
   };
+
+  const popularCategories =
+    formData.type === 'INCOME' ? DEFAULT_INCOME_CATEGORIES : DEFAULT_EXPENSE_CATEGORIES;
 
   return (
     <div className="modal-backdrop animate-fade-in" onClick={onClose} role="dialog" aria-modal="true">
@@ -209,7 +205,7 @@ export function TransactionModal({
                 type="button"
                 className={`type-toggle-btn expense ${formData.type === 'EXPENSE' ? 'active' : ''}`}
                 onClick={() => {
-                  setFormData({ ...formData, type: 'EXPENSE' });
+                  setFormData({ ...formData, type: 'EXPENSE', category: '' });
                   setErrors({ ...errors, type: undefined });
                 }}
               >
@@ -220,7 +216,7 @@ export function TransactionModal({
                 type="button"
                 className={`type-toggle-btn income ${formData.type === 'INCOME' ? 'active' : ''}`}
                 onClick={() => {
-                  setFormData({ ...formData, type: 'INCOME' });
+                  setFormData({ ...formData, type: 'INCOME', category: '' });
                   setErrors({ ...errors, type: undefined });
                 }}
               >
@@ -259,40 +255,18 @@ export function TransactionModal({
           {/* Amount & Date 2-Column Row */}
           <div className="form-row-2">
             {/* Amount Field */}
-            <div className="form-group amount-form-group">
-              <div className="amount-label-row">
-                <label htmlFor="tx-amount" className="form-label">
-                  Amount <span className="required-star">*</span>
-                </label>
-                <span className="amount-currency-label">
-                  Unit: <strong>{selectedCurrency} ({CURRENCIES[selectedCurrency]?.symbol || '$'})</strong>
-                </span>
-              </div>
-
-              {/* Currency Selector Input Group */}
-              <div className="amount-input-composite">
-                <div className="currency-selector-addon" title="Select currency unit">
-                  <select
-                    id="tx-currency-select"
-                    className="currency-addon-select"
-                    value={selectedCurrency}
-                    onChange={(e) => handleCurrencyChange(e.target.value)}
-                    aria-label="Select currency"
-                  >
-                    {Object.values(CURRENCIES).map((c) => (
-                      <option key={c.code} value={c.code}>
-                        {c.symbol} {c.code}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown size={13} className="currency-addon-arrow" />
-                </div>
+            <div className="form-group">
+              <label htmlFor="tx-amount" className="form-label">
+                Amount <span className="required-star">*</span>
+              </label>
+              <div className="input-with-icon">
+                <span className="input-currency-symbol">$</span>
                 <input
                   id="tx-amount"
                   type="number"
                   step="0.01"
                   min="0.01"
-                  className={`form-input composite-amount-input tabular-nums ${errors.amount ? 'error' : ''}`}
+                  className={`form-input tabular-nums ${errors.amount ? 'error' : ''}`}
                   placeholder="0.00"
                   value={formData.amount}
                   onChange={(e) => {
@@ -302,26 +276,6 @@ export function TransactionModal({
                   disabled={isSubmitting}
                 />
               </div>
-
-              {/* Quick Currency Switcher Chips */}
-              <div className="currency-chips-strip">
-                {Object.values(CURRENCIES).map((c) => {
-                  const isActive = selectedCurrency === c.code;
-                  return (
-                    <button
-                      key={c.code}
-                      type="button"
-                      className={`currency-chip-btn ${isActive ? 'active' : ''}`}
-                      onClick={() => handleCurrencyChange(c.code)}
-                      title={c.label}
-                    >
-                      <span className="chip-symbol">{c.symbol}</span>
-                      <span className="chip-code">{c.code}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
               {errors.amount && <span className="field-error">{errors.amount}</span>}
             </div>
 
@@ -345,6 +299,47 @@ export function TransactionModal({
                 />
               </div>
               {errors.date && <span className="field-error">{errors.date}</span>}
+            </div>
+          </div>
+
+          {/* Category Field */}
+          <div className="form-group">
+            <label htmlFor="tx-category" className="form-label">
+              Category <span className="required-star">*</span>
+            </label>
+            <div className="input-with-icon">
+              <Tag size={17} className="input-icon" />
+              <input
+                id="tx-category"
+                type="text"
+                className={`form-input ${errors.category ? 'error' : ''}`}
+                placeholder="Choose from chips below or type custom"
+                value={formData.category}
+                maxLength={50}
+                onChange={(e) => {
+                  setFormData({ ...formData, category: e.target.value });
+                  if (errors.category) setErrors({ ...errors, category: undefined });
+                }}
+                disabled={isSubmitting}
+              />
+            </div>
+            {errors.category && <span className="field-error">{errors.category}</span>}
+
+            {/* Popular Category Chips */}
+            <div className="category-chips-list">
+              {popularCategories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  className={`category-chip ${formData.category.toLowerCase() === cat.toLowerCase() ? 'active' : ''}`}
+                  onClick={() => {
+                    setFormData({ ...formData, category: cat });
+                    if (errors.category) setErrors({ ...errors, category: undefined });
+                  }}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
           </div>
 

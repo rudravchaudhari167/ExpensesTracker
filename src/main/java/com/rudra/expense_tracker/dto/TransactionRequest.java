@@ -22,6 +22,7 @@ public record TransactionRequest(
         @NotNull(message = "Type is required")
         TransactionType type,
 
+        @NotBlank(message = "Category is required")
         @Size(max = 50, message = "Category must be at most 50 characters")
         String category,
 
