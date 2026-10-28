@@ -82,6 +82,24 @@ class TransactionServiceTest {
     }
 
     @Test
+    @DisplayName("create() with null or empty category defaults to General or Income")
+    void testCreate_NullCategory_Defaults() {
+        when(repository.save(any(Transaction.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        TransactionRequest reqWithoutCategory = new TransactionRequest(
+                "Lunch",
+                new BigDecimal("15.00"),
+                TransactionType.EXPENSE,
+                null,
+                LocalDate.of(2026, 10, 28)
+        );
+
+        Transaction created = service.create(reqWithoutCategory);
+        assertNotNull(created);
+        assertEquals("General", created.getCategory());
+    }
+
+    @Test
     @DisplayName("create() with null request should throw ResponseStatusException")
     void testCreate_NullRequest() {
         assertThrows(ResponseStatusException.class, () -> service.create(null));

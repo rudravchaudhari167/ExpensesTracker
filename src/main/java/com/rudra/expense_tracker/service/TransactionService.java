@@ -155,7 +155,10 @@ public class TransactionService {
         transaction.setTitle(request.title() != null ? request.title().trim() : null);
         transaction.setAmount(request.amount());
         transaction.setType(request.type());
-        transaction.setCategory(request.category() != null ? request.category().trim() : null);
+        String cat = (request.category() != null && !request.category().trim().isEmpty())
+                ? request.category().trim()
+                : (request.type() == TransactionType.INCOME ? "Income" : "General");
+        transaction.setCategory(cat);
         transaction.setDate(request.date());
     }
 }

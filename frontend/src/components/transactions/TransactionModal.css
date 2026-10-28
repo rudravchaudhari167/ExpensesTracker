@@ -278,36 +278,6 @@
   gap: var(--space-4);
 }
 
-.category-chips-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 6px;
-}
-
-.category-chip {
-  padding: 4px 10px;
-  border-radius: var(--radius-pill);
-  font-size: 0.75rem;
-  font-weight: 500;
-  background: var(--color-surface-muted);
-  color: var(--color-text-secondary);
-  border: 1px solid transparent;
-  transition: all var(--transition-fast);
-}
-
-.category-chip:hover {
-  background: var(--color-surface-hover);
-  border-color: var(--color-border);
-  color: var(--color-text-main);
-}
-
-.category-chip.active {
-  background: var(--color-accent-subtle);
-  color: var(--color-deep-accent);
-  border-color: rgba(232, 121, 82, 0.3);
-  font-weight: 600;
-}
 
 .tx-modal-actions {
   display: flex;

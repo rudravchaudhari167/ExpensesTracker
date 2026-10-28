@@ -4,7 +4,6 @@ import {
   Plus,
   Check,
   Calendar,
-  Tag,
   DollarSign,
   FileText,
   ArrowDownLeft,
@@ -14,10 +13,6 @@ import {
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { getTodayDateString } from '../../utils/date';
-import {
-  DEFAULT_EXPENSE_CATEGORIES,
-  DEFAULT_INCOME_CATEGORIES,
-} from '../../utils/categoryIcons';
 import { CURRENCIES } from '../../utils/currency';
 import './TransactionModal.css';
 
@@ -122,13 +117,6 @@ export function TransactionModal({
       newErrors.type = 'Please select either Income or Expense';
     }
 
-    // Category validation
-    if (!formData.category || !formData.category.trim()) {
-      newErrors.category = 'Category is required';
-    } else if (formData.category.trim().length > 50) {
-      newErrors.category = 'Category cannot exceed 50 characters';
-    }
-
     // Date validation
     if (!formData.date) {
       newErrors.date = 'Date is required';
@@ -152,7 +140,7 @@ export function TransactionModal({
         title: formData.title.trim(),
         amount: parseFloat(formData.amount),
         type: formData.type,
-        category: formData.category.trim(),
+        category: (formData.category && formData.category.trim()) || (formData.type === 'INCOME' ? 'Income' : 'General'),
         date: formData.date,
       };
 
@@ -176,9 +164,6 @@ export function TransactionModal({
       setIsSubmitting(false);
     }
   };
-
-  const popularCategories =
-    formData.type === 'INCOME' ? DEFAULT_INCOME_CATEGORIES : DEFAULT_EXPENSE_CATEGORIES;
 
   return (
     <div className="modal-backdrop animate-fade-in" onClick={onClose} role="dialog" aria-modal="true">
@@ -224,7 +209,7 @@ export function TransactionModal({
                 type="button"
                 className={`type-toggle-btn expense ${formData.type === 'EXPENSE' ? 'active' : ''}`}
                 onClick={() => {
-                  setFormData({ ...formData, type: 'EXPENSE', category: '' });
+                  setFormData({ ...formData, type: 'EXPENSE' });
                   setErrors({ ...errors, type: undefined });
                 }}
               >
@@ -235,7 +220,7 @@ export function TransactionModal({
                 type="button"
                 className={`type-toggle-btn income ${formData.type === 'INCOME' ? 'active' : ''}`}
                 onClick={() => {
-                  setFormData({ ...formData, type: 'INCOME', category: '' });
+                  setFormData({ ...formData, type: 'INCOME' });
                   setErrors({ ...errors, type: undefined });
                 }}
               >
@@ -360,47 +345,6 @@ export function TransactionModal({
                 />
               </div>
               {errors.date && <span className="field-error">{errors.date}</span>}
-            </div>
-          </div>
-
-          {/* Category Field */}
-          <div className="form-group">
-            <label htmlFor="tx-category" className="form-label">
-              Category <span className="required-star">*</span>
-            </label>
-            <div className="input-with-icon">
-              <Tag size={17} className="input-icon" />
-              <input
-                id="tx-category"
-                type="text"
-                className={`form-input ${errors.category ? 'error' : ''}`}
-                placeholder="Choose from chips below or type custom"
-                value={formData.category}
-                maxLength={50}
-                onChange={(e) => {
-                  setFormData({ ...formData, category: e.target.value });
-                  if (errors.category) setErrors({ ...errors, category: undefined });
-                }}
-                disabled={isSubmitting}
-              />
-            </div>
-            {errors.category && <span className="field-error">{errors.category}</span>}
-
-            {/* Popular Category Chips */}
-            <div className="category-chips-list">
-              {popularCategories.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  className={`category-chip ${formData.category.toLowerCase() === cat.toLowerCase() ? 'active' : ''}`}
-                  onClick={() => {
-                    setFormData({ ...formData, category: cat });
-                    if (errors.category) setErrors({ ...errors, category: undefined });
-                  }}
-                >
-                  {cat}
-                </button>
-              ))}
             </div>
           </div>
 
