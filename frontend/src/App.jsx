@@ -241,6 +241,7 @@ export function App() {
         onSubmit={handleModalSubmit}
         initialData={modalInitialData}
         currency={currency}
+        onCurrencyChange={setCurrency}
       />
 
       {/* Delete Confirmation Dialog */}

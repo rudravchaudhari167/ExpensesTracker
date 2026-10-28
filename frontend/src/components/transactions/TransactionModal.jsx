@@ -10,6 +10,7 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Loader2,
+  ChevronDown,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { getTodayDateString } from '../../utils/date';
@@ -17,6 +18,7 @@ import {
   DEFAULT_EXPENSE_CATEGORIES,
   DEFAULT_INCOME_CATEGORIES,
 } from '../../utils/categoryIcons';
+import { CURRENCIES } from '../../utils/currency';
 import './TransactionModal.css';
 
 export function TransactionModal({
@@ -25,8 +27,25 @@ export function TransactionModal({
   onSubmit,
   initialData = null,
   currency = 'USD',
+  onCurrencyChange,
 }) {
   const isEditing = Boolean(initialData && initialData.id);
+
+  const [selectedCurrency, setSelectedCurrency] = useState(currency);
+
+  // Sync currency with external changes
+  useEffect(() => {
+    if (currency) {
+      setSelectedCurrency(currency);
+    }
+  }, [currency, isOpen]);
+
+  const handleCurrencyChange = (newCode) => {
+    setSelectedCurrency(newCode);
+    if (onCurrencyChange) {
+      onCurrencyChange(newCode);
+    }
+  };
 
   const [formData, setFormData] = useState({
     title: '',
@@ -255,18 +274,40 @@ export function TransactionModal({
           {/* Amount & Date 2-Column Row */}
           <div className="form-row-2">
             {/* Amount Field */}
-            <div className="form-group">
-              <label htmlFor="tx-amount" className="form-label">
-                Amount <span className="required-star">*</span>
-              </label>
-              <div className="input-with-icon">
-                <span className="input-currency-symbol">$</span>
+            <div className="form-group amount-form-group">
+              <div className="amount-label-row">
+                <label htmlFor="tx-amount" className="form-label">
+                  Amount <span className="required-star">*</span>
+                </label>
+                <span className="amount-currency-label">
+                  Unit: <strong>{selectedCurrency} ({CURRENCIES[selectedCurrency]?.symbol || '$'})</strong>
+                </span>
+              </div>
+
+              {/* Currency Selector Input Group */}
+              <div className="amount-input-composite">
+                <div className="currency-selector-addon" title="Select currency unit">
+                  <select
+                    id="tx-currency-select"
+                    className="currency-addon-select"
+                    value={selectedCurrency}
+                    onChange={(e) => handleCurrencyChange(e.target.value)}
+                    aria-label="Select currency"
+                  >
+                    {Object.values(CURRENCIES).map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.symbol} {c.code}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown size={13} className="currency-addon-arrow" />
+                </div>
                 <input
                   id="tx-amount"
                   type="number"
                   step="0.01"
                   min="0.01"
-                  className={`form-input tabular-nums ${errors.amount ? 'error' : ''}`}
+                  className={`form-input composite-amount-input tabular-nums ${errors.amount ? 'error' : ''}`}
                   placeholder="0.00"
                   value={formData.amount}
                   onChange={(e) => {
@@ -276,6 +317,26 @@ export function TransactionModal({
                   disabled={isSubmitting}
                 />
               </div>
+
+              {/* Quick Currency Switcher Chips */}
+              <div className="currency-chips-strip">
+                {Object.values(CURRENCIES).map((c) => {
+                  const isActive = selectedCurrency === c.code;
+                  return (
+                    <button
+                      key={c.code}
+                      type="button"
+                      className={`currency-chip-btn ${isActive ? 'active' : ''}`}
+                      onClick={() => handleCurrencyChange(c.code)}
+                      title={c.label}
+                    >
+                      <span className="chip-symbol">{c.symbol}</span>
+                      <span className="chip-code">{c.code}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
               {errors.amount && <span className="field-error">{errors.amount}</span>}
             </div>
 
