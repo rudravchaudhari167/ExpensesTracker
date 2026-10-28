@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   X,
   Plus,
@@ -10,6 +10,7 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   Loader2,
+  Sparkles,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { getTodayDateString } from '../../utils/date';
@@ -18,6 +19,8 @@ import {
   DEFAULT_INCOME_CATEGORIES,
 } from '../../utils/categoryIcons';
 import './TransactionModal.css';
+
+const CUSTOM_CATEGORIES_STORAGE_KEY = 'pennywise_custom_categories';
 
 export function TransactionModal({
   isOpen,
@@ -39,6 +42,60 @@ export function TransactionModal({
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+
+  // Custom user-created categories state (persisted in localStorage)
+  const [customCategories, setCustomCategories] = useState(() => {
+    try {
+      const stored = localStorage.getItem(CUSTOM_CATEGORIES_STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // State for inline category creator
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+  const [newCategoryInput, setNewCategoryInput] = useState('');
+  const [categoryError, setCategoryError] = useState('');
+
+  // Handle adding a new custom category
+  const handleAddNewCategory = (e) => {
+    if (e) e.preventDefault();
+    const trimmed = newCategoryInput.trim();
+    if (!trimmed) {
+      setCategoryError('Category name cannot be empty');
+      return;
+    }
+    if (trimmed.length > 50) {
+      setCategoryError('Category name must be 50 characters or less');
+      return;
+    }
+
+    // Capitalize first letter neatly
+    const formatted = trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+
+    // Save to customCategories list if not present
+    if (!customCategories.some((c) => c.toLowerCase() === formatted.toLowerCase())) {
+      const updated = [...customCategories, formatted];
+      setCustomCategories(updated);
+      try {
+        localStorage.setItem(CUSTOM_CATEGORIES_STORAGE_KEY, JSON.stringify(updated));
+      } catch (err) {
+        console.warn('Could not save custom category to localStorage', err);
+      }
+    }
+
+    // Immediately select this category for current transaction
+    setFormData((prev) => ({ ...prev, category: formatted }));
+    if (errors.category) {
+      setErrors((prev) => ({ ...prev, category: undefined }));
+    }
+
+    // Reset creator form
+    setNewCategoryInput('');
+    setCategoryError('');
+    setIsCreatingCategory(false);
+  };
 
   // Sync initialData when modal opens
   useEffect(() => {
@@ -158,8 +215,23 @@ export function TransactionModal({
     }
   };
 
-  const popularCategories =
+  const defaultList =
     formData.type === 'INCOME' ? DEFAULT_INCOME_CATEGORIES : DEFAULT_EXPENSE_CATEGORIES;
+
+  // Merge default list + user custom categories (avoiding case-insensitive duplicates)
+  const popularCategories = useMemo(() => {
+    const map = new Map();
+    defaultList.forEach((c) => map.set(c.toLowerCase(), c));
+    customCategories.forEach((c) => {
+      if (c && !map.has(c.toLowerCase())) {
+        map.set(c.toLowerCase(), c);
+      }
+    });
+    if (formData.category && !map.has(formData.category.toLowerCase())) {
+      map.set(formData.category.toLowerCase(), formData.category);
+    }
+    return Array.from(map.values());
+  }, [defaultList, customCategories, formData.category]);
 
   return (
     <div className="modal-backdrop animate-fade-in" onClick={onClose} role="dialog" aria-modal="true">
@@ -304,16 +376,33 @@ export function TransactionModal({
 
           {/* Category Field */}
           <div className="form-group">
-            <label htmlFor="tx-category" className="form-label">
-              Category <span className="required-star">*</span>
-            </label>
+            <div className="category-label-row">
+              <label htmlFor="tx-category" className="form-label">
+                Category <span className="required-star">*</span>
+              </label>
+              {!isCreatingCategory && (
+                <button
+                  type="button"
+                  className="btn-create-category-trigger"
+                  onClick={() => {
+                    setIsCreatingCategory(true);
+                    setCategoryError('');
+                  }}
+                  id="btn-trigger-create-category"
+                >
+                  <Plus size={13} strokeWidth={2.4} />
+                  <span>+ Create new category</span>
+                </button>
+              )}
+            </div>
+
             <div className="input-with-icon">
               <Tag size={17} className="input-icon" />
               <input
                 id="tx-category"
                 type="text"
                 className={`form-input ${errors.category ? 'error' : ''}`}
-                placeholder="Choose from chips below or type custom"
+                placeholder="Choose from chips below, type custom, or click + Create"
                 value={formData.category}
                 maxLength={50}
                 onChange={(e) => {
@@ -325,21 +414,110 @@ export function TransactionModal({
             </div>
             {errors.category && <span className="field-error">{errors.category}</span>}
 
-            {/* Popular Category Chips */}
+            {/* Inline Custom Category Creator Card */}
+            {isCreatingCategory && (
+              <div className="create-category-card animate-scale-up">
+                <div className="create-category-header">
+                  <div className="create-category-heading">
+                    <Sparkles size={14} className="create-cat-sparkle" />
+                    <span>Create a new custom category</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="create-cat-close-btn"
+                    onClick={() => {
+                      setIsCreatingCategory(false);
+                      setNewCategoryInput('');
+                      setCategoryError('');
+                    }}
+                    title="Close creator"
+                    aria-label="Close custom category creator"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+
+                <div className="create-category-form-row">
+                  <div className="create-category-input-wrap">
+                    <Tag size={15} className="create-cat-input-icon" />
+                    <input
+                      id="input-new-custom-category"
+                      type="text"
+                      className={`form-input create-cat-input ${categoryError ? 'error' : ''}`}
+                      placeholder="e.g. Pet Care, Books, Gaming, Subscriptions..."
+                      value={newCategoryInput}
+                      maxLength={50}
+                      onChange={(e) => {
+                        setNewCategoryInput(e.target.value);
+                        if (categoryError) setCategoryError('');
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddNewCategory();
+                        } else if (e.key === 'Escape') {
+                          e.preventDefault();
+                          setIsCreatingCategory(false);
+                        }
+                      }}
+                      autoFocus
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-add-category-confirm"
+                    onClick={handleAddNewCategory}
+                    id="btn-confirm-new-category"
+                  >
+                    <Check size={15} strokeWidth={2.4} />
+                    <span>Add</span>
+                  </button>
+                </div>
+                {categoryError && <span className="field-error">{categoryError}</span>}
+              </div>
+            )}
+
+            {/* Category Chips List (Default + Custom Categories) */}
             <div className="category-chips-list">
-              {popularCategories.map((cat) => (
+              {popularCategories.map((cat) => {
+                const isActive =
+                  formData.category.toLowerCase().trim() === cat.toLowerCase().trim();
+                const isCustom = customCategories.some(
+                  (c) => c.toLowerCase() === cat.toLowerCase()
+                );
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    className={`category-chip ${isActive ? 'active' : ''} ${isCustom ? 'is-custom' : ''}`}
+                    onClick={() => {
+                      setFormData({ ...formData, category: cat });
+                      if (errors.category) setErrors({ ...errors, category: undefined });
+                    }}
+                    title={isCustom ? `${cat} (Custom user category)` : cat}
+                  >
+                    <span>{cat}</span>
+                    {isCustom && <span className="custom-indicator-dot" title="Custom category" />}
+                  </button>
+                );
+              })}
+
+              {/* "+ Create category" chip at the end */}
+              {!isCreatingCategory && (
                 <button
-                  key={cat}
                   type="button"
-                  className={`category-chip ${formData.category.toLowerCase() === cat.toLowerCase() ? 'active' : ''}`}
+                  className="category-chip create-chip-btn"
                   onClick={() => {
-                    setFormData({ ...formData, category: cat });
-                    if (errors.category) setErrors({ ...errors, category: undefined });
+                    setIsCreatingCategory(true);
+                    setCategoryError('');
                   }}
+                  id="chip-btn-create-category"
+                  title="Create custom category"
                 >
-                  {cat}
+                  <Plus size={13} strokeWidth={2.5} />
+                  <span>+ Create category</span>
                 </button>
-              ))}
+              )}
             </div>
           </div>
 
