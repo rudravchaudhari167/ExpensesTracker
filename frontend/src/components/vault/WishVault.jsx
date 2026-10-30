@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Lock,
   Unlock,
@@ -7,13 +7,13 @@ import {
   Sparkles,
   ShoppingBag,
   PiggyBank,
-  CheckCircle2,
   Trash2,
   Flame,
-  ArrowRight,
-  TrendingDown,
   Check,
   Zap,
+  Pencil,
+  X,
+  RotateCcw,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { formatCurrency, getCurrencySymbol } from '../../utils/currency';
@@ -32,7 +32,7 @@ const INITIAL_DEMO_ITEMS = [
     lockedAt: Date.now() - 14 * 3600 * 1000,
     unlockAt: Date.now() + 34 * 3600 * 1000, // 34h remaining
     durationMs: 48 * 3600 * 1000,
-    status: 'locked', // 'locked' | 'decision' | 'saved' | 'bought'
+    status: 'locked', // 'locked' | 'decision'
   },
   {
     id: 'vault-2',
@@ -40,7 +40,7 @@ const INITIAL_DEMO_ITEMS = [
     price: 199.0,
     category: 'Shopping',
     lockedAt: Date.now() - 23 * 3600 * 1000,
-    unlockAt: Date.now() + 20 * 1000, // 20s remaining so user can watch it hit 0!
+    unlockAt: Date.now() + 25 * 1000, // 25s remaining so user can watch it hit 0!
     durationMs: 24 * 3600 * 1000,
     status: 'locked',
   },
@@ -57,12 +57,33 @@ const INITIAL_DEMO_ITEMS = [
 ];
 
 /**
+ * Convert value + unit to milliseconds
+ */
+function toMilliseconds(value, unit) {
+  const val = Math.max(1, parseFloat(value) || 1);
+  switch (unit) {
+    case 'hours':
+      return val * 3600 * 1000;
+    case 'days':
+      return val * 24 * 3600 * 1000;
+    case 'weeks':
+      return val * 7 * 24 * 3600 * 1000;
+    case 'months':
+      return val * 30 * 24 * 3600 * 1000;
+    case 'seconds':
+      return val * 1000;
+    default:
+      return val * 24 * 3600 * 1000;
+  }
+}
+
+/**
  * Format remaining milliseconds into Days, Hours, Mins, Secs
  */
 function calculateTimeLeft(targetTimestamp, now) {
   const difference = targetTimestamp - now;
   if (difference <= 0) {
-    return { days: 0, hours: 0, minutes: 0, seconds: 0, isZero: true, progressPercent: 100 };
+    return { days: 0, hours: 0, minutes: 0, seconds: 0, isZero: true };
   }
 
   const days = Math.floor(difference / (1000 * 60 * 60 * 24));
@@ -102,7 +123,7 @@ export function WishVault({ currency = 'USD', onLogExpense, onShowToast }) {
       const stored = localStorage.getItem(VAULT_SAVED_TOTAL_KEY);
       if (stored) return parseFloat(stored) || 0;
     } catch {}
-    return 620; // default seed for impressive first look
+    return 620;
   });
 
   // Real-time ticker
@@ -111,9 +132,16 @@ export function WishVault({ currency = 'USD', onLogExpense, onShowToast }) {
   // Form State
   const [itemName, setItemName] = useState('');
   const [itemPrice, setItemPrice] = useState('');
-  const [durationHours, setDurationHours] = useState('48');
-  const [customSeconds, setCustomSeconds] = useState(false);
+  const [durationMode, setDurationMode] = useState('preset'); // 'preset' | 'custom' | 'test'
+  const [presetHours, setPresetHours] = useState('48');
+  const [customValue, setCustomValue] = useState('7');
+  const [customUnit, setCustomUnit] = useState('days');
   const [formError, setFormError] = useState('');
+
+  // Editing Time State for locked items
+  const [editingItemId, setEditingItemId] = useState(null);
+  const [editCustomValue, setEditCustomValue] = useState('3');
+  const [editCustomUnit, setEditCustomUnit] = useState('days');
 
   // Persist items
   useEffect(() => {
@@ -174,12 +202,19 @@ export function WishVault({ currency = 'USD', onLogExpense, onShowToast }) {
     }
 
     let durationMs = 0;
-    if (customSeconds) {
-      // 15 seconds demo cooling period
+    let durationLabel = '';
+
+    if (durationMode === 'test') {
       durationMs = 15 * 1000;
+      durationLabel = '15 seconds (Test Mode)';
+    } else if (durationMode === 'custom') {
+      const parsedVal = Math.max(1, parseFloat(customValue) || 1);
+      durationMs = toMilliseconds(parsedVal, customUnit);
+      durationLabel = `${parsedVal} ${customUnit}`;
     } else {
-      const hoursNum = parseInt(durationHours, 10) || 48;
+      const hoursNum = parseInt(presetHours, 10) || 48;
       durationMs = hoursNum * 3600 * 1000;
+      durationLabel = `${hoursNum} hours`;
     }
 
     const newItem = {
@@ -201,25 +236,83 @@ export function WishVault({ currency = 'USD', onLogExpense, onShowToast }) {
     if (onShowToast) {
       onShowToast(
         'success',
-        `"${cleanName}" (${formatCurrency(cleanPrice, currency)}) locked in your Wish Vault for cooling.`,
-        'Impulse Locked'
+        `"${cleanName}" (${formatCurrency(cleanPrice, currency)}) locked for ${durationLabel}.`,
+        'Impulse Locked in Vault'
       );
     }
   };
 
+  // Quick Extend an existing item's time period
+  const handleQuickExtend = (itemId, additionalHours, label) => {
+    setItems((prev) =>
+      prev.map((it) => {
+        if (it.id !== itemId) return it;
+        const baseTime = it.unlockAt > now ? it.unlockAt : now;
+        const newUnlockAt = baseTime + additionalHours * 3600 * 1000;
+        const newDuration = newUnlockAt - it.lockedAt;
+        return {
+          ...it,
+          unlockAt: newUnlockAt,
+          durationMs: newDuration,
+          status: 'locked', // Re-lock if it was in decision
+        };
+      })
+    );
+
+    const targetItem = items.find((i) => i.id === itemId);
+    const itemNameStr = targetItem ? targetItem.name : 'Item';
+
+    if (onShowToast) {
+      onShowToast(
+        'info',
+        `Added ${label} to cooling period for "${itemNameStr}".`,
+        'Cooling Period Extended'
+      );
+    }
+    setEditingItemId(null);
+  };
+
+  // Set custom new cooling period for an existing item
+  const handleApplyCustomEditTime = (itemId) => {
+    const parsedVal = Math.max(1, parseFloat(editCustomValue) || 1);
+    const addedMs = toMilliseconds(parsedVal, editCustomUnit);
+    const newUnlockAt = now + addedMs;
+
+    setItems((prev) =>
+      prev.map((it) => {
+        if (it.id !== itemId) return it;
+        return {
+          ...it,
+          unlockAt: newUnlockAt,
+          durationMs: newUnlockAt - it.lockedAt,
+          status: 'locked',
+        };
+      })
+    );
+
+    const targetItem = items.find((i) => i.id === itemId);
+    const itemNameStr = targetItem ? targetItem.name : 'Item';
+
+    if (onShowToast) {
+      onShowToast(
+        'success',
+        `Cooling period for "${itemNameStr}" updated to ${parsedVal} ${editCustomUnit} from now.`,
+        'Timer Updated'
+      );
+    }
+    setEditingItemId(null);
+  };
+
   // Action 1: "Save This Money instead!" (Hero action)
   const handleSaveInstead = (item) => {
-    // Celebratory confetti burst
     confetti({
       particleCount: 80,
       spread: 70,
       origin: { y: 0.65 },
-      colors: ['#10B981', '#34D399', '#059669', '#FBBF24', '#FFFFFF'],
+      colors: ['#3E6B3B', '#E87952', '#F6E6A9', '#282820', '#FFFFFF'],
     });
 
     setTotalSaved((prev) => prev + item.price);
-
-    // Remove from locked items list
     setItems((prev) => prev.filter((i) => i.id !== item.id));
 
     if (onShowToast) {
@@ -243,7 +336,6 @@ export function WishVault({ currency = 'USD', onLogExpense, onShowToast }) {
       });
     }
 
-    // Remove from vault
     setItems((prev) => prev.filter((i) => i.id !== item.id));
 
     if (onShowToast) {
@@ -273,9 +365,9 @@ export function WishVault({ currency = 'USD', onLogExpense, onShowToast }) {
 
   return (
     <section className="wish-vault-section animate-fade-in" id="wish-vault-container">
-      {/* Dark Obsidian Glass Container */}
+      {/* Light Glassmorphism Container per Spendl Theme */}
       <div className="vault-glass-card">
-        {/* Subtle Ambient Radial Backlight */}
+        {/* Soft Warm Ambient Backlight */}
         <div className="vault-ambient-glow" aria-hidden="true" />
 
         {/* Vault Header */}
@@ -298,18 +390,18 @@ export function WishVault({ currency = 'USD', onLogExpense, onShowToast }) {
             </div>
           </div>
 
-          {/* Quick Statistics Bar */}
+          {/* Statistics Bar */}
           <div className="vault-stats-bar">
             <div className="vault-stat-box">
               <span className="stat-caption">Total Money Saved</span>
-              <span className="stat-num text-neon-emerald tabular-nums font-serif">
+              <span className="stat-num text-income tabular-nums font-serif">
                 {formatCurrency(totalSaved, currency)}
               </span>
             </div>
             <div className="stat-divider" />
             <div className="vault-stat-box">
               <span className="stat-caption">Currently Locked</span>
-              <span className="stat-num text-muted-white tabular-nums font-serif">
+              <span className="stat-num text-main tabular-nums font-serif">
                 {formatCurrency(totalLockedValue, currency)}
               </span>
             </div>
@@ -330,7 +422,7 @@ export function WishVault({ currency = 'USD', onLogExpense, onShowToast }) {
                   id="vault-item-name"
                   type="text"
                   className="vault-text-input"
-                  placeholder="e.g. Mechanical Keyboard, Noise-Cancelling Headphones..."
+                  placeholder="e.g. Noise-Cancelling Headphones, Mechanical Keyboard..."
                   value={itemName}
                   onChange={(e) => setItemName(e.target.value)}
                   maxLength={75}
@@ -362,7 +454,7 @@ export function WishVault({ currency = 'USD', onLogExpense, onShowToast }) {
               </div>
             </div>
 
-            {/* Cooling Period Selector */}
+            {/* Cooling Period Selector with Edit/Custom Option */}
             <div className="vault-field-group field-duration">
               <label className="vault-field-label">
                 <Clock size={14} />
@@ -371,38 +463,47 @@ export function WishVault({ currency = 'USD', onLogExpense, onShowToast }) {
               <div className="duration-pills-wrap">
                 <button
                   type="button"
-                  className={`duration-pill ${!customSeconds && durationHours === '24' ? 'active' : ''}`}
+                  className={`duration-pill ${durationMode === 'preset' && presetHours === '24' ? 'active' : ''}`}
                   onClick={() => {
-                    setCustomSeconds(false);
-                    setDurationHours('24');
+                    setDurationMode('preset');
+                    setPresetHours('24');
                   }}
                 >
                   24h
                 </button>
                 <button
                   type="button"
-                  className={`duration-pill ${!customSeconds && durationHours === '48' ? 'active' : ''}`}
+                  className={`duration-pill ${durationMode === 'preset' && presetHours === '48' ? 'active' : ''}`}
                   onClick={() => {
-                    setCustomSeconds(false);
-                    setDurationHours('48');
+                    setDurationMode('preset');
+                    setPresetHours('48');
                   }}
                 >
                   48h (Rec)
                 </button>
                 <button
                   type="button"
-                  className={`duration-pill ${!customSeconds && durationHours === '72' ? 'active' : ''}`}
+                  className={`duration-pill ${durationMode === 'preset' && presetHours === '72' ? 'active' : ''}`}
                   onClick={() => {
-                    setCustomSeconds(false);
-                    setDurationHours('72');
+                    setDurationMode('preset');
+                    setPresetHours('72');
                   }}
                 >
                   72h
                 </button>
                 <button
                   type="button"
-                  className={`duration-pill demo-pill ${customSeconds ? 'active' : ''}`}
-                  onClick={() => setCustomSeconds(true)}
+                  className={`duration-pill custom-pill ${durationMode === 'custom' ? 'active' : ''}`}
+                  onClick={() => setDurationMode('custom')}
+                  title="Edit custom cooling duration as long as you want"
+                >
+                  <Pencil size={12} />
+                  <span>Custom Time</span>
+                </button>
+                <button
+                  type="button"
+                  className={`duration-pill demo-pill ${durationMode === 'test' ? 'active' : ''}`}
+                  onClick={() => setDurationMode('test')}
                   title="Test countdown reaching 0 in 15 seconds"
                 >
                   ⚡ 15s Test
@@ -422,6 +523,40 @@ export function WishVault({ currency = 'USD', onLogExpense, onShowToast }) {
               </button>
             </div>
           </div>
+
+          {/* Expandable Custom Duration Controls */}
+          {durationMode === 'custom' && (
+            <div className="vault-custom-duration-box animate-fade-in">
+              <div className="custom-duration-header">
+                <Clock size={14} />
+                <span>Set Custom Cooling Period (as long as you want):</span>
+              </div>
+              <div className="custom-duration-inputs">
+                <input
+                  type="number"
+                  min="1"
+                  max="999"
+                  className="vault-custom-number-input font-mono"
+                  value={customValue}
+                  onChange={(e) => setCustomValue(e.target.value)}
+                  placeholder="Duration"
+                />
+                <select
+                  className="vault-custom-unit-select"
+                  value={customUnit}
+                  onChange={(e) => setCustomUnit(e.target.value)}
+                >
+                  <option value="hours">Hours</option>
+                  <option value="days">Days</option>
+                  <option value="weeks">Weeks</option>
+                  <option value="months">Months</option>
+                </select>
+                <span className="custom-duration-preview">
+                  Will stay locked for <strong>{customValue || 1} {customUnit}</strong> before unlocking.
+                </span>
+              </div>
+            </div>
+          )}
 
           {formError && (
             <div className="vault-form-error animate-fade-in">
@@ -458,6 +593,7 @@ export function WishVault({ currency = 'USD', onLogExpense, onShowToast }) {
               {items.map((item) => {
                 const timeLeft = calculateTimeLeft(item.unlockAt, now);
                 const isDecisionTime = item.status === 'decision' || timeLeft.isZero;
+                const isEditingThisItem = editingItemId === item.id;
 
                 // Progress calculation
                 const totalDuration = item.durationMs || (48 * 3600 * 1000);
@@ -480,7 +616,7 @@ export function WishVault({ currency = 'USD', onLogExpense, onShowToast }) {
                             </span>
                           ) : (
                             <span className="lock-status-badge">
-                              <span className="pulsing-neon-dot" />
+                              <span className="pulsing-sage-dot" />
                               <span>Locked in Vault</span>
                             </span>
                           )}
@@ -503,85 +639,207 @@ export function WishVault({ currency = 'USD', onLogExpense, onShowToast }) {
                       />
                     </div>
 
-                    {/* Middle: Timer vs Decision States */}
-                    <div className="card-state-container">
-                      {!isDecisionTime ? (
-                        /* Locked State: Digital Countdown Timer */
-                        <div className="vault-countdown-container">
-                          <span className="countdown-label">Cooling Timer</span>
-                          <div className="digital-timer-display font-mono">
-                            <div className="timer-unit">
-                              <span className="unit-value">
-                                {String(timeLeft.days).padStart(2, '0')}
-                              </span>
-                              <span className="unit-caption">DAYS</span>
-                            </div>
-                            <span className="timer-colon">:</span>
-                            <div className="timer-unit">
-                              <span className="unit-value">
-                                {String(timeLeft.hours).padStart(2, '0')}
-                              </span>
-                              <span className="unit-caption">HRS</span>
-                            </div>
-                            <span className="timer-colon">:</span>
-                            <div className="timer-unit">
-                              <span className="unit-value">
-                                {String(timeLeft.minutes).padStart(2, '0')}
-                              </span>
-                              <span className="unit-caption">MINS</span>
-                            </div>
-                            <span className="timer-colon">:</span>
-                            <div className="timer-unit">
-                              <span className="unit-value highlight-secs">
-                                {String(timeLeft.seconds).padStart(2, '0')}
-                              </span>
-                              <span className="unit-caption">SECS</span>
-                            </div>
+                    {/* Inline Edit Time Drawer / Panel */}
+                    {isEditingThisItem ? (
+                      <div className="card-edit-timer-panel animate-fade-in">
+                        <div className="edit-timer-header">
+                          <div className="edit-timer-title">
+                            <Clock size={13} />
+                            <span>Edit Cooling Period</span>
                           </div>
+                          <button
+                            type="button"
+                            className="btn-close-edit"
+                            onClick={() => setEditingItemId(null)}
+                            title="Cancel edit"
+                          >
+                            <X size={14} />
+                          </button>
                         </div>
-                      ) : (
-                        /* Unlocked State: Reveals the 2 Distinct Decision Buttons */
-                        <div className="vault-decision-container animate-fade-in">
-                          <div className="decision-prompt">
-                            <span className="decision-glow-icon">
-                              <Sparkles size={15} />
-                            </span>
-                            <span className="decision-text">
-                              Your dopamine has reset. What is your choice?
-                            </span>
-                          </div>
 
-                          <div className="decision-actions-row">
-                            {/* 1. Subtle Button: "I Still Want It" */}
+                        {/* Quick Extend Buttons */}
+                        <div className="quick-extend-row">
+                          <span className="quick-extend-label">Quick Extend:</span>
+                          <div className="quick-extend-pills">
                             <button
                               type="button"
-                              className="btn-decision-subtle"
-                              onClick={() => handleStillWantIt(item)}
-                              title="Purchase mindfully and record in expense ledger"
+                              className="btn-quick-pill"
+                              onClick={() => handleQuickExtend(item.id, 24, '24 hours')}
                             >
-                              <span>I Still Want It</span>
+                              +24h
                             </button>
-
-                            {/* 2. Vibrant Glowing Neon Button: "Save This Money instead!" */}
                             <button
                               type="button"
-                              className="btn-decision-save-vibrant"
-                              onClick={() => handleSaveInstead(item)}
-                              title="Resist the urge and save this amount!"
+                              className="btn-quick-pill"
+                              onClick={() => handleQuickExtend(item.id, 72, '3 days')}
                             >
-                              <PiggyBank size={16} />
-                              <span>Save This Money instead!</span>
+                              +3 Days
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-quick-pill"
+                              onClick={() => handleQuickExtend(item.id, 168, '1 week')}
+                            >
+                              +1 Week
+                            </button>
+                            <button
+                              type="button"
+                              className="btn-quick-pill"
+                              onClick={() => handleQuickExtend(item.id, 720, '30 days')}
+                            >
+                              +30 Days
                             </button>
                           </div>
                         </div>
-                      )}
-                    </div>
+
+                        {/* Custom New Duration from Now */}
+                        <div className="custom-extend-row">
+                          <span className="quick-extend-label">Or set time from now:</span>
+                          <div className="custom-extend-inputs">
+                            <input
+                              type="number"
+                              min="1"
+                              max="999"
+                              className="edit-number-input font-mono"
+                              value={editCustomValue}
+                              onChange={(e) => setEditCustomValue(e.target.value)}
+                            />
+                            <select
+                              className="edit-unit-select"
+                              value={editCustomUnit}
+                              onChange={(e) => setEditCustomUnit(e.target.value)}
+                            >
+                              <option value="hours">Hours</option>
+                              <option value="days">Days</option>
+                              <option value="weeks">Weeks</option>
+                              <option value="months">Months</option>
+                            </select>
+                            <button
+                              type="button"
+                              className="btn-apply-timer-edit"
+                              onClick={() => handleApplyCustomEditTime(item.id)}
+                            >
+                              <Check size={13} />
+                              <span>Update</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      /* Normal Middle: Timer vs Decision States */
+                      <div className="card-state-container">
+                        {!isDecisionTime ? (
+                          /* Locked State: Digital Countdown Timer */
+                          <div className="vault-countdown-container">
+                            <div className="countdown-header-row">
+                              <span className="countdown-label">Cooling Timer</span>
+                              <button
+                                type="button"
+                                className="btn-trigger-edit-time"
+                                onClick={() => {
+                                  setEditingItemId(item.id);
+                                  setEditCustomValue('3');
+                                  setEditCustomUnit('days');
+                                }}
+                                title="Edit cooling period"
+                              >
+                                <Pencil size={11} />
+                                <span>Edit Time</span>
+                              </button>
+                            </div>
+
+                            <div className="digital-timer-display font-mono">
+                              <div className="timer-unit">
+                                <span className="unit-value">
+                                  {String(timeLeft.days).padStart(2, '0')}
+                                </span>
+                                <span className="unit-caption">DAYS</span>
+                              </div>
+                              <span className="timer-colon">:</span>
+                              <div className="timer-unit">
+                                <span className="unit-value">
+                                  {String(timeLeft.hours).padStart(2, '0')}
+                                </span>
+                                <span className="unit-caption">HRS</span>
+                              </div>
+                              <span className="timer-colon">:</span>
+                              <div className="timer-unit">
+                                <span className="unit-value">
+                                  {String(timeLeft.minutes).padStart(2, '0')}
+                                </span>
+                                <span className="unit-caption">MINS</span>
+                              </div>
+                              <span className="timer-colon">:</span>
+                              <div className="timer-unit">
+                                <span className="unit-value highlight-secs">
+                                  {String(timeLeft.seconds).padStart(2, '0')}
+                                </span>
+                                <span className="unit-caption">SECS</span>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          /* Unlocked State: Reveals the 2 Distinct Decision Buttons */
+                          <div className="vault-decision-container animate-fade-in">
+                            <div className="decision-prompt">
+                              <span className="decision-glow-icon">
+                                <Sparkles size={15} />
+                              </span>
+                              <span className="decision-text">
+                                Your dopamine has reset. What is your choice?
+                              </span>
+                            </div>
+
+                            <div className="decision-actions-row">
+                              {/* 1. Subtle Button: "I Still Want It" */}
+                              <button
+                                type="button"
+                                className="btn-decision-subtle"
+                                onClick={() => handleStillWantIt(item)}
+                                title="Purchase mindfully and record in expense ledger"
+                              >
+                                <span>I Still Want It</span>
+                              </button>
+
+                              {/* 2. Vibrant Button: "Save This Money instead!" */}
+                              <button
+                                type="button"
+                                className="btn-decision-save-vibrant"
+                                onClick={() => handleSaveInstead(item)}
+                                title="Resist the urge and save this amount!"
+                              >
+                                <PiggyBank size={16} />
+                                <span>Save This Money instead!</span>
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     {/* Bottom Utility Bar */}
                     <div className="card-footer-row">
-                      <span className="card-timestamp">
-                        {isDecisionTime ? 'Ready for mindful decision' : 'Locked for impulse resistance'}
-                      </span>
+                      <div className="card-footer-left">
+                        <span className="card-timestamp">
+                          {isDecisionTime ? 'Ready for mindful decision' : 'Locked for impulse resistance'}
+                        </span>
+                        {!isEditingThisItem && isDecisionTime && (
+                          <button
+                            type="button"
+                            className="btn-relock-item"
+                            onClick={() => {
+                              setEditingItemId(item.id);
+                              setEditCustomValue('3');
+                              setEditCustomUnit('days');
+                            }}
+                            title="Want more time? Extend cooling period"
+                          >
+                            <RotateCcw size={11} />
+                            <span>Extend Time</span>
+                          </button>
+                        )}
+                      </div>
+
                       <button
                         type="button"
                         className="btn-card-discard"
@@ -602,8 +860,8 @@ export function WishVault({ currency = 'USD', onLogExpense, onShowToast }) {
               </div>
               <h4 className="empty-vault-title font-serif">Your Wish Vault is Clean</h4>
               <p className="empty-vault-desc">
-                Whenever you feel the sudden urge to buy something online, lock it here first for 48 hours.
-                If you still need it when the timer rings, buy it guilt-free. If not, keep your money!
+                Whenever you feel the sudden urge to buy something online, lock it here first.
+                Set the cooling period as long as you want. If you still need it when the timer rings, buy it guilt-free. If not, keep your money!
               </p>
             </div>
           )}
