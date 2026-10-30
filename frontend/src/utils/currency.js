@@ -43,3 +43,7 @@ export function formatAmountWithSign(amount, type, currencyCode = DEFAULT_CURREN
   }
   return formatted;
 }
+
+export function getCurrencySymbol(currencyCode = DEFAULT_CURRENCY) {
+  return CURRENCIES[currencyCode]?.symbol || '$';
+}

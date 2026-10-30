@@ -21,6 +21,7 @@ import TransactionModal from './components/transactions/TransactionModal';
 import AnalyticsDeepDive from './components/analytics/AnalyticsDeepDive';
 import BudgetsView from './components/budgets/BudgetsView';
 import SettingsView from './components/settings/SettingsView';
+import WishVault from './components/vault/WishVault';
 
 import { formatAmountWithSign } from './utils/currency';
 import './App.css';
@@ -153,6 +154,13 @@ export function App() {
                 />
               </div>
 
+              {/* Impulse Buy Wish Vault Feature Section */}
+              <WishVault
+                currency={currency}
+                onLogExpense={(itemData) => handleModalSubmit(itemData)}
+                onShowToast={showToast}
+              />
+
               {/* 2-Column Activity & Budgets Row */}
               <div className="dashboard-bottom-grid">
                 <RecentTransactions
@@ -196,6 +204,17 @@ export function App() {
                 transactions={transactions}
                 summary={summary}
                 currency={currency}
+              />
+            </div>
+          )}
+
+          {/* Tab: Dedicated Wish Vault */}
+          {activeTab === 'vault' && (
+            <div className="tab-vault animate-fade-in">
+              <WishVault
+                currency={currency}
+                onLogExpense={(itemData) => handleModalSubmit(itemData)}
+                onShowToast={showToast}
               />
             </div>
           )}
