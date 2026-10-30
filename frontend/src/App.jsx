@@ -154,13 +154,6 @@ export function App() {
                 />
               </div>
 
-              {/* Impulse Buy Wish Vault Feature Section */}
-              <WishVault
-                currency={currency}
-                onLogExpense={(itemData) => handleModalSubmit(itemData)}
-                onShowToast={showToast}
-              />
-
               {/* 2-Column Activity & Budgets Row */}
               <div className="dashboard-bottom-grid">
                 <RecentTransactions

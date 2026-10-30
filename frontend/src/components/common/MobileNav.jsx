@@ -5,6 +5,7 @@ import {
   Plus,
   PieChart,
   Settings,
+  Lock,
 } from 'lucide-react';
 import './MobileNav.css';
 
@@ -40,6 +41,15 @@ export function MobileNav({ activeTab, onSelectTab, onOpenAddModal }) {
           <Plus size={22} strokeWidth={2.6} />
         </button>
       </div>
+
+      <button
+        id="mobile-nav-vault"
+        className={`mobile-nav-item ${activeTab === 'vault' ? 'active' : ''}`}
+        onClick={() => onSelectTab('vault')}
+      >
+        <Lock size={20} />
+        <span>Vault</span>
+      </button>
 
       <button
         id="mobile-nav-analytics"
