@@ -213,21 +213,21 @@ export function SettingsView({
               <span className="health-val font-mono">{getBaseUrl()}</span>
             </div>
             <div className="health-item">
-              <span className="health-label">Local Default:</span>
-              <span className="health-val font-mono">http://localhost:8080</span>
+              <span className="health-label">Environment / Host:</span>
+              <span className="health-val font-mono">{isCloudHost ? 'Vercel Cloud (Web / Chrome)' : 'Local Host (Port 8080 / 5173)'}</span>
             </div>
             <div className="health-item">
               <span className="health-label">Database Target:</span>
-              <span className="health-val font-mono">MySQL (expense_tracker on 3306)</span>
+              <span className="health-val font-mono">{isCloudHost ? 'Cloud Browser Storage & Sync' : 'MySQL (expense_tracker on 3306)'}</span>
             </div>
             <div className="health-item">
               <span className="health-label">Live Connection:</span>
               <div
-                className={`health-badge ${isBackendHealthy ? 'online' : 'offline'}`}
-                title={isBackendHealthy ? 'Spring Boot REST API is connected' : 'Cannot reach backend on localhost (runs locally)'}
+                className={`health-badge ${isBackendHealthy ? 'online' : (isCloudHost ? 'online' : 'offline')}`}
+                title={isBackendHealthy ? 'Spring Boot REST API is connected' : (isCloudHost ? 'Running on Vercel with Cloud Storage' : 'Cannot reach backend on localhost (runs locally)')}
               >
                 <span className="dot"></span>
-                <span>{isBackendHealthy ? 'Active & Healthy' : 'Disconnected'}</span>
+                <span>{isBackendHealthy ? 'Active & Healthy' : (isCloudHost ? 'Cloud Web Mode (Active)' : 'Disconnected')}</span>
               </div>
             </div>
           </div>

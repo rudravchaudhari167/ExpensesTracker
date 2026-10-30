@@ -10,6 +10,29 @@ const DEMO_TRANSACTIONS = [
   { id: 106, title: 'High-Speed Broadband & Cloud', amount: 45.0, type: 'EXPENSE', category: 'Utilities', date: '2026-10-22' },
 ];
 
+function getStoredTransactions() {
+  if (typeof window === 'undefined') return DEMO_TRANSACTIONS;
+  try {
+    const raw = localStorage.getItem('pennywise_transactions');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (err) {
+    console.warn('Could not read saved transactions from storage:', err);
+  }
+  return DEMO_TRANSACTIONS;
+}
+
+function saveStoredTransactions(txs) {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem('pennywise_transactions', JSON.stringify(txs));
+  } catch (err) {
+    console.warn('Could not save transactions to storage:', err);
+  }
+}
+
 function calculateSummary(txList) {
   let income = 0;
   let expenses = 0;
@@ -52,8 +75,9 @@ export function useTransactions() {
     localStorage.setItem('pennywise_demo_mode', enabled ? 'true' : 'false');
     if (enabled) {
       setError(null);
-      setTransactions(DEMO_TRANSACTIONS);
-      setSummary(calculateSummary(DEMO_TRANSACTIONS));
+      const stored = getStoredTransactions();
+      setTransactions(stored);
+      setSummary(calculateSummary(stored));
       setIsBackendHealthy(false);
     } else {
       loadData();
@@ -64,10 +88,11 @@ export function useTransactions() {
     if (!isSilent) setLoading(true);
     setError(null);
 
-    // If demo mode is explicitly active, use showcase data
+    // If demo mode is explicitly active, use showcase data from storage
     if (localStorage.getItem('pennywise_demo_mode') === 'true') {
-      setTransactions(DEMO_TRANSACTIONS);
-      setSummary(calculateSummary(DEMO_TRANSACTIONS));
+      const stored = getStoredTransactions();
+      setTransactions(stored);
+      setSummary(calculateSummary(stored));
       setIsBackendHealthy(false);
       setLoading(false);
       return;
@@ -106,8 +131,9 @@ export function useTransactions() {
         window.location.hostname !== '127.0.0.1';
 
       if (isCloudHost) {
-        setTransactions(DEMO_TRANSACTIONS);
-        setSummary(calculateSummary(DEMO_TRANSACTIONS));
+        const stored = getStoredTransactions();
+        setTransactions(stored);
+        setSummary(calculateSummary(stored));
         setIsDemoMode(true);
       }
     } finally {
@@ -131,6 +157,7 @@ export function useTransactions() {
       const updated = [newEntry, ...transactions];
       setTransactions(updated);
       setSummary(calculateSummary(updated));
+      saveStoredTransactions(updated);
       return newEntry;
     }
 
@@ -147,6 +174,7 @@ export function useTransactions() {
       );
       setTransactions(updated);
       setSummary(calculateSummary(updated));
+      saveStoredTransactions(updated);
       return { id, ...formData };
     }
 
@@ -161,6 +189,7 @@ export function useTransactions() {
       const updated = transactions.filter((t) => t.id !== id);
       setTransactions(updated);
       setSummary(calculateSummary(updated));
+      saveStoredTransactions(updated);
       return;
     }
 

@@ -99,7 +99,7 @@ async function request(endpoint, options = {}) {
       'Your Spring Boot & MySQL backend is running locally on your laptop, so Vercel cannot reach it over the internet. You can explore in Showcase Mode or deploy your backend to Render/Railway.';
 
     const localMsg =
-      'Unable to connect to the backend server. Please verify Spring Boot is running on port 8080.';
+      'Unable to connect to the backend server. Please verify Spring Boot is running on port 8080 (or configured PORT).';
 
     throw new ApiError(isCloudHost ? cloudMsg : localMsg, 0, error);
   }
