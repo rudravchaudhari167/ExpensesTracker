@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -6,26 +6,27 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend,
   CartesianGrid,
 } from 'recharts';
-import { computeMonthlyData } from '../../utils/analytics';
+import { computeMonthlyData, computeDailyData } from '../../utils/analytics';
 import { formatCurrency } from '../../utils/currency';
-import { BarChart3, TrendingUp, Sparkles } from 'lucide-react';
+import { BarChart3, TrendingUp, Calendar } from 'lucide-react';
 import './SpendingChart.css';
 
 /**
  * Custom Tooltip for Cash Flow Chart
  */
-function CustomTooltip({ active, payload, label, currency }) {
+function CustomTooltip({ active, payload, label, currency, viewMode }) {
   if (active && payload && payload.length) {
     const incomeVal = payload.find((p) => p.dataKey === 'income')?.value || 0;
     const expenseVal = payload.find((p) => p.dataKey === 'expense')?.value || 0;
-    const netVal = incomeVal - expenseVal;
+    const netVal = Math.round((incomeVal - expenseVal) * 100) / 100;
 
     return (
       <div className="custom-chart-tooltip card-surface">
-        <div className="tooltip-header">{label}</div>
+        <div className="tooltip-header">
+          {viewMode === 'daily' ? `Date: ${label}` : `Month: ${label}`}
+        </div>
         <div className="tooltip-row income">
           <span className="tooltip-indicator income-dot"></span>
           <span className="tooltip-label">Income:</span>
@@ -50,27 +51,75 @@ function CustomTooltip({ active, payload, label, currency }) {
 }
 
 export function SpendingChart({ transactions = [], currency = 'USD' }) {
-  const chartData = useMemo(() => {
-    return computeMonthlyData(transactions);
-  }, [transactions]);
+  // Allow toggling between daily breakdown and monthly overview
+  const [viewMode, setViewMode] = useState('daily');
 
-  const hasData = chartData.length > 0;
+  const chartData = useMemo(() => {
+    if (viewMode === 'daily') {
+      const daily = computeDailyData(transactions, 14);
+      // Fallback to monthly if daily has no entries
+      return daily.length > 0 ? daily : computeMonthlyData(transactions);
+    }
+    return computeMonthlyData(transactions);
+  }, [transactions, viewMode]);
+
+  const hasData = chartData.length > 0 && chartData.some((d) => d.income > 0 || d.expense > 0);
+
+  // Period total net calculation
+  const periodTotals = useMemo(() => {
+    let inc = 0;
+    let exp = 0;
+    chartData.forEach((d) => {
+      inc += d.income || 0;
+      exp += d.expense || 0;
+    });
+    return {
+      income: inc,
+      expense: exp,
+      net: inc - exp,
+    };
+  }, [chartData]);
 
   return (
     <div className="spending-chart-card card-surface animate-fade-in">
       <div className="chart-card-header">
-        <div>
+        <div className="chart-title-group">
           <h3 className="chart-title font-serif">Cash Flow Overview</h3>
-          <p className="chart-subtitle">Monthly income vs. outflow trends</p>
+          <p className="chart-subtitle">
+            {viewMode === 'daily' ? 'Recent daily income vs. outflow' : 'Monthly income vs. outflow trends'}
+          </p>
         </div>
-        <div className="chart-legend-custom">
-          <div className="legend-item">
-            <span className="legend-pill sage"></span>
-            <span>Income</span>
+
+        <div className="chart-actions-group">
+          {/* Daily vs Monthly Toggle */}
+          <div className="chart-view-toggle">
+            <button
+              type="button"
+              className={`toggle-btn ${viewMode === 'daily' ? 'active' : ''}`}
+              onClick={() => setViewMode('daily')}
+              title="View daily cash flow breakdown"
+            >
+              Daily
+            </button>
+            <button
+              type="button"
+              className={`toggle-btn ${viewMode === 'monthly' ? 'active' : ''}`}
+              onClick={() => setViewMode('monthly')}
+              title="View 6-month trend overview"
+            >
+              Monthly
+            </button>
           </div>
-          <div className="legend-item">
-            <span className="legend-pill terracotta"></span>
-            <span>Expense</span>
+
+          <div className="chart-legend-custom">
+            <div className="legend-item">
+              <span className="legend-pill sage"></span>
+              <span>Income</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-pill terracotta"></span>
+              <span>Expense</span>
+            </div>
           </div>
         </div>
       </div>
@@ -80,7 +129,7 @@ export function SpendingChart({ transactions = [], currency = 'USD' }) {
           <ResponsiveContainer width="100%" height={290}>
             <BarChart
               data={chartData}
-              margin={{ top: 12, right: 12, left: -16, bottom: 0 }}
+              margin={{ top: 12, right: 16, left: 0, bottom: 0 }}
               barGap={6}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAE5DC" />
@@ -88,19 +137,22 @@ export function SpendingChart({ transactions = [], currency = 'USD' }) {
                 dataKey="month"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#858276', fontSize: 12 }}
+                tick={{ fill: '#858276', fontSize: 11 }}
+                interval={0}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#858276', fontSize: 12 }}
+                width={48}
+                tick={{ fill: '#858276', fontSize: 11 }}
                 tickFormatter={(val) => {
-                  if (val >= 1000) return `${val / 1000}k`;
+                  if (val >= 1000000) return `${(val / 1000000).toFixed(1).replace(/\.0$/, '')}M`;
+                  if (val >= 1000) return `${(val / 1000).toFixed(1).replace(/\.0$/, '')}k`;
                   return val;
                 }}
               />
               <Tooltip
-                content={<CustomTooltip currency={currency} />}
+                content={<CustomTooltip currency={currency} viewMode={viewMode} />}
                 cursor={{ fill: 'rgba(234, 229, 220, 0.4)' }}
               />
               <Bar
@@ -108,14 +160,14 @@ export function SpendingChart({ transactions = [], currency = 'USD' }) {
                 name="Income"
                 fill="#3E6B3B"
                 radius={[6, 6, 0, 0]}
-                maxBarSize={36}
+                maxBarSize={32}
               />
               <Bar
                 dataKey="expense"
                 name="Expense"
                 fill="#E87952"
                 radius={[6, 6, 0, 0]}
-                maxBarSize={36}
+                maxBarSize={32}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -126,7 +178,7 @@ export function SpendingChart({ transactions = [], currency = 'USD' }) {
             </div>
             <div className="empty-title">No cash flow activity yet</div>
             <p className="empty-desc">
-              Log transactions to start visualizing your monthly income vs. expense balance.
+              Log transactions to start visualizing your daily and monthly income vs. expense balance.
             </p>
           </div>
         )}

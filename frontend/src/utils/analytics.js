@@ -16,25 +16,106 @@ const PALETTE = [
 ];
 
 /**
- * Group transactions by month for Cash Flow trend charts
+ * Safely parse date strings (YYYY-MM-DD) avoiding UTC timezone off-by-one shifts
+ */
+export function parseDateParts(dateStr) {
+  if (!dateStr) return null;
+  if (dateStr instanceof Date) {
+    if (isNaN(dateStr.getTime())) return null;
+    return {
+      year: dateStr.getFullYear(),
+      month: dateStr.getMonth() + 1,
+      day: dateStr.getDate(),
+      dateObj: dateStr,
+    };
+  }
+  const clean = String(dateStr).split('T')[0].trim();
+  const parts = clean.split('-');
+  if (parts.length === 3) {
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
+    if (!isNaN(year) && !isNaN(month) && !isNaN(day)) {
+      const dateObj = new Date(year, month - 1, day);
+      return { year, month, day, dateObj };
+    }
+  }
+  const fallback = new Date(dateStr);
+  if (!isNaN(fallback.getTime())) {
+    return {
+      year: fallback.getFullYear(),
+      month: fallback.getMonth() + 1,
+      day: fallback.getDate(),
+      dateObj: fallback,
+    };
+  }
+  return null;
+}
+
+/**
+ * Group transactions by day for recent Cash Flow activity
+ */
+export function computeDailyData(transactions = [], limit = 14) {
+  if (!transactions.length) return [];
+
+  const dayMap = new Map();
+
+  transactions.forEach((tx) => {
+    const p = parseDateParts(tx.date);
+    if (!p) return;
+
+    const dayKey = `${p.year}-${String(p.month).padStart(2, '0')}-${String(p.day).padStart(2, '0')}`;
+    const dayLabel = p.dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    if (!dayMap.has(dayKey)) {
+      dayMap.set(dayKey, {
+        key: dayKey,
+        month: dayLabel,
+        label: dayLabel,
+        income: 0,
+        expense: 0,
+        net: 0,
+      });
+    }
+
+    const entry = dayMap.get(dayKey);
+    const rawAmt = typeof tx.amount === 'string' ? parseFloat(tx.amount.replace(/[^0-9.-]+/g, '')) : Number(tx.amount);
+    const amount = Math.abs(rawAmt) || 0;
+    const typeUpper = String(tx.type || '').trim().toUpperCase();
+
+    if (typeUpper === 'INCOME') {
+      entry.income = Math.round((entry.income + amount) * 100) / 100;
+    } else if (typeUpper === 'EXPENSE') {
+      entry.expense = Math.round((entry.expense + amount) * 100) / 100;
+    }
+    entry.net = Math.round((entry.income - entry.expense) * 100) / 100;
+  });
+
+  const sorted = Array.from(dayMap.values()).sort((a, b) => a.key.localeCompare(b.key));
+  return sorted.length > limit ? sorted.slice(-limit) : sorted;
+}
+
+/**
+ * Group transactions by month for Cash Flow trend charts with a continuous 6-month timeline
  */
 export function computeMonthlyData(transactions = []) {
   if (!transactions.length) return [];
 
   const monthMap = new Map();
+  const now = new Date();
 
   transactions.forEach((tx) => {
-    if (!tx.date) return;
-    const date = new Date(tx.date);
-    if (isNaN(date.getTime())) return;
+    const p = parseDateParts(tx.date);
+    if (!p) return;
 
-    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-    const monthLabel = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    const monthKey = `${p.year}-${String(p.month).padStart(2, '0')}`;
+    const monthLabel = p.dateObj.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
     if (!monthMap.has(monthKey)) {
       monthMap.set(monthKey, {
         key: monthKey,
         month: monthLabel,
+        label: monthLabel,
         income: 0,
         expense: 0,
         net: 0,
@@ -42,14 +123,36 @@ export function computeMonthlyData(transactions = []) {
     }
 
     const entry = monthMap.get(monthKey);
-    const amount = Number(tx.amount) || 0;
-    if (tx.type === 'INCOME') {
-      entry.income += amount;
-    } else if (tx.type === 'EXPENSE') {
-      entry.expense += amount;
+    const rawAmt = typeof tx.amount === 'string' ? parseFloat(tx.amount.replace(/[^0-9.-]+/g, '')) : Number(tx.amount);
+    const amount = Math.abs(rawAmt) || 0;
+    const typeUpper = String(tx.type || '').trim().toUpperCase();
+
+    if (typeUpper === 'INCOME') {
+      entry.income = Math.round((entry.income + amount) * 100) / 100;
+    } else if (typeUpper === 'EXPENSE') {
+      entry.expense = Math.round((entry.expense + amount) * 100) / 100;
     }
-    entry.net = entry.income - entry.expense;
+    entry.net = Math.round((entry.income - entry.expense) * 100) / 100;
   });
+
+  // If there are fewer than 4 months, pad with previous months ending at latest transaction date
+  let latestDate = now;
+  if (monthMap.size > 0) {
+    const sortedKeys = Array.from(monthMap.keys()).sort();
+    const lastKey = sortedKeys[sortedKeys.length - 1];
+    const [ly, lm] = lastKey.split('-').map(Number);
+    latestDate = new Date(ly, lm - 1, 1);
+  }
+
+  // Ensure a rolling 6-month timeline up to latestDate
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(latestDate.getFullYear(), latestDate.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    if (!monthMap.has(key)) {
+      const label = d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+      monthMap.set(key, { key, month: label, label, income: 0, expense: 0, net: 0 });
+    }
+  }
 
   // Sort chronologically
   return Array.from(monthMap.values()).sort((a, b) => a.key.localeCompare(b.key));
@@ -59,7 +162,9 @@ export function computeMonthlyData(transactions = []) {
  * Compute spending breakdown by category for Donut/Pie charts
  */
 export function computeCategorySpending(transactions = []) {
-  const expenseTransactions = transactions.filter((t) => t.type === 'EXPENSE');
+  const expenseTransactions = transactions.filter(
+    (t) => String(t.type || '').trim().toUpperCase() === 'EXPENSE'
+  );
   if (!expenseTransactions.length) return [];
 
   const categoryMap = new Map();
@@ -67,7 +172,8 @@ export function computeCategorySpending(transactions = []) {
 
   expenseTransactions.forEach((tx) => {
     const cat = (tx.category || 'Uncategorized').trim();
-    const amount = Number(tx.amount) || 0;
+    const rawAmt = typeof tx.amount === 'string' ? parseFloat(tx.amount.replace(/[^0-9.-]+/g, '')) : Number(tx.amount);
+    const amount = Math.abs(rawAmt) || 0;
     totalExpenseAmount += amount;
     categoryMap.set(cat, (categoryMap.get(cat) || 0) + amount);
   });
@@ -96,11 +202,22 @@ export function computeInsights(transactions = [], summary = {}) {
     };
   }
 
-  const expenses = transactions.filter((t) => t.type === 'EXPENSE');
-  const incomes = transactions.filter((t) => t.type === 'INCOME');
+  const expenses = transactions.filter(
+    (t) => String(t.type || '').trim().toUpperCase() === 'EXPENSE'
+  );
+  const incomes = transactions.filter(
+    (t) => String(t.type || '').trim().toUpperCase() === 'INCOME'
+  );
 
-  const totalExpense = expenses.reduce((acc, t) => acc + (Number(t.amount) || 0), 0);
-  const totalIncome = incomes.reduce((acc, t) => acc + (Number(t.amount) || 0), 0);
+  const totalExpense = expenses.reduce((acc, t) => {
+    const rawAmt = typeof t.amount === 'string' ? parseFloat(t.amount.replace(/[^0-9.-]+/g, '')) : Number(t.amount);
+    return acc + (Math.abs(rawAmt) || 0);
+  }, 0);
+
+  const totalIncome = incomes.reduce((acc, t) => {
+    const rawAmt = typeof t.amount === 'string' ? parseFloat(t.amount.replace(/[^0-9.-]+/g, '')) : Number(t.amount);
+    return acc + (Math.abs(rawAmt) || 0);
+  }, 0);
 
   const categories = computeCategorySpending(transactions);
   const topCategory = categories[0] || null;
