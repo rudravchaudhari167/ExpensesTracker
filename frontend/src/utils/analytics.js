@@ -53,9 +53,9 @@ export function parseDateParts(dateStr) {
 }
 
 /**
- * Group transactions by day for recent Cash Flow activity
+ * Group transactions by day for recent Cash Flow activity with a continuous 7-day timeline
  */
-export function computeDailyData(transactions = [], limit = 14) {
+export function computeDailyData(transactions = [], numDays = 7) {
   if (!transactions.length) return [];
 
   const dayMap = new Map();
@@ -65,16 +65,12 @@ export function computeDailyData(transactions = [], limit = 14) {
     if (!p) return;
 
     const dayKey = `${p.year}-${String(p.month).padStart(2, '0')}-${String(p.day).padStart(2, '0')}`;
-    const dayLabel = p.dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
     if (!dayMap.has(dayKey)) {
       dayMap.set(dayKey, {
-        key: dayKey,
-        month: dayLabel,
-        label: dayLabel,
         income: 0,
         expense: 0,
-        net: 0,
+        dateObj: p.dateObj,
       });
     }
 
@@ -88,17 +84,50 @@ export function computeDailyData(transactions = [], limit = 14) {
     } else if (typeUpper === 'EXPENSE') {
       entry.expense = Math.round((entry.expense + amount) * 100) / 100;
     }
-    entry.net = Math.round((entry.income - entry.expense) * 100) / 100;
   });
 
-  const sorted = Array.from(dayMap.values()).sort((a, b) => a.key.localeCompare(b.key));
-  return sorted.length > limit ? sorted.slice(-limit) : sorted;
+  // Determine latest date to anchor the continuous daily timeline
+  const sortedKeys = Array.from(dayMap.keys()).sort();
+  if (sortedKeys.length === 0) return [];
+
+  const lastKey = sortedKeys[sortedKeys.length - 1];
+  const pLast = parseDateParts(lastKey);
+  const endDate = pLast ? pLast.dateObj : new Date();
+
+  // Build a continuous rolling window of numDays ending on endDate
+  const result = [];
+  for (let i = numDays - 1; i >= 0; i--) {
+    const d = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate() - i);
+    const y = d.getFullYear();
+    const m = d.getMonth() + 1;
+    const day = d.getDate();
+    const key = `${y}-${String(m).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const existing = dayMap.get(key);
+
+    const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const fullDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const income = existing ? existing.income : 0;
+    const expense = existing ? existing.expense : 0;
+
+    result.push({
+      key,
+      date: key,
+      month: label,
+      label,
+      fullDate,
+      income,
+      expense,
+      net: Math.round((income - expense) * 100) / 100,
+    });
+  }
+
+  return result;
 }
 
 /**
  * Group transactions by month for Cash Flow trend charts with a continuous 6-month timeline
  */
-export function computeMonthlyData(transactions = []) {
+export function computeMonthlyData(transactions = [], numMonths = 6) {
   if (!transactions.length) return [];
 
   const monthMap = new Map();
@@ -109,16 +138,12 @@ export function computeMonthlyData(transactions = []) {
     if (!p) return;
 
     const monthKey = `${p.year}-${String(p.month).padStart(2, '0')}`;
-    const monthLabel = p.dateObj.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
     if (!monthMap.has(monthKey)) {
       monthMap.set(monthKey, {
-        key: monthKey,
-        month: monthLabel,
-        label: monthLabel,
         income: 0,
         expense: 0,
-        net: 0,
+        dateObj: new Date(p.year, p.month - 1, 1),
       });
     }
 
@@ -132,10 +157,9 @@ export function computeMonthlyData(transactions = []) {
     } else if (typeUpper === 'EXPENSE') {
       entry.expense = Math.round((entry.expense + amount) * 100) / 100;
     }
-    entry.net = Math.round((entry.income - entry.expense) * 100) / 100;
   });
 
-  // If there are fewer than 4 months, pad with previous months ending at latest transaction date
+  // Find latest month to anchor the 6-month continuous timeline
   let latestDate = now;
   if (monthMap.size > 0) {
     const sortedKeys = Array.from(monthMap.keys()).sort();
@@ -144,18 +168,30 @@ export function computeMonthlyData(transactions = []) {
     latestDate = new Date(ly, lm - 1, 1);
   }
 
-  // Ensure a rolling 6-month timeline up to latestDate
-  for (let i = 5; i >= 0; i--) {
+  // Ensure rolling numMonths up to latestDate with clean non-colliding labels
+  const result = [];
+  for (let i = numMonths - 1; i >= 0; i--) {
     const d = new Date(latestDate.getFullYear(), latestDate.getMonth() - i, 1);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-    if (!monthMap.has(key)) {
-      const label = d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-      monthMap.set(key, { key, month: label, label, income: 0, expense: 0, net: 0 });
-    }
+    const existing = monthMap.get(key);
+
+    const shortLabel = d.toLocaleDateString('en-US', { month: 'short' });
+    const fullMonth = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const income = existing ? existing.income : 0;
+    const expense = existing ? existing.expense : 0;
+
+    result.push({
+      key,
+      month: shortLabel,
+      label: shortLabel,
+      fullMonth,
+      income,
+      expense,
+      net: Math.round((income - expense) * 100) / 100,
+    });
   }
 
-  // Sort chronologically
-  return Array.from(monthMap.values()).sort((a, b) => a.key.localeCompare(b.key));
+  return result;
 }
 
 /**

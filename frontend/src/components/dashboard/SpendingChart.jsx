@@ -18,15 +18,18 @@ import './SpendingChart.css';
  */
 function CustomTooltip({ active, payload, label, currency, viewMode }) {
   if (active && payload && payload.length) {
-    const incomeVal = payload.find((p) => p.dataKey === 'income')?.value || 0;
-    const expenseVal = payload.find((p) => p.dataKey === 'expense')?.value || 0;
+    const dataItem = payload[0]?.payload || {};
+    const incomeVal = dataItem.income || 0;
+    const expenseVal = dataItem.expense || 0;
     const netVal = Math.round((incomeVal - expenseVal) * 100) / 100;
+    const headerTitle =
+      viewMode === 'daily'
+        ? dataItem.fullDate || `Date: ${label}`
+        : dataItem.fullMonth || `Month: ${label}`;
 
     return (
       <div className="custom-chart-tooltip card-surface">
-        <div className="tooltip-header">
-          {viewMode === 'daily' ? `Date: ${label}` : `Month: ${label}`}
-        </div>
+        <div className="tooltip-header">{headerTitle}</div>
         <div className="tooltip-row income">
           <span className="tooltip-indicator income-dot"></span>
           <span className="tooltip-label">Income:</span>
@@ -50,35 +53,64 @@ function CustomTooltip({ active, payload, label, currency, viewMode }) {
   return null;
 }
 
+/**
+ * Custom Bar renderer that aligns bars directly over their corresponding date ticks.
+ * If a date has only income, the income bar is centered over the tick.
+ * If a date has only expense, the expense bar is centered over the tick.
+ * If both exist, they are displayed side-by-side symmetrically around the tick.
+ */
+function AlignedBar(props) {
+  const { x, y, width, height, fill, payload, dataKey } = props;
+  if (!height || height <= 0) return null;
+
+  const barGap = 3;
+  const hasIncome = (payload?.income || 0) > 0;
+  const hasExpense = (payload?.expense || 0) > 0;
+
+  // Maximum elegant bar width to maintain readable proportions
+  const barWidth = Math.min(width, 24);
+
+  let adjustedX = x;
+
+  if (hasIncome && !hasExpense && dataKey === 'income') {
+    // Single income bar: center directly over category tick
+    adjustedX = x + (width + barGap) / 2 - (barWidth - width) / 2;
+  } else if (hasExpense && !hasIncome && dataKey === 'expense') {
+    // Single expense bar: center directly over category tick
+    adjustedX = x - (width + barGap) / 2 - (barWidth - width) / 2;
+  } else {
+    // Both exist: center the bar within its allotted half-slot
+    adjustedX = x + (width - barWidth) / 2;
+  }
+
+  return (
+    <rect
+      x={adjustedX}
+      y={y}
+      width={barWidth}
+      height={Math.max(height, 2)}
+      rx={5}
+      ry={5}
+      fill={fill}
+      className="recharts-bar-rectangle"
+    />
+  );
+}
+
 export function SpendingChart({ transactions = [], currency = 'USD' }) {
   // Allow toggling between daily breakdown and monthly overview
   const [viewMode, setViewMode] = useState('daily');
 
   const chartData = useMemo(() => {
     if (viewMode === 'daily') {
-      const daily = computeDailyData(transactions, 14);
+      const daily = computeDailyData(transactions, 7);
       // Fallback to monthly if daily has no entries
-      return daily.length > 0 ? daily : computeMonthlyData(transactions);
+      return daily.length > 0 ? daily : computeMonthlyData(transactions, 6);
     }
-    return computeMonthlyData(transactions);
+    return computeMonthlyData(transactions, 6);
   }, [transactions, viewMode]);
 
   const hasData = chartData.length > 0 && chartData.some((d) => d.income > 0 || d.expense > 0);
-
-  // Period total net calculation
-  const periodTotals = useMemo(() => {
-    let inc = 0;
-    let exp = 0;
-    chartData.forEach((d) => {
-      inc += d.income || 0;
-      exp += d.expense || 0;
-    });
-    return {
-      income: inc,
-      expense: exp,
-      net: inc - exp,
-    };
-  }, [chartData]);
 
   return (
     <div className="spending-chart-card card-surface animate-fade-in">
@@ -86,7 +118,7 @@ export function SpendingChart({ transactions = [], currency = 'USD' }) {
         <div className="chart-title-group">
           <h3 className="chart-title font-serif">Cash Flow Overview</h3>
           <p className="chart-subtitle">
-            {viewMode === 'daily' ? 'Recent daily income vs. outflow' : 'Monthly income vs. outflow trends'}
+            {viewMode === 'daily' ? 'Past 7 days income vs. outflow' : '6-month cash flow trajectory'}
           </p>
         </div>
 
@@ -129,15 +161,17 @@ export function SpendingChart({ transactions = [], currency = 'USD' }) {
           <ResponsiveContainer width="100%" height={290}>
             <BarChart
               data={chartData}
-              margin={{ top: 12, right: 16, left: 0, bottom: 0 }}
-              barGap={6}
+              margin={{ top: 14, right: 16, left: 0, bottom: 4 }}
+              barCategoryGap="28%"
+              barGap={3}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAE5DC" />
               <XAxis
-                dataKey="month"
+                dataKey="label"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fill: '#858276', fontSize: 11 }}
+                tick={{ fill: '#858276', fontSize: 11, fontWeight: 500 }}
+                dy={6}
                 interval={0}
               />
               <YAxis
@@ -153,21 +187,19 @@ export function SpendingChart({ transactions = [], currency = 'USD' }) {
               />
               <Tooltip
                 content={<CustomTooltip currency={currency} viewMode={viewMode} />}
-                cursor={{ fill: 'rgba(234, 229, 220, 0.4)' }}
+                cursor={{ fill: 'rgba(234, 229, 220, 0.4)', radius: 6 }}
               />
               <Bar
                 dataKey="income"
                 name="Income"
                 fill="#3E6B3B"
-                radius={[6, 6, 0, 0]}
-                maxBarSize={32}
+                shape={<AlignedBar dataKey="income" />}
               />
               <Bar
                 dataKey="expense"
                 name="Expense"
                 fill="#E87952"
-                radius={[6, 6, 0, 0]}
-                maxBarSize={32}
+                shape={<AlignedBar dataKey="expense" />}
               />
             </BarChart>
           </ResponsiveContainer>
