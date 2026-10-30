@@ -29,10 +29,18 @@ export function SettingsView({
 }) {
   const [pingStatus, setPingStatus] = useState(null);
   const [isPinging, setIsPinging] = useState(false);
-  const [customUrl, setCustomUrl] = useState(() => localStorage.getItem('pennywise_custom_api_url') || '');
+  const [customUrl, setCustomUrl] = useState(
+    () =>
+      localStorage.getItem('spendl_custom_api_url') ||
+      localStorage.getItem('pennywise_custom_api_url') ||
+      ''
+  );
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [dismissNotice, setDismissNotice] = useState(() => {
-    return localStorage.getItem('pennywise_dismiss_cloud_notice') === 'true';
+    return (
+      localStorage.getItem('spendl_dismiss_cloud_notice') === 'true' ||
+      localStorage.getItem('pennywise_dismiss_cloud_notice') === 'true'
+    );
   });
 
   const isCloudHost =
@@ -42,7 +50,7 @@ export function SettingsView({
 
   const handleDismissNotice = () => {
     setDismissNotice(true);
-    localStorage.setItem('pennywise_dismiss_cloud_notice', 'true');
+    localStorage.setItem('spendl_dismiss_cloud_notice', 'true');
   };
 
   const testConnection = async () => {

@@ -26,12 +26,12 @@ export function Sidebar({ activeTab, onSelectTab, transactionCount = 0 }) {
         <div className="brand-logo-coin">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="12" cy="12" r="10" fill="#E87952" />
-            <circle cx="12" cy="12" r="6.5" stroke="#FFFFFF" strokeWidth="1.8" strokeDasharray="3 2" />
-            <path d="M9.5 8.5H13C14.1 8.5 15 9.4 15 10.5C15 11.6 14.1 12.5 13 12.5H9.5V15.5M9.5 10.5H14" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="12" cy="12" r="6.5" stroke="#FFFFFF" strokeWidth="1.6" strokeDasharray="3 2" />
+            <path d="M14.5 8.5C14.1 7.9 13.2 7.5 12 7.5C10.5 7.5 9.5 8.4 9.5 9.6C9.5 11 11 11.5 12.3 12C13.6 12.5 14.6 13.1 14.6 14.6C14.6 16 13.3 16.9 11.8 16.9C10.2 16.9 9.3 16 9 15.2" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
         <div className="brand-text">
-          <div className="brand-name font-serif">Pennywise</div>
+          <div className="brand-name font-serif">Spendl</div>
           <div className="brand-tagline">Your money, your rhythm.</div>
         </div>
       </div>

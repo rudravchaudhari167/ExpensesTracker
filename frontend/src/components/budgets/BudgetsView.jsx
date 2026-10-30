@@ -32,7 +32,7 @@ export function BudgetsView({ summary = {}, transactions = [], currency = 'USD' 
         </div>
 
         <p className="info-text">
-          Pennywise connects directly to your existing Spring Boot backend.
+          Spendl connects directly to your existing Spring Boot backend.
           Your current backend implements complete CRUD and summary endpoints for{' '}
           <code>Transaction</code> records (Title, Amount, Type, Category, Date), but does not yet expose a{' '}
           <code>Budget</code> entity or <code>/api/budgets</code> endpoints.

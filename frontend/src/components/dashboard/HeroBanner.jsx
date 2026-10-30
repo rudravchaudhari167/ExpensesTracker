@@ -12,7 +12,7 @@ export function HeroBanner({ totalTransactions = 0, balance = 0, currency = 'USD
         <div className="hero-tag-wrapper">
           <span className="hero-tag-pill">
             <Sparkles size={13} className="hero-tag-icon" />
-            <span>Pennywise Editorial</span>
+            <span>Spendl Editorial</span>
           </span>
           <span className="hero-month-pill">{currentMonth}</span>
         </div>

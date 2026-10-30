@@ -22,7 +22,7 @@ import {
 import { CURRENCIES } from '../../utils/currency';
 import './TransactionModal.css';
 
-const CUSTOM_CATEGORIES_STORAGE_KEY = 'pennywise_custom_categories';
+const CUSTOM_CATEGORIES_STORAGE_KEY = 'spendl_custom_categories';
 
 export function TransactionModal({
   isOpen,
@@ -66,7 +66,9 @@ export function TransactionModal({
   // Custom user-created categories state (persisted in localStorage)
   const [customCategories, setCustomCategories] = useState(() => {
     try {
-      const stored = localStorage.getItem(CUSTOM_CATEGORIES_STORAGE_KEY);
+      const stored =
+        localStorage.getItem(CUSTOM_CATEGORIES_STORAGE_KEY) ||
+        localStorage.getItem('pennywise_custom_categories');
       return stored ? JSON.parse(stored) : [];
     } catch {
       return [];

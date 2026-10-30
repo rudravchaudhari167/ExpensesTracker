@@ -1,4 +1,4 @@
-# Pennywise — Your money, your rhythm 🪙
+# Spendl — Your money, your rhythm 🪙
 
 > **A portfolio-grade creative fintech web app** combining a Java Spring Boot & MySQL backend with an editorial, warm minimalist React dashboard.
 > Built by **Rudra Vijay Chaudhari** (BTech Computer Science & Engineering).
@@ -7,7 +7,7 @@
 
 ## 🎨 Visual Identity & Art Direction
 
-- **Name:** Pennywise — *"Your money, your rhythm."*
+- **Name:** Spendl — *"Your money, your rhythm."*
 - **Theme:** Warm minimalism, Gen Z editorial, playful sophistication.
 - **Color Palette:**
   - Background: `#F8F5EF`

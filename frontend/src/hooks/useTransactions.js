@@ -13,7 +13,9 @@ const DEMO_TRANSACTIONS = [
 function getStoredTransactions() {
   if (typeof window === 'undefined') return DEMO_TRANSACTIONS;
   try {
-    const raw = localStorage.getItem('pennywise_transactions');
+    const raw =
+      localStorage.getItem('spendl_transactions') ||
+      localStorage.getItem('pennywise_transactions');
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -27,7 +29,7 @@ function getStoredTransactions() {
 function saveStoredTransactions(txs) {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem('pennywise_transactions', JSON.stringify(txs));
+    localStorage.setItem('spendl_transactions', JSON.stringify(txs));
   } catch (err) {
     console.warn('Could not save transactions to storage:', err);
   }
@@ -59,20 +61,27 @@ export function useTransactions() {
   const [error, setError] = useState(null);
   const [isBackendHealthy, setIsBackendHealthy] = useState(true);
   const [isDemoMode, setIsDemoMode] = useState(() => {
-    return localStorage.getItem('pennywise_demo_mode') === 'true';
+    return (
+      localStorage.getItem('spendl_demo_mode') === 'true' ||
+      localStorage.getItem('pennywise_demo_mode') === 'true'
+    );
   });
   const [currency, setCurrency] = useState(() => {
-    return localStorage.getItem('pennywise_currency') || 'USD';
+    return (
+      localStorage.getItem('spendl_currency') ||
+      localStorage.getItem('pennywise_currency') ||
+      'USD'
+    );
   });
 
   const handleSetCurrency = (newCurrency) => {
     setCurrency(newCurrency);
-    localStorage.setItem('pennywise_currency', newCurrency);
+    localStorage.setItem('spendl_currency', newCurrency);
   };
 
   const setDemoMode = (enabled) => {
     setIsDemoMode(enabled);
-    localStorage.setItem('pennywise_demo_mode', enabled ? 'true' : 'false');
+    localStorage.setItem('spendl_demo_mode', enabled ? 'true' : 'false');
     if (enabled) {
       setError(null);
       const stored = getStoredTransactions();
@@ -89,7 +98,10 @@ export function useTransactions() {
     setError(null);
 
     // If demo mode is explicitly active, use showcase data from storage
-    if (localStorage.getItem('pennywise_demo_mode') === 'true') {
+    if (
+      localStorage.getItem('spendl_demo_mode') === 'true' ||
+      localStorage.getItem('pennywise_demo_mode') === 'true'
+    ) {
       const stored = getStoredTransactions();
       setTransactions(stored);
       setSummary(calculateSummary(stored));

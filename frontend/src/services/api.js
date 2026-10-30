@@ -1,11 +1,13 @@
 /**
- * Dedicated API Client Layer for Pennywise
+ * Dedicated API Client Layer for Spendl
  * Connects to Spring Boot REST API
  */
 
 export function getBaseUrl() {
   if (typeof window !== 'undefined') {
-    const custom = localStorage.getItem('pennywise_custom_api_url');
+    const custom =
+      localStorage.getItem('spendl_custom_api_url') ||
+      localStorage.getItem('pennywise_custom_api_url');
     if (custom && custom.trim()) {
       return custom.trim().replace(/\/+$/, '');
     }
@@ -15,9 +17,10 @@ export function getBaseUrl() {
 
 export function setCustomApiUrl(url) {
   if (!url || !url.trim()) {
+    localStorage.removeItem('spendl_custom_api_url');
     localStorage.removeItem('pennywise_custom_api_url');
   } else {
-    localStorage.setItem('pennywise_custom_api_url', url.trim());
+    localStorage.setItem('spendl_custom_api_url', url.trim());
   }
 }
 
