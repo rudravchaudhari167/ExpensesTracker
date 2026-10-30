@@ -195,6 +195,91 @@ export function computeMonthlyData(transactions = [], numMonths = 6) {
 }
 
 /**
+ * Compute cumulative wealth trajectory and savings velocity for Analytics Spline Area chart
+ */
+export function computeWealthTrajectory(transactions = [], numMonths = 6) {
+  if (!transactions.length) return [];
+
+  const monthMap = new Map();
+  const now = new Date();
+
+  transactions.forEach((tx) => {
+    const p = parseDateParts(tx.date);
+    if (!p) return;
+
+    const monthKey = `${p.year}-${String(p.month).padStart(2, '0')}`;
+    if (!monthMap.has(monthKey)) {
+      monthMap.set(monthKey, {
+        income: 0,
+        expense: 0,
+        dateObj: new Date(p.year, p.month - 1, 1),
+      });
+    }
+
+    const entry = monthMap.get(monthKey);
+    const rawAmt = typeof tx.amount === 'string' ? parseFloat(tx.amount.replace(/[^0-9.-]+/g, '')) : Number(tx.amount);
+    const amount = Math.abs(rawAmt) || 0;
+    const typeUpper = String(tx.type || '').trim().toUpperCase();
+
+    if (typeUpper === 'INCOME') {
+      entry.income = Math.round((entry.income + amount) * 100) / 100;
+    } else if (typeUpper === 'EXPENSE') {
+      entry.expense = Math.round((entry.expense + amount) * 100) / 100;
+    }
+  });
+
+  let latestDate = now;
+  if (monthMap.size > 0) {
+    const sortedKeys = Array.from(monthMap.keys()).sort();
+    const lastKey = sortedKeys[sortedKeys.length - 1];
+    const [ly, lm] = lastKey.split('-').map(Number);
+    latestDate = new Date(ly, lm - 1, 1);
+  }
+
+  const timeline = [];
+  for (let i = numMonths - 1; i >= 0; i--) {
+    const d = new Date(latestDate.getFullYear(), latestDate.getMonth() - i, 1);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const existing = monthMap.get(key);
+
+    const shortLabel = d.toLocaleDateString('en-US', { month: 'short' });
+    const fullMonth = d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    const income = existing ? existing.income : 0;
+    const expense = existing ? existing.expense : 0;
+    const net = Math.round((income - expense) * 100) / 100;
+
+    timeline.push({
+      key,
+      label: shortLabel,
+      fullMonth,
+      income,
+      expense,
+      net,
+    });
+  }
+
+  let runningBalance = 0;
+  let runningIncome = 0;
+  let runningExpense = 0;
+
+  return timeline.map((item) => {
+    runningBalance += item.net;
+    runningIncome += item.income;
+    runningExpense += item.expense;
+
+    return {
+      ...item,
+      cumulativeBalance: Math.round(runningBalance * 100) / 100,
+      cumulativeIncome: Math.round(runningIncome * 100) / 100,
+      cumulativeExpense: Math.round(runningExpense * 100) / 100,
+      savingsRate: runningIncome > 0
+        ? Math.max(0, Math.round(((runningIncome - runningExpense) / runningIncome) * 100))
+        : 0,
+    };
+  });
+}
+
+/**
  * Compute spending breakdown by category for Donut/Pie charts
  */
 export function computeCategorySpending(transactions = []) {
