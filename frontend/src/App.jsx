@@ -143,9 +143,6 @@ export function App() {
                 />
               )}
 
-              {/* RPG Financial Health Avatar Widget */}
-              <FinancialAvatarWidget onShowToast={showToast} />
-
               {/* 2-Column Analytics Charts Row */}
               <div className="dashboard-charts-grid">
                 <SpendingChart
@@ -202,6 +199,20 @@ export function App() {
                 summary={summary}
                 currency={currency}
               />
+            </div>
+          )}
+
+          {/* Tab: Dedicated RPG Financial Guardian */}
+          {activeTab === 'guardian' && (
+            <div className="tab-guardian animate-fade-in">
+              <div className="page-header-simple">
+                <h2 className="page-heading font-serif">RPG Financial Guardian</h2>
+                <p className="page-subheading">
+                  Nurture your financial life spirit, level up your spending discipline, and maintain your budget streak.
+                </p>
+              </div>
+
+              <FinancialAvatarWidget onShowToast={showToast} />
             </div>
           )}
 

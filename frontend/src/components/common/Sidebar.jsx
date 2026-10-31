@@ -8,6 +8,7 @@ import {
   Sparkles,
   TrendingUp,
   Lock,
+  Shield,
 } from 'lucide-react';
 import './Sidebar.css';
 
@@ -15,6 +16,7 @@ export function Sidebar({ activeTab, onSelectTab, transactionCount = 0 }) {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'transactions', label: 'Transactions', icon: ArrowLeftRight, badge: transactionCount > 0 ? transactionCount : null },
+    { id: 'guardian', label: 'Financial Guardian', icon: Shield, badge: 'RPG' },
     { id: 'analytics', label: 'Analytics', icon: PieChart },
     { id: 'vault', label: 'Wish Vault', icon: Lock, badge: 'Vault' },
     { id: 'budgets', label: 'Budgets', icon: Target },
