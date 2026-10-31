@@ -26,54 +26,6 @@ const RANK_TITLES = {
   7: 'Financial Sovereign',
 };
 
-// Adult Financial Prestige Tiers based on streak days
-export const PRESTIGE_TIERS = [
-  {
-    maxStreak: 2,
-    stage: 1,
-    title: 'The Aspirant',
-    subtitle: 'Foundation Phase • Establishing Spending Discipline',
-    prestigeLabel: 'Disciplined Vanguard',
-    icon: '⚡',
-    badgeClass: 'tier-aspirant',
-  },
-  {
-    maxStreak: 5,
-    stage: 2,
-    title: 'The Tactician',
-    subtitle: 'Momentum Phase • Systematic Budget Control',
-    prestigeLabel: 'Strategic Planner',
-    icon: '🎯',
-    badgeClass: 'tier-tactician',
-  },
-  {
-    maxStreak: 9,
-    stage: 3,
-    title: 'The Vanguard',
-    subtitle: 'Fortress Phase • Ironclad Impulse Resistance',
-    prestigeLabel: 'Asset Guardian',
-    icon: '🛡️',
-    badgeClass: 'tier-vanguard',
-  },
-  {
-    maxStreak: 15,
-    stage: 4,
-    title: 'The Sentinel',
-    subtitle: 'Mastery Phase • High-Yield Discipline Multipliers',
-    prestigeLabel: 'Wealth Paladin',
-    icon: '⚔️',
-    badgeClass: 'tier-sentinel',
-  },
-  {
-    maxStreak: Infinity,
-    stage: 5,
-    title: 'The Sovereign',
-    subtitle: 'Apex Command • Financial Autonomy & Mastery',
-    prestigeLabel: 'Financial Sovereign',
-    icon: '👑',
-    badgeClass: 'tier-sovereign',
-  },
-];
 
 const DEFAULT_STATE = {
   level: 4,
@@ -192,13 +144,7 @@ export function FinancialAvatarWidget({ onShowToast }) {
     return 100 + Math.round(100 * (savingsBuff / 100));
   }, [savingsBuff]);
 
-  // 4. Prestige Tier based on Streak Days
-  const currentTier = useMemo(() => {
-    const streak = Math.max(0, gameState.streakDays);
-    return PRESTIGE_TIERS.find((s) => streak <= s.maxStreak) || PRESTIGE_TIERS[0];
-  }, [gameState.streakDays]);
-
-  // 5. Mature Presence & Command Scale (dignified 0.96x to 1.14x, not shrunken)
+  // Dynamic Presence & Command Scale
   const avatarScale = useMemo(() => {
     const s = Math.max(0, gameState.streakDays);
     const scale = 0.96 + Math.min(0.16, Math.sqrt(s) * 0.035);
@@ -279,14 +225,13 @@ export function FinancialAvatarWidget({ onShowToast }) {
     const totalGainedXp = baseBonusXp + buffBonusXp;
 
     const nextStreak = gameState.streakDays + 1;
-    const nextTier = PRESTIGE_TIERS.find((t) => nextStreak <= t.maxStreak) || PRESTIGE_TIERS[PRESTIGE_TIERS.length - 1];
 
     // Show floating notification with active buff & discipline details
     const notifId = Date.now();
     setFloatingNotification({
       id: notifId,
       text: `+${totalGainedXp} XP • +5 HP`,
-      subtext: `Streak: ${nextStreak} Days (${nextTier.title})`,
+      subtext: `Streak: ${nextStreak} Days Under Budget`,
       type: 'good',
     });
     setTimeout(() => {
@@ -473,7 +418,7 @@ export function FinancialAvatarWidget({ onShowToast }) {
                 <div className="pedestal-glow-spot" />
               </div>
 
-              {/* Dignified Male Financial Guardian (Dynamically scales subtly with prestige) */}
+              {/* Dignified Male Financial Guardian (Dynamically scales subtly with streak) */}
               <div
                 className="vector-avatar-wrapper"
                 style={{ transform: `scale(${avatarScale})` }}
@@ -735,7 +680,7 @@ export function FinancialAvatarWidget({ onShowToast }) {
                       />
                     </g>
 
-                    {/* Prestige Tier 2+ Accents: Gold Collar Cord (Streak >= 3) */}
+                    {/* Subtle Gold Collar Cord Milestone (Streak >= 3) */}
                     {gameState.streakDays >= 3 && (
                       <path
                         d="M106 102 Q112 110 118 108"
@@ -746,7 +691,7 @@ export function FinancialAvatarWidget({ onShowToast }) {
                       />
                     )}
 
-                    {/* Prestige Tier 3+ Accents: Vanguard Gold Pauldrons (Streak >= 7) */}
+                    {/* Vanguard Gold Pauldron Milestones (Streak >= 7) */}
                     {gameState.streakDays >= 7 && (
                       <g className="man-vanguard-pauldrons">
                         <path
@@ -906,8 +851,8 @@ export function FinancialAvatarWidget({ onShowToast }) {
                 <span className="mood-text">
                   {avatarMood === 'happy' && 'Disciplined Resolve Fortified • Momentum Surging'}
                   {avatarMood === 'hurt' && 'Budget Armor Absorbed Impact • Caution Advised'}
-                  {avatarMood === 'levelup' && 'Prestige Ascended • Sentinel Tier Unlocked!'}
-                  {avatarMood === 'normal' && `Guarding Capital as ${currentTier.title}`}
+                  {avatarMood === 'levelup' && 'Level Up! Health & Vitality Fortified'}
+                  {avatarMood === 'normal' && `Guarding Capital • ${rankName}`}
                 </span>
               </div>
             </div>
@@ -928,7 +873,7 @@ export function FinancialAvatarWidget({ onShowToast }) {
                   Level {gameState.level} {rankName}
                 </h3>
                 <p className="character-rank-desc">
-                  {currentTier.title} • {currentTier.subtitle}
+                  Maintain daily spending discipline to fortify your financial health and protect your savings.
                 </p>
               </div>
 
