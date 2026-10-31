@@ -14,6 +14,7 @@ import SpendingChart from './components/dashboard/SpendingChart';
 import CategoryDonutChart from './components/dashboard/CategoryDonutChart';
 import RecentTransactions from './components/dashboard/RecentTransactions';
 import BudgetTeaserCard from './components/dashboard/BudgetTeaserCard';
+import FinancialAvatarWidget from './components/dashboard/FinancialAvatarWidget';
 
 // Pages
 import TransactionTable from './components/transactions/TransactionTable';
@@ -141,6 +142,9 @@ export function App() {
                   currency={currency}
                 />
               )}
+
+              {/* RPG Financial Health Avatar Widget */}
+              <FinancialAvatarWidget onShowToast={showToast} />
 
               {/* 2-Column Analytics Charts Row */}
               <div className="dashboard-charts-grid">
