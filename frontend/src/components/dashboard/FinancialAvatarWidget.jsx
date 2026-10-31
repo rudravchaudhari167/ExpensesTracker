@@ -24,71 +24,71 @@ import './FinancialAvatarWidget.css';
 const AVATAR_STORAGE_KEY = 'spendl_rpg_avatar_state';
 
 const RANK_TITLES = {
-  1: 'Novice Sproutling',
-  2: 'Budget Apprentice',
-  3: 'Coin Sentry',
-  4: 'Budget Knight',
-  5: 'Vault Warden',
-  6: 'Wealth Paladin',
+  1: 'Disciplined Strategist',
+  2: 'Budget Tactician',
+  3: 'Asset Vanguard',
+  4: 'Wealth Sentinel',
+  5: 'Capital Commander',
+  6: 'Sovereign Guardian',
   7: 'Financial Sovereign',
 };
 
-// Child Character Growth Stages according to streak days
-export const GROWTH_STAGES = [
+// Adult Financial Prestige Tiers based on streak days
+export const PRESTIGE_TIERS = [
   {
     maxStreak: 2,
     stage: 1,
-    title: 'Sproutling Baby',
-    subtitle: 'Child Stage 1: Innocent Seedling',
-    ageLabel: 'Baby Child',
-    icon: '🌱',
-    badgeClass: 'stage-baby',
+    title: 'The Aspirant',
+    subtitle: 'Foundation Phase • Establishing Spending Discipline',
+    prestigeLabel: 'Disciplined Vanguard',
+    icon: '⚡',
+    badgeClass: 'tier-aspirant',
   },
   {
     maxStreak: 5,
     stage: 2,
-    title: 'Toddler Explorer',
-    subtitle: 'Child Stage 2: Curious Sprout',
-    ageLabel: 'Toddler Child',
-    icon: '🧒',
-    badgeClass: 'stage-toddler',
+    title: 'The Tactician',
+    subtitle: 'Momentum Phase • Systematic Budget Control',
+    prestigeLabel: 'Strategic Planner',
+    icon: '🎯',
+    badgeClass: 'tier-tactician',
   },
   {
     maxStreak: 9,
     stage: 3,
-    title: 'Youth Knight',
-    subtitle: 'Child Stage 3: Disciplined Kid',
-    ageLabel: 'Youth Guardian',
+    title: 'The Vanguard',
+    subtitle: 'Fortress Phase • Ironclad Impulse Resistance',
+    prestigeLabel: 'Asset Guardian',
     icon: '🛡️',
-    badgeClass: 'stage-youth',
+    badgeClass: 'tier-vanguard',
   },
   {
     maxStreak: 15,
     stage: 4,
-    title: 'Champion Protector',
-    subtitle: 'Child Stage 4: Adolescent Guardian',
-    ageLabel: 'Heroic Youth',
+    title: 'The Sentinel',
+    subtitle: 'Mastery Phase • High-Yield Discipline Multipliers',
+    prestigeLabel: 'Wealth Paladin',
     icon: '⚔️',
-    badgeClass: 'stage-champion',
+    badgeClass: 'tier-sentinel',
   },
   {
     maxStreak: Infinity,
     stage: 5,
-    title: 'Ascended Titan',
-    subtitle: 'Child Stage 5: Crowned Grand Guardian',
-    ageLabel: 'Elder Spirit',
+    title: 'The Sovereign',
+    subtitle: 'Apex Command • Financial Autonomy & Mastery',
+    prestigeLabel: 'Financial Sovereign',
     icon: '👑',
-    badgeClass: 'stage-titan',
+    badgeClass: 'tier-sovereign',
   },
 ];
 
 const DEFAULT_STATE = {
-  level: 1,
-  hp: 90,
+  level: 4,
+  hp: 92,
   maxHp: 100,
-  xp: 120,
-  xpForNextLevel: 250,
-  streakDays: 1, // Starts as 1 day so he is initially a cute child cartoon!
+  xp: 450,
+  xpForNextLevel: 1000,
+  streakDays: 7, // Sophisticated grown man with an active 7-day budget streak!
 };
 
 export function FinancialAvatarWidget({ onShowToast }) {
@@ -197,21 +197,20 @@ export function FinancialAvatarWidget({ onShowToast }) {
     return levelBonus + streakBonus + healthBonus;
   }, [gameState.level, gameState.streakDays, gameState.hp]);
 
-  // 4. Growth Stage based on Streak Days (starts as a child and grows with streak)
-  const growthStage = useMemo(() => {
+  // 4. Prestige Tier based on Streak Days
+  const currentTier = useMemo(() => {
     const streak = Math.max(0, gameState.streakDays);
-    return GROWTH_STAGES.find((s) => streak <= s.maxStreak) || GROWTH_STAGES[0];
+    return PRESTIGE_TIERS.find((s) => streak <= s.maxStreak) || PRESTIGE_TIERS[0];
   }, [gameState.streakDays]);
 
-  // 5. Dynamic Child Cartoon Scale: Starts small (~0.70x at streak 0-1) and grows up to 1.32x as streak increases
-  const childScale = useMemo(() => {
+  // 5. Mature Presence & Command Scale (dignified 0.96x to 1.14x, not shrunken)
+  const avatarScale = useMemo(() => {
     const s = Math.max(0, gameState.streakDays);
-    // Smooth growth formula: 0.70 at s=0, 0.78 at s=1, 0.90 at s=3, 1.02 at s=6, 1.18 at s=12, 1.32 at s=20+
-    const scale = 0.70 + Math.min(0.62, Math.sqrt(s) * 0.138);
+    const scale = 0.96 + Math.min(0.16, Math.sqrt(s) * 0.035);
     return Number(scale.toFixed(2));
   }, [gameState.streakDays]);
 
-  // Interactive Streak Controller: Quick one-click testing of all child growth stages!
+  // Interactive Streak Controller: Quick one-click testing of discipline tiers
   const handleSetStreak = (newStreak) => {
     const s = Math.max(0, newStreak);
     setGameState((prev) => ({
@@ -219,7 +218,7 @@ export function FinancialAvatarWidget({ onShowToast }) {
       streakDays: s,
     }));
 
-    const scale = Number((0.70 + Math.min(0.62, Math.sqrt(s) * 0.138)).toFixed(2));
+    const tier = PRESTIGE_TIERS.find((t) => s <= t.maxStreak) || PRESTIGE_TIERS[0];
 
     // Particle burst
     const sparkles = Array.from({ length: 8 }, (_, i) => ({
@@ -236,14 +235,14 @@ export function FinancialAvatarWidget({ onShowToast }) {
       particleCount: 25,
       spread: 50,
       origin: { y: 0.65 },
-      colors: ['#10B981', '#34D399', '#FBBF24'],
+      colors: ['#E87952', '#059669', '#FBBF24'],
     });
 
     const notifId = Date.now();
     setFloatingNotification({
       id: notifId,
       text: `Streak: ${s} Days`,
-      subtext: `Cartoon Child Size: ${Math.round(scale * 100)}% 🌱`,
+      subtext: `${tier.title} Tier Active`,
       type: 'heal',
     });
     setTimeout(() => setFloatingNotification(null), 1800);
@@ -251,8 +250,8 @@ export function FinancialAvatarWidget({ onShowToast }) {
     if (onShowToast) {
       onShowToast(
         'info',
-        `Streak set to ${s} days. Cartoon child size scaled to ${Math.round(scale * 100)}%!`,
-        'Growth Updated 🌱'
+        `Discipline streak updated to ${s} days. Active tier: ${tier.title}.`,
+        'Discipline Updated ⚔️'
       );
     }
   };
@@ -300,7 +299,7 @@ export function FinancialAvatarWidget({ onShowToast }) {
     return null;
   };
 
-  // 1. "Simulate Good Day (Log Within Budget)"
+  // 1. "Simulate Disciplined Day (Log Within Budget)"
   const handleSimulateGoodDay = () => {
     // Generate burst of green sparkles around the avatar container
     const sparkles = Array.from({ length: 8 }, (_, i) => ({
@@ -318,10 +317,10 @@ export function FinancialAvatarWidget({ onShowToast }) {
       particleCount: 35,
       spread: 55,
       origin: { y: 0.7 },
-      colors: ['#10B981', '#34D399', '#6EE7B7', '#F6E6A9'],
+      colors: ['#059669', '#10B981', '#E87952', '#FBBF24'],
     });
 
-    // Avatar happy mood
+    // Avatar confident mood
     setAvatarMood('happy');
     setTimeout(() => setAvatarMood('normal'), 1800);
 
@@ -331,14 +330,14 @@ export function FinancialAvatarWidget({ onShowToast }) {
     const totalGainedXp = baseBonusXp + buffBonusXp;
 
     const nextStreak = gameState.streakDays + 1;
-    const nextScale = Number((0.70 + Math.min(0.62, Math.sqrt(nextStreak) * 0.138)).toFixed(2));
+    const nextTier = PRESTIGE_TIERS.find((t) => nextStreak <= t.maxStreak) || PRESTIGE_TIERS[PRESTIGE_TIERS.length - 1];
 
-    // Show floating notification with active buff & growth details
+    // Show floating notification with active buff & discipline details
     const notifId = Date.now();
     setFloatingNotification({
       id: notifId,
-      text: `Streak Day ${nextStreak}! (+${totalGainedXp} XP)`,
-      subtext: `Cartoon Child Grew: ${Math.round(nextScale * 100)}% 🌱`,
+      text: `+${totalGainedXp} XP • +5 HP`,
+      subtext: `Streak: ${nextStreak} Days (${nextTier.title})`,
       type: 'good',
     });
     setTimeout(() => {
@@ -600,22 +599,22 @@ export function FinancialAvatarWidget({ onShowToast }) {
                 </div>
               ))}
 
-              {/* Top Floating Growth Stage & Size Indicator */}
-              <div className="avatar-growth-pill animate-fade-in">
-                <span className="growth-icon">{growthStage.icon}</span>
-                <div className="growth-pill-text">
-                  <span className="growth-title">{growthStage.title}</span>
-                  <span className="growth-sub font-mono">
-                    Streak: {gameState.streakDays}d • Size: {Math.round(childScale * 100)}%
+              {/* Top Floating Prestige Tier & Streak Indicator */}
+              <div className="avatar-prestige-pill animate-fade-in">
+                <span className="prestige-icon">{currentTier.icon}</span>
+                <div className="prestige-pill-text">
+                  <span className="prestige-title">{currentTier.title}</span>
+                  <span className="prestige-sub font-mono">
+                    Streak: {gameState.streakDays}d • {currentTier.prestigeLabel}
                   </span>
                 </div>
               </div>
 
-              {/* Ambient Circular Runic Dial & Pedestal (grows subtly with streak) */}
+              {/* Ambient Circular Runic Dial & Pedestal */}
               <div
                 className="avatar-mystic-pedestal"
                 style={{
-                  transform: `scale(${0.82 + Math.min(0.38, gameState.streakDays * 0.02)})`,
+                  transform: `scale(${0.9 + Math.min(0.25, gameState.streakDays * 0.015)})`,
                 }}
                 aria-hidden="true"
               >
@@ -624,405 +623,428 @@ export function FinancialAvatarWidget({ onShowToast }) {
                 <div className="pedestal-glow-spot" />
               </div>
 
-              {/* Animated Cartoon Child Character (Dynamically scales with streak!) */}
+              {/* Dignified Male Financial Guardian (Dynamically scales subtly with prestige) */}
               <div
                 className="vector-avatar-wrapper"
-                style={{ transform: `scale(${childScale})` }}
+                style={{ transform: `scale(${avatarScale})` }}
               >
                 <svg
                   viewBox="0 0 240 240"
-                  className="child-avatar-svg"
+                  className="man-avatar-svg"
                   xmlns="http://www.w3.org/2000/svg"
                 >
                   <defs>
-                    {/* Warm Peach Child Skin */}
-                    <linearGradient id="childSkinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#FFF1E6" />
-                      <stop offset="60%" stopColor="#FED7AA" />
+                    {/* Natural Healthy Skin Tone */}
+                    <linearGradient id="manSkinGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#FFF2E8" />
+                      <stop offset="55%" stopColor="#FED7AA" />
                       <stop offset="100%" stopColor="#FDBA74" />
                     </linearGradient>
 
-                    {/* Anime Sprout Hair */}
-                    <linearGradient id="childHairGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#4ADE80" />
-                      <stop offset="40%" stopColor="#16A34A" />
-                      <stop offset="100%" stopColor="#14532D" />
+                    {/* Neck Shadow Tone */}
+                    <linearGradient id="manSkinShadowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#FED7AA" />
+                      <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.4" />
                     </linearGradient>
 
-                    {/* Vibrant Overalls Green */}
-                    <linearGradient id="overallGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#22C55E" />
-                      <stop offset="70%" stopColor="#15803D" />
-                      <stop offset="100%" stopColor="#14532D" />
+                    {/* Styled Dark Textured Hair */}
+                    <linearGradient id="manHairGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#334155" />
+                      <stop offset="40%" stopColor="#1E293B" />
+                      <stop offset="100%" stopColor="#0F172A" />
                     </linearGradient>
 
-                    {/* Golden Leaf Horns / Crown */}
-                    <linearGradient id="goldenHornGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    {/* Tailored Deep Charcoal Suit Coat */}
+                    <linearGradient id="manCoatGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#2E384D" />
+                      <stop offset="50%" stopColor="#1E2638" />
+                      <stop offset="100%" stopColor="#0F1420" />
+                    </linearGradient>
+
+                    {/* Signature Spendl Terracotta Silk Lapels */}
+                    <linearGradient id="manLapelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#EA580C" />
+                      <stop offset="60%" stopColor="#C2410C" />
+                      <stop offset="100%" stopColor="#9A3412" />
+                    </linearGradient>
+
+                    {/* Emerald Cravat / Necktie */}
+                    <linearGradient id="manTieGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#10B981" />
+                      <stop offset="60%" stopColor="#059669" />
+                      <stop offset="100%" stopColor="#047857" />
+                    </linearGradient>
+
+                    {/* Brushed Gold Accents & Brooch */}
+                    <linearGradient id="crestGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                       <stop offset="0%" stopColor="#FDE047" />
-                      <stop offset="60%" stopColor="#EAB308" />
-                      <stop offset="100%" stopColor="#CA8A04" />
+                      <stop offset="50%" stopColor="#F59E0B" />
+                      <stop offset="100%" stopColor="#D97706" />
                     </linearGradient>
 
-                    {/* Discipline Core Crystal */}
-                    <linearGradient id="gemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#67E8F9" />
-                      <stop offset="50%" stopColor="#06B6D4" />
-                      <stop offset="100%" stopColor="#0891B2" />
+                    {/* Vanguard Shoulder Pauldron Gradient */}
+                    <linearGradient id="pauldronGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#FDE68A" />
+                      <stop offset="40%" stopColor="#D97706" />
+                      <stop offset="100%" stopColor="#1E293B" />
                     </linearGradient>
 
-                    {/* Hurt Core Crystal */}
-                    <linearGradient id="gemHurtGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#FDA4AF" />
-                      <stop offset="50%" stopColor="#F43F5E" />
-                      <stop offset="100%" stopColor="#BE123C" />
-                    </linearGradient>
-
-                    {/* Aura Filter */}
+                    {/* Soft Filter Glow */}
                     <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
                       <feGaussianBlur stdDeviation="3" result="blur" />
                       <feComposite in="SourceGraphic" in2="blur" operator="over" />
                     </filter>
                   </defs>
 
-                  {/* Ethereal Aura Rings (Radiates more brightly with higher streak) */}
+                  {/* Refined Geometric HUD Rings (Concentric Discipline Orbit) */}
                   <g className="avatar-halo-orbit">
                     <circle
                       cx="120"
                       cy="120"
-                      r="88"
+                      r="96"
                       fill="none"
-                      stroke="#A7F3D0"
-                      strokeWidth="1.5"
-                      strokeDasharray="6 8"
-                      opacity={0.4 + Math.min(0.5, gameState.streakDays * 0.03)}
+                      stroke="#CBD5E1"
+                      strokeWidth="1.2"
+                      strokeDasharray="4 8"
+                      opacity={0.35 + Math.min(0.4, gameState.streakDays * 0.02)}
                     />
                     <circle
                       cx="120"
                       cy="120"
-                      r="104"
+                      r="108"
                       fill="none"
-                      stroke="#FDE68A"
-                      strokeWidth="1.2"
-                      strokeDasharray="4 12"
-                      opacity={0.3 + Math.min(0.5, gameState.streakDays * 0.03)}
+                      stroke="#FBBF24"
+                      strokeWidth="1"
+                      strokeDasharray="2 12"
+                      opacity={0.25 + Math.min(0.45, gameState.streakDays * 0.02)}
                     />
+                    {/* Cardinal Compass Tick Marks */}
+                    <line x1="120" y1="12" x2="120" y2="18" stroke="#F59E0B" strokeWidth="1.5" />
+                    <line x1="120" y1="222" x2="120" y2="228" stroke="#F59E0B" strokeWidth="1.5" />
+                    <line x1="12" y1="120" x2="18" y2="120" stroke="#F59E0B" strokeWidth="1.5" />
+                    <line x1="222" y1="120" x2="228" y2="120" stroke="#F59E0B" strokeWidth="1.5" />
                   </g>
 
-                  {/* Cartoon Child Character */}
-                  <g className="cartoon-child-group">
-                    {/* Dynamic Ground Shadow */}
+                  {/* Sovereign Celestial Astral Halo (Unlocked at Streak >= 14) */}
+                  {gameState.streakDays >= 14 && (
+                    <g className="man-sovereign-halo" opacity="0.85">
+                      <circle
+                        cx="120"
+                        cy="76"
+                        r="52"
+                        fill="none"
+                        stroke="#F59E0B"
+                        strokeWidth="1"
+                        strokeDasharray="3 5"
+                      />
+                      <polygon
+                        points="120,18 123,28 120,25 117,28"
+                        fill="#F59E0B"
+                      />
+                      <polygon
+                        points="178,76 168,79 171,76 168,73"
+                        fill="#F59E0B"
+                      />
+                      <polygon
+                        points="62,76 72,79 69,76 72,73"
+                        fill="#F59E0B"
+                      />
+                    </g>
+                  )}
+
+                  {/* Character Illustration Group */}
+                  <g className="male-guardian-group">
+                    {/* Realistic Ground Pedestal Shadow */}
                     <ellipse
                       cx="120"
-                      cy="216"
-                      rx={36 + Math.min(22, gameState.streakDays * 1.3)}
+                      cy="222"
+                      rx="48"
                       ry="8"
-                      fill="rgba(40, 40, 32, 0.12)"
+                      fill="rgba(30, 41, 59, 0.16)"
                     />
 
-                    {/* Cute Toddler Leather Boots */}
-                    <g className="child-boots">
-                      {/* Left Boot */}
+                    {/* Polished Oxford Dress Shoes */}
+                    <g className="man-shoes">
                       <path
-                        d="M96 196 Q92 214 100 215 Q112 215 112 204 Q112 196 102 196 Z"
-                        fill="#854D0E"
+                        d="M98 217 Q94 223 99 224 L114 224 Q116 220 115 217 Z"
+                        fill="#0B0F19"
                       />
-                      <circle cx="104" cy="204" r="2.2" fill="#FBBF24" />
-
-                      {/* Right Boot */}
                       <path
-                        d="M128 196 Q128 214 140 215 Q148 215 144 204 Q144 196 134 196 Z"
-                        fill="#854D0E"
+                        d="M125 217 Q124 220 126 224 L141 224 Q146 222 142 217 Z"
+                        fill="#0B0F19"
                       />
-                      <circle cx="136" cy="204" r="2.2" fill="#FBBF24" />
+                      <line x1="99" y1="223" x2="114" y2="223" stroke="#334155" strokeWidth="0.8" />
+                      <line x1="126" y1="223" x2="141" y2="223" stroke="#334155" strokeWidth="0.8" />
                     </g>
 
-                    {/* Chubby Toddler Legs */}
-                    <rect x="98" y="174" width="14" height="26" rx="7" fill="#15803D" />
-                    <rect x="128" y="174" width="14" height="26" rx="7" fill="#15803D" />
-
-                    {/* Chubby Child Overalls & Torso */}
-                    <path
-                      d="M94 136 C94 128, 146 128, 146 136 L150 182 C150 190, 90 190, 90 182 Z"
-                      fill="url(#overallGrad)"
-                      filter="drop-shadow(0 4px 8px rgba(20, 83, 45, 0.2))"
-                    />
-
-                    {/* Inner Pastel Cream Shirt */}
-                    <path
-                      d="M104 126 C104 122, 136 122, 136 126 L138 138 L102 138 Z"
-                      fill="#FEF3C7"
-                    />
-
-                    {/* Overalls Straps & Brass Buttons */}
-                    <line
-                      x1="102"
-                      y1="126"
-                      x2="102"
-                      y2="148"
-                      stroke="#14532D"
-                      strokeWidth="5"
-                      strokeLinecap="round"
-                    />
-                    <circle cx="102" cy="146" r="2.8" fill="#FBBF24" />
-
-                    <line
-                      x1="138"
-                      y1="126"
-                      x2="138"
-                      y2="148"
-                      stroke="#14532D"
-                      strokeWidth="5"
-                      strokeLinecap="round"
-                    />
-                    <circle cx="138" cy="146" r="2.8" fill="#FBBF24" />
-
-                    {/* Front Kangaroo Pocket with Gold Coin Peeking Out */}
-                    <path
-                      d="M106 154 L134 154 L130 170 L110 170 Z"
-                      fill="#14532D"
-                      opacity="0.85"
-                    />
-                    <circle cx="120" cy="155" r="3.5" fill="#FBBF24" />
-                    <text
-                      x="120"
-                      y="157.5"
-                      fontSize="4.5"
-                      textAnchor="middle"
-                      fill="#78350F"
-                      fontWeight="bold"
-                    >
-                      ₹
-                    </text>
-
-                    {/* Discipline Core Gem on Chest */}
-                    <polygon
-                      points="120,132 126,140 120,148 114,140"
-                      fill={avatarMood === 'hurt' ? 'url(#gemHurtGrad)' : 'url(#gemGrad)'}
-                      filter="url(#softGlow)"
-                      className="discipline-crystal-gem"
-                    />
-
-                    {/* Left Arm: Cute arm holding miniature leaf shield */}
-                    <g className="child-left-arm">
+                    {/* Tailored Dress Trousers */}
+                    <g className="man-trousers">
+                      {/* Left Leg */}
                       <path
-                        d="M92 136 Q74 150 82 166"
-                        stroke="#15803D"
-                        strokeWidth="10"
+                        d="M98 178 L100 218 L114 218 L117 178 Z"
+                        fill="#18202F"
+                      />
+                      <line x1="107" y1="184" x2="107" y2="216" stroke="#0F172A" strokeWidth="1" />
+                      {/* Right Leg */}
+                      <path
+                        d="M123 178 L126 218 L140 218 L142 178 Z"
+                        fill="#18202F"
+                      />
+                      <line x1="133" y1="184" x2="133" y2="216" stroke="#0F172A" strokeWidth="1" />
+                    </g>
+
+                    {/* Tailored Coat Torso */}
+                    <path
+                      d="M80 122 C80 114, 160 114, 160 122 L152 188 C152 192, 88 192, 88 188 Z"
+                      fill="url(#manCoatGrad)"
+                      filter="drop-shadow(0 6px 14px rgba(15, 23, 42, 0.22))"
+                    />
+
+                    {/* Crisp Cream Inner Shirt Collar */}
+                    <path
+                      d="M108 98 L120 118 L132 98 L126 95 L114 95 Z"
+                      fill="#FAF8F5"
+                    />
+
+                    {/* Emerald Cravat / Necktie */}
+                    <path
+                      d="M117 110 L123 110 L125 136 L120 142 L115 136 Z"
+                      fill="url(#manTieGrad)"
+                    />
+                    {/* Gold Tie Clip */}
+                    <rect x="117" y="122" width="6" height="2" rx="0.8" fill="#F59E0B" />
+
+                    {/* Signature Terracotta Silk Peak Lapels */}
+                    <path
+                      d="M106 98 L84 126 L108 158 L118 122 Z"
+                      fill="url(#manLapelGrad)"
+                    />
+                    <path
+                      d="M134 98 L156 126 L124 162 L122 122 Z"
+                      fill="url(#manLapelGrad)"
+                    />
+
+                    {/* Double-Breasted Brushed Gold Buttons */}
+                    <circle cx="112" cy="140" r="2.2" fill="url(#crestGoldGrad)" />
+                    <circle cx="128" cy="140" r="2.2" fill="url(#crestGoldGrad)" />
+                    <circle cx="113" cy="156" r="2.2" fill="url(#crestGoldGrad)" />
+                    <circle cx="127" cy="156" r="2.2" fill="url(#crestGoldGrad)" />
+                    <circle cx="114" cy="172" r="2.2" fill="url(#crestGoldGrad)" />
+                    <circle cx="126" cy="172" r="2.2" fill="url(#crestGoldGrad)" />
+
+                    {/* Breast Pocket with Pocket Square & Gold Guardian Brooch */}
+                    <path d="M93 134 L102 134 L99 128 Z" fill="#FAF8F5" />
+                    <line x1="91" y1="134" x2="104" y2="134" stroke="#9A3412" strokeWidth="1.5" />
+
+                    {/* Financial Guardian Medallion Brooch */}
+                    <g className="guardian-medallion-crest">
+                      <path
+                        d="M94 140 L101 140 L101 146 Q101 151 97.5 153 Q94 151 94 146 Z"
+                        fill="url(#crestGoldGrad)"
+                        filter="url(#softGlow)"
+                      />
+                      <circle
+                        cx="97.5"
+                        cy="145"
+                        r="1.8"
+                        fill={avatarMood === 'hurt' ? '#EF4444' : '#10B981'}
+                      />
+                    </g>
+
+                    {/* Left Arm: Tailored sleeve resting at side with gold cufflink */}
+                    <g className="man-left-arm">
+                      <path
+                        d="M82 122 Q72 144 76 172"
+                        stroke="url(#manCoatGrad)"
+                        strokeWidth="11"
                         strokeLinecap="round"
                         fill="none"
                       />
-                      <ellipse
-                        cx="80"
-                        cy="166"
-                        rx="8"
-                        ry="10.5"
-                        fill="#FDE047"
-                        stroke="#166534"
-                        strokeWidth="1.8"
-                      />
+                      {/* Shirt Cuff & Gold Cufflink */}
+                      <line x1="73" y1="168" x2="79" y2="169" stroke="#FAF8F5" strokeWidth="2.5" />
+                      <circle cx="76" cy="168.5" r="1.4" fill="#F59E0B" />
+                      {/* Poised Male Hand */}
+                      <ellipse cx="76" cy="177" rx="4.2" ry="5.8" fill="url(#manSkinGrad)" />
+                    </g>
+
+                    {/* Right Arm: Poised Executive Hand on Coat Lapel */}
+                    <g className="man-lapel-hand">
                       <path
-                        d="M80 159 L80 173 M74 166 L86 166"
-                        stroke="#166534"
+                        d="M158 122 Q164 144 148 158 Q138 160 128 150"
+                        stroke="url(#manCoatGrad)"
+                        strokeWidth="11"
+                        strokeLinecap="round"
+                        fill="none"
+                      />
+                      {/* White Shirt Cuff peeking out */}
+                      <line x1="126" y1="148" x2="130" y2="153" stroke="#FAF8F5" strokeWidth="2.5" />
+                      {/* Masculine Hand resting on Lapel */}
+                      <path
+                        d="M125 146 Q122 142 125 139 Q130 140 131 145 Q129 150 125 146 Z"
+                        fill="url(#manSkinGrad)"
+                      />
+                    </g>
+
+                    {/* Prestige Tier 2+ Accents: Gold Collar Cord (Streak >= 3) */}
+                    {gameState.streakDays >= 3 && (
+                      <path
+                        d="M106 102 Q112 110 118 108"
+                        stroke="#F59E0B"
                         strokeWidth="1.2"
-                        strokeLinecap="round"
-                      />
-                    </g>
-
-                    {/* Right Arm: Enthusiastic Animated Waving Hand */}
-                    <g className="child-waving-arm">
-                      <path
-                        d="M148 136 Q162 126 166 112"
-                        stroke="#FEF3C7"
-                        strokeWidth="9.5"
-                        strokeLinecap="round"
+                        strokeDasharray="2 1.5"
                         fill="none"
                       />
-                      <circle cx="166" cy="112" r="6" fill="#FED7AA" />
-                      <circle cx="162" cy="108" r="2.5" fill="#FED7AA" />
-                    </g>
+                    )}
 
-                    {/* Round Chibi Child Head */}
-                    <ellipse
-                      cx="120"
-                      cy="92"
-                      rx="46"
-                      ry="42"
-                      fill="url(#childSkinGrad)"
-                      filter="drop-shadow(0 4px 10px rgba(40,40,32,0.08))"
-                    />
-
-                    {/* Cute Baby Ears */}
-                    <ellipse cx="74" cy="94" rx="5" ry="7" fill="#FED7AA" />
-                    <ellipse cx="166" cy="94" rx="5" ry="7" fill="#FED7AA" />
-
-                    {/* Rosy Blushing Cheeks (Pulsing soft pink) */}
-                    <ellipse
-                      cx="90"
-                      cy="102"
-                      rx="8.5"
-                      ry="5.5"
-                      fill="#FDA4AF"
-                      opacity="0.75"
-                      className="child-cheeks"
-                    />
-                    <ellipse
-                      cx="150"
-                      cy="102"
-                      rx="8.5"
-                      ry="5.5"
-                      fill="#FDA4AF"
-                      opacity="0.75"
-                      className="child-cheeks"
-                    />
-
-                    {/* Soft Anime Toddler Bangs / Hair Fringe */}
-                    <path
-                      d="M74 84 C74 54, 166 54, 166 84 C166 88, 158 80, 148 85 C138 90, 132 80, 120 83 C108 80, 102 90, 92 85 C82 80, 74 88, 74 84 Z"
-                      fill="url(#childHairGrad)"
-                    />
-
-                    {/* Adaptive Sprout on Head (grows more leaves/horns as streak increases) */}
-                    <g className="child-head-sprout">
-                      {/* Bouncy Central Sprout Stem */}
-                      <path
-                        d="M120 54 Q120 36 124 26"
-                        stroke="#22C55E"
-                        strokeWidth="3.2"
-                        strokeLinecap="round"
-                        fill="none"
-                      />
-                      {/* Primary Baby Sprout Leaf */}
-                      <path
-                        d="M124 26 C116 16, 134 8, 142 16 C148 22, 138 30, 124 26 Z"
-                        fill="#4ADE80"
-                        className="child-sprout-leaf"
-                      />
-
-                      {/* Secondary Sprout Leaf (Unlocked at streak >= 3) */}
-                      {gameState.streakDays >= 3 && (
+                    {/* Prestige Tier 3+ Accents: Vanguard Gold Pauldrons (Streak >= 7) */}
+                    {gameState.streakDays >= 7 && (
+                      <g className="man-vanguard-pauldrons">
                         <path
-                          d="M123 28 C131 18, 113 10, 105 18 C99 24, 109 32, 123 28 Z"
-                          fill="#86EFAC"
-                          className="child-sprout-leaf-secondary"
-                        />
-                      )}
-
-                      {/* Budding Golden Antlers (Unlocked at streak >= 7) */}
-                      {gameState.streakDays >= 7 && (
-                        <g className="child-golden-antlers">
-                          <path
-                            d="M96 66 C80 44, 60 38, 54 48 C48 56, 56 74, 88 74 Z"
-                            fill="url(#goldenHornGrad)"
-                            className="left-leaf"
-                          />
-                          <path
-                            d="M144 66 C160 44, 180 38, 186 48 C192 56, 184 74, 152 74 Z"
-                            fill="url(#goldenHornGrad)"
-                            className="right-leaf"
-                          />
-                        </g>
-                      )}
-
-                      {/* Celestial Titan Crown (Unlocked at streak >= 14) */}
-                      {gameState.streakDays >= 14 && (
-                        <g className="child-titan-crown">
-                          <polygon points="120,6 125,18 115,18" fill="#F59E0B" />
-                          <polygon points="106,12 112,22 102,22" fill="#FBBF24" />
-                          <polygon points="134,12 138,22 128,22" fill="#FBBF24" />
-                          <circle cx="120" cy="18" r="2.8" fill="#FEF08A" />
-                        </g>
-                      )}
-                    </g>
-
-                    {/* Tiny Child Button Nose */}
-                    <path
-                      d="M120 100 Q121 102 120 103"
-                      stroke="#D97706"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      fill="none"
-                    />
-
-                    {/* Dynamic Facial Expressions */}
-                    {avatarMood === 'happy' ? (
-                      /* Joyous Giggling Child Face (^ ^) */
-                      <g className="face-happy animate-bounce-short">
-                        <path
-                          d="M95 94 Q103 85 111 94"
-                          stroke="#14532D"
-                          strokeWidth="3.4"
-                          strokeLinecap="round"
-                          fill="none"
+                          d="M78 120 Q84 114 94 119 L92 125 Q84 122 78 125 Z"
+                          fill="url(#pauldronGrad)"
+                          stroke="#F59E0B"
+                          strokeWidth="0.8"
                         />
                         <path
-                          d="M129 94 Q137 85 145 94"
-                          stroke="#14532D"
-                          strokeWidth="3.4"
-                          strokeLinecap="round"
-                          fill="none"
-                        />
-                        {/* Open Joyous Smile showing tiny tooth */}
-                        <path
-                          d="M112 108 Q120 120 128 108 Z"
-                          fill="#BE123C"
-                        />
-                        <path
-                          d="M115 108 Q120 111 125 108"
-                          fill="#FFFFFF"
+                          d="M162 120 Q156 114 146 119 L148 125 Q156 122 162 125 Z"
+                          fill="url(#pauldronGrad)"
+                          stroke="#F59E0B"
+                          strokeWidth="0.8"
                         />
                       </g>
-                    ) : avatarMood === 'hurt' ? (
-                      /* Hurt Wincing Child Face (> <) with Sweatdrop */
-                      <g className="face-hurt">
-                        <path
-                          d="M96 90 L106 96 L96 102"
-                          stroke="#991B1B"
-                          strokeWidth="3.2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          fill="none"
-                        />
-                        <path
-                          d="M144 90 L134 96 L144 102"
-                          stroke="#991B1B"
-                          strokeWidth="3.2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          fill="none"
-                        />
-                        <path
-                          d="M114 112 Q120 106 126 112"
-                          stroke="#991B1B"
-                          strokeWidth="2.8"
-                          strokeLinecap="round"
-                          fill="none"
-                        />
-                        <circle cx="152" cy="94" r="3" fill="#67E8F9" />
+                    )}
+
+                    {/* Defined Masculine Neck & Collar Shadow */}
+                    <path
+                      d="M112 94 L112 108 Q120 112 128 108 L128 94 Z"
+                      fill="url(#manSkinShadowGrad)"
+                    />
+                    <line x1="120" y1="99" x2="120" y2="103" stroke="#E2A984" strokeWidth="1.2" />
+
+                    {/* Defined Male Jawline & Face Structure */}
+                    <path
+                      d="M102 68 Q100 84 111 94 Q120 97 129 94 Q140 84 138 68 Q120 64 102 68 Z"
+                      fill="url(#manSkinGrad)"
+                    />
+
+                    {/* Refined Male Ears */}
+                    <path
+                      d="M101 70 Q98 75 100 80 Q102 83 104 82 Z"
+                      fill="url(#manSkinGrad)"
+                    />
+                    <path
+                      d="M139 70 Q142 75 140 80 Q138 83 136 82 Z"
+                      fill="url(#manSkinGrad)"
+                    />
+
+                    {/* Modern Styled Textured Dark Haircut (Fade sides, styled swept fringe) */}
+                    <g className="man-styled-hair">
+                      <path
+                        d="M99 68 C96 50, 108 42, 120 42 C132 42, 144 50, 141 68 C138 66, 134 66, 132 62 C127 56, 121 60, 117 59 C111 58, 105 63, 102 65 C100 66, 99 67, 99 68 Z"
+                        fill="url(#manHairGrad)"
+                      />
+                      {/* Subtle Hair Highlights */}
+                      <path
+                        d="M114 45 Q124 49 133 45"
+                        stroke="#475569"
+                        strokeWidth="1.4"
+                        strokeLinecap="round"
+                        fill="none"
+                      />
+                      <path
+                        d="M108 51 Q119 53 128 49"
+                        stroke="#475569"
+                        strokeWidth="1.1"
+                        strokeLinecap="round"
+                        fill="none"
+                      />
+                    </g>
+
+                    {/* Confident Masculine Eyebrows */}
+                    {avatarMood === 'hurt' ? (
+                      <g className="brows-hurt">
+                        <line x1="105" y1="73" x2="116" y2="70" stroke="#991B1B" strokeWidth="2.2" strokeLinecap="round" />
+                        <line x1="124" y1="70" x2="135" y2="73" stroke="#991B1B" strokeWidth="2.2" strokeLinecap="round" />
                       </g>
                     ) : (
-                      /* Normal Curious Sparkling Cartoon Child Eyes */
-                      <g className="child-eyes-normal">
+                      <g className="brows-normal">
+                        <path d="M106 70 Q111 68 116 70" stroke="#1E293B" strokeWidth="2" strokeLinecap="round" fill="none" />
+                        <path d="M124 70 Q129 68 134 70" stroke="#1E293B" strokeWidth="2" strokeLinecap="round" fill="none" />
+                      </g>
+                    )}
+
+                    {/* Clean Straight Masculine Nose */}
+                    <path
+                      d="M120 72 L120 81 L118 83 L122 83"
+                      stroke="#D97706"
+                      strokeWidth="1.3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      fill="none"
+                      opacity="0.65"
+                    />
+
+                    {/* Sharp Focused Almond Eyes (Adult Male) */}
+                    {avatarMood === 'happy' ? (
+                      /* Confident Victorious Smirk & Sharp Eye Glint */
+                      <g className="eyes-happy">
+                        <path d="M107 75.5 Q111 73.5 115 75.5" stroke="#047857" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+                        <path d="M125 75.5 Q129 73.5 133 75.5" stroke="#047857" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+                        <circle cx="116.5" cy="74.5" r="1" fill="#10B981" />
+                        <circle cx="123.5" cy="74.5" r="1" fill="#10B981" />
+                      </g>
+                    ) : avatarMood === 'hurt' ? (
+                      /* Focused Stern Stoic Gaze Under Stress */
+                      <g className="eyes-hurt">
+                        <path d="M107 75 Q111 74 115 75" stroke="#991B1B" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+                        <path d="M125 75 Q129 74 133 75" stroke="#991B1B" strokeWidth="2.2" strokeLinecap="round" fill="none" />
+                      </g>
+                    ) : (
+                      /* Focused Vigilant Eyes */
+                      <g className="eyes-focused">
                         {/* Left Eye */}
-                        <ellipse cx="102" cy="94" rx="8" ry="10.5" fill="#14532D" />
-                        <ellipse cx="102" cy="95" rx="6.8" ry="8.8" fill="#15803D" />
-                        <circle cx="100" cy="90" r="3.2" fill="#FFFFFF" />
-                        <circle cx="105" cy="98" r="1.6" fill="#FFFFFF" />
+                        <path d="M107 75 Q111 73 115 75 Q111 78 107 75 Z" fill="#FFFFFF" />
+                        <circle cx="111.5" cy="75.2" r="2.1" fill="#0F766E" />
+                        <circle cx="111.5" cy="75.2" r="1.1" fill="#042F2E" />
+                        <circle cx="112.2" cy="74.5" r="0.6" fill="#FFFFFF" />
+                        <path d="M106.5 74.8 Q111 72.8 115.5 74.8" stroke="#1E293B" strokeWidth="1.2" fill="none" />
 
                         {/* Right Eye */}
-                        <ellipse cx="138" cy="94" rx="8" ry="10.5" fill="#14532D" />
-                        <ellipse cx="138" cy="95" rx="6.8" ry="8.8" fill="#15803D" />
-                        <circle cx="136" cy="90" r="3.2" fill="#FFFFFF" />
-                        <circle cx="141" cy="98" r="1.6" fill="#FFFFFF" />
-
-                        {/* Sweet Child Smile */}
-                        <path
-                          d="M115 108 Q120 114 125 108"
-                          stroke="#15803D"
-                          strokeWidth="2.4"
-                          strokeLinecap="round"
-                          fill="none"
-                        />
+                        <path d="M125 75 Q129 73 133 75 Q129 78 125 75 Z" fill="#FFFFFF" />
+                        <circle cx="128.5" cy="75.2" r="2.1" fill="#0F766E" />
+                        <circle cx="128.5" cy="75.2" r="1.1" fill="#042F2E" />
+                        <circle cx="129.2" cy="74.5" r="0.6" fill="#FFFFFF" />
+                        <path d="M124.5 74.8 Q129 72.8 133.5 74.8" stroke="#1E293B" strokeWidth="1.2" fill="none" />
                       </g>
+                    )}
+
+                    {/* Resolute Composed Mouth */}
+                    {avatarMood === 'happy' ? (
+                      <path
+                        d="M115 86 Q120 90 125 85"
+                        stroke="#15803D"
+                        strokeWidth="1.9"
+                        strokeLinecap="round"
+                        fill="none"
+                      />
+                    ) : avatarMood === 'hurt' ? (
+                      <line
+                        x1="116"
+                        y1="88"
+                        x2="124"
+                        y2="88"
+                        stroke="#991B1B"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                      />
+                    ) : (
+                      <path
+                        d="M116 87 Q120 89 124 87"
+                        stroke="#9A3412"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        fill="none"
+                      />
                     )}
                   </g>
                 </svg>
@@ -1032,10 +1054,10 @@ export function FinancialAvatarWidget({ onShowToast }) {
               <div className="avatar-mood-badge">
                 <span className={`mood-dot mood-dot-${avatarMood}`} />
                 <span className="mood-text">
-                  {avatarMood === 'happy' && 'Child Spirit Joyfully Cheering & Growing!'}
-                  {avatarMood === 'hurt' && 'Child Spirit Startled by Overspend!'}
-                  {avatarMood === 'levelup' && 'Ascending in Size & Discipline Rank!'}
-                  {avatarMood === 'normal' && `Guarding Budget as ${growthStage.title}`}
+                  {avatarMood === 'happy' && 'Disciplined Resolve Fortified • Momentum Surging'}
+                  {avatarMood === 'hurt' && 'Budget Armor Absorbed Impact • Caution Advised'}
+                  {avatarMood === 'levelup' && 'Prestige Ascended • Sentinel Tier Unlocked!'}
+                  {avatarMood === 'normal' && `Guarding Capital as ${currentTier.title}`}
                 </span>
               </div>
             </div>
@@ -1056,7 +1078,7 @@ export function FinancialAvatarWidget({ onShowToast }) {
                   Level {gameState.level} {rankName}
                 </h3>
                 <p className="character-rank-desc">
-                  {growthStage.title} ({growthStage.ageLabel}) • Growth Size: {Math.round(childScale * 100)}%
+                  {currentTier.title} • {currentTier.subtitle}
                 </p>
               </div>
 
@@ -1344,7 +1366,7 @@ export function FinancialAvatarWidget({ onShowToast }) {
               )}
             </div>
 
-            {/* Mock Demonstration Control Buttons & Streak Growth Tester */}
+            {/* Mock Demonstration Control Buttons & Discipline Benchmark */}
             <div className="avatar-actions-dock">
               <div className="dock-header">
                 <span className="dock-title">Demonstration Actions</span>
@@ -1352,16 +1374,16 @@ export function FinancialAvatarWidget({ onShowToast }) {
                   type="button"
                   className="btn-rest-inn"
                   onClick={handleRestAtInn}
-                  title="Reset state to default child demonstration settings"
+                  title="Reset state to default guardian demonstration settings"
                 >
                   <RefreshCw size={12} />
-                  <span>Reset / Rest</span>
+                  <span>Reset Strategy</span>
                 </button>
               </div>
 
               {/* Primary Action Buttons */}
               <div className="dock-buttons-row">
-                {/* 1. Good Day Button */}
+                {/* 1. Disciplined Day Button */}
                 <button
                   type="button"
                   id="btn-simulate-good-day"
@@ -1370,14 +1392,14 @@ export function FinancialAvatarWidget({ onShowToast }) {
                 >
                   <Sparkles size={16} className="btn-action-icon" />
                   <div className="btn-label-stack">
-                    <span className="main-action-text">Simulate Good Day (+1 Streak & Grow)</span>
+                    <span className="main-action-text">Simulate Disciplined Day (Under Budget)</span>
                     <span className="sub-action-text">
                       +{100 + Math.round(100 * (savingsBuff / 100))} XP • +5 HP • Streak +1 Day
                     </span>
                   </div>
                 </button>
 
-                {/* 2. Overspend Button */}
+                {/* 2. Stress Test Overspend Button */}
                 <button
                   type="button"
                   id="btn-simulate-overspend"
@@ -1386,22 +1408,22 @@ export function FinancialAvatarWidget({ onShowToast }) {
                 >
                   <AlertTriangle size={16} className="btn-action-icon" />
                   <div className="btn-label-stack">
-                    <span className="main-action-text">Simulate Overspend</span>
+                    <span className="main-action-text">Stress Test Budget (Overspend)</span>
                     <span className="sub-action-text">
-                      Armor Mitigates Damage • Strains Shield
+                      Armor Mitigates Damage • Vitality Strained
                     </span>
                   </div>
                 </button>
               </div>
 
-              {/* Streak Growth Controller Dock */}
+              {/* Discipline & Prestige Benchmark Controller */}
               <div className="streak-growth-dock">
                 <div className="streak-growth-header">
                   <span className="streak-growth-title">
-                    STREAK & SIZE TESTER (Watch Cartoon Child Grow)
+                    DISCIPLINE & PRESTIGE BENCHMARK
                   </span>
                   <span className="streak-current-readout font-mono">
-                    Day {gameState.streakDays} • Size: {Math.round(childScale * 100)}%
+                    Day {gameState.streakDays} • Tier: {currentTier.title}
                   </span>
                 </div>
 
@@ -1409,46 +1431,46 @@ export function FinancialAvatarWidget({ onShowToast }) {
                   <button
                     type="button"
                     className={`btn-streak-preset ${gameState.streakDays <= 2 ? 'active-preset' : ''}`}
-                    onClick={() => handleSetStreak(0)}
-                    title="Set to Day 0 (Baby Child - Size 70%)"
+                    onClick={() => handleSetStreak(1)}
+                    title="Set to Day 1 (The Aspirant)"
                   >
-                    <span>🌱 Baby (0d)</span>
+                    <span>⚡ Aspirant (1d)</span>
                   </button>
 
                   <button
                     type="button"
                     className={`btn-streak-preset ${gameState.streakDays >= 3 && gameState.streakDays <= 5 ? 'active-preset' : ''}`}
-                    onClick={() => handleSetStreak(3)}
-                    title="Set to Day 3 (Toddler Child - Size 85%)"
+                    onClick={() => handleSetStreak(4)}
+                    title="Set to Day 4 (The Tactician)"
                   >
-                    <span>🧒 Toddler (3d)</span>
+                    <span>🎯 Tactician (4d)</span>
                   </button>
 
                   <button
                     type="button"
                     className={`btn-streak-preset ${gameState.streakDays >= 6 && gameState.streakDays <= 9 ? 'active-preset' : ''}`}
                     onClick={() => handleSetStreak(7)}
-                    title="Set to Day 7 (Youth Knight - Size 102%)"
+                    title="Set to Day 7 (The Vanguard)"
                   >
-                    <span>🛡️ Youth (7d)</span>
+                    <span>🛡️ Vanguard (7d)</span>
                   </button>
 
                   <button
                     type="button"
                     className={`btn-streak-preset ${gameState.streakDays >= 10 && gameState.streakDays <= 15 ? 'active-preset' : ''}`}
                     onClick={() => handleSetStreak(14)}
-                    title="Set to Day 14 (Champion - Size 120%)"
+                    title="Set to Day 14 (The Sentinel)"
                   >
-                    <span>⚔️ Champ (14d)</span>
+                    <span>⚔️ Sentinel (14d)</span>
                   </button>
 
                   <button
                     type="button"
                     className={`btn-streak-preset ${gameState.streakDays >= 16 ? 'active-preset' : ''}`}
                     onClick={() => handleSetStreak(21)}
-                    title="Set to Day 21+ (Titan - Size 132%)"
+                    title="Set to Day 21+ (The Sovereign)"
                   >
-                    <span>👑 Titan (21d)</span>
+                    <span>👑 Sovereign (21d+)</span>
                   </button>
                 </div>
 
@@ -1457,20 +1479,20 @@ export function FinancialAvatarWidget({ onShowToast }) {
                     type="button"
                     className="btn-stepper btn-stepper-minus"
                     onClick={() => handleSetStreak(Math.max(0, gameState.streakDays - 1))}
-                    title="Decrease Streak by 1 Day (Shrink Cartoon Size)"
+                    title="Decrease Streak by 1 Day"
                   >
                     <Minus size={13} />
-                    <span>-1 Day (Shrink)</span>
+                    <span>-1 Day</span>
                   </button>
 
                   <button
                     type="button"
                     className="btn-stepper btn-stepper-plus"
                     onClick={() => handleSetStreak(gameState.streakDays + 1)}
-                    title="Increase Streak by 1 Day (Grow Cartoon Size)"
+                    title="Increase Streak by 1 Day"
                   >
                     <Plus size={13} />
-                    <span>+1 Day (Grow Size)</span>
+                    <span>+1 Day</span>
                   </button>
                 </div>
               </div>

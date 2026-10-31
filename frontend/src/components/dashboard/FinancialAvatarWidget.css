@@ -147,8 +147,8 @@
   to { transform: rotate(360deg); }
 }
 
-/* Floating Growth Stage Pill */
-.avatar-growth-pill {
+/* Floating Prestige Tier Pill */
+.avatar-prestige-pill {
   position: absolute;
   top: 14px;
   z-index: 12;
@@ -163,30 +163,30 @@
   box-shadow: 0 2px 8px rgba(40, 40, 32, 0.06);
 }
 
-.growth-icon {
+.prestige-icon {
   font-size: 0.95rem;
   line-height: 1;
 }
 
-.growth-pill-text {
+.prestige-pill-text {
   display: flex;
   flex-direction: column;
 }
 
-.growth-title {
+.prestige-title {
   font-size: 0.74rem;
   font-weight: 700;
   color: var(--color-text-main, #282820);
   line-height: 1.15;
 }
 
-.growth-sub {
+.prestige-sub {
   font-size: 0.62rem;
   color: var(--color-accent, #E87952);
   font-weight: 600;
 }
 
-/* Vector Avatar SVG - Dynamically scales with streak! */
+/* Vector Avatar SVG - Mature Male Guardian */
 .vector-avatar-wrapper {
   position: relative;
   z-index: 2;
@@ -199,95 +199,80 @@
   transition: transform 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.child-avatar-svg {
+.man-avatar-svg {
   width: 100%;
   height: 100%;
   overflow: visible;
-  animation: child-breathe 3.6s ease-in-out infinite;
+  animation: man-breathe 4.2s ease-in-out infinite;
 }
 
-/* Child Breathing & Gentle Idle Bob */
-@keyframes child-breathe {
+/* Dignified Adult Posture & Subtle Steady Breathing */
+@keyframes man-breathe {
   0%, 100% {
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
   50% {
-    transform: translateY(-4px) scale(1.015);
+    transform: translateY(-2.5px);
   }
 }
 
-/* Enthusiastic Waving Hand */
-.child-waving-arm {
-  transform-origin: 148px 136px;
-  animation: child-wave 2.2s ease-in-out infinite;
+/* Poised Male Hand on Lapel */
+.man-lapel-hand {
+  transform-origin: 158px 122px;
+  animation: lapel-poise 5s ease-in-out infinite;
 }
 
-@keyframes child-wave {
+@keyframes lapel-poise {
   0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(18deg); }
+  50% { transform: rotate(-1.5deg); }
 }
 
-/* Sprout Stem & Leaf Sway */
-.child-sprout-leaf {
-  transform-origin: 124px 26px;
-  animation: sprout-sway 2.5s ease-in-out infinite;
+/* Relaxed Left Arm */
+.man-left-arm {
+  transform-origin: 82px 122px;
+  animation: arm-subtle 4.2s ease-in-out infinite;
 }
 
-.child-sprout-leaf-secondary {
-  transform-origin: 123px 28px;
-  animation: sprout-sway-rev 2.8s ease-in-out infinite;
-}
-
-@keyframes sprout-sway {
+@keyframes arm-subtle {
   0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(-9deg); }
+  50% { transform: rotate(1deg); }
 }
 
-@keyframes sprout-sway-rev {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(9deg); }
+/* Sovereign Halo Rotation */
+.man-sovereign-halo {
+  transform-origin: 120px 76px;
+  animation: orbit-rotate 40s linear infinite;
 }
 
-/* Golden Horns Sway */
-.child-golden-antlers .left-leaf {
-  transform-origin: 88px 74px;
-  animation: sprout-sway 3.2s ease-in-out infinite;
+/* Guardian Medallion Crest Glow Pulse */
+.guardian-medallion-crest {
+  animation: crest-pulse 3s ease-in-out infinite;
 }
 
-.child-golden-antlers .right-leaf {
-  transform-origin: 152px 74px;
-  animation: sprout-sway-rev 3.2s ease-in-out infinite;
+@keyframes crest-pulse {
+  0%, 100% { opacity: 0.95; filter: drop-shadow(0 0 2px rgba(245, 158, 11, 0.4)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.7)); }
 }
 
-/* Blinking Cartoon Eyes */
-.child-eyes-normal {
-  transform-origin: 120px 94px;
-  animation: child-blink 4s ease-in-out infinite;
+/* Focused Adult Eyes */
+.eyes-focused {
+  transform-origin: 120px 75px;
+  animation: man-blink 5.2s ease-in-out infinite;
 }
 
-@keyframes child-blink {
-  0%, 94%, 98%, 100% { transform: scaleY(1); }
-  96% { transform: scaleY(0.08); }
+@keyframes man-blink {
+  0%, 95%, 98%, 100% { transform: scaleY(1); }
+  96.5% { transform: scaleY(0.1); }
 }
 
-/* Soft Rosy Cheeks Pulse */
-.child-cheeks {
-  animation: cheek-pulse 2.8s ease-in-out infinite;
+/* Confident Triumph Expression */
+.mood-happy .man-avatar-svg {
+  animation: man-triumph 0.8s cubic-bezier(0.2, 0.9, 0.3, 1.2) 1;
 }
 
-@keyframes cheek-pulse {
-  0%, 100% { opacity: 0.65; transform: scale(1); }
-  50% { opacity: 0.9; transform: scale(1.08); }
-}
-
-/* Happy Bounce Celebration */
-.mood-happy .child-avatar-svg {
-  animation: child-celebrate 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) 2;
-}
-
-@keyframes child-celebrate {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-12px) scale(1.05); }
+@keyframes man-triumph {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-6px) scale(1.02); }
 }
 
 /* Core Gem Pulse */
