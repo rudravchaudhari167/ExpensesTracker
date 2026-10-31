@@ -8,15 +8,8 @@ import {
   Trophy,
   RefreshCw,
   AlertTriangle,
-  Award,
-  ChevronRight,
   TrendingUp,
-  X,
-  Info,
-  ShieldCheck,
   CheckCircle2,
-  Plus,
-  Minus,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import './FinancialAvatarWidget.css';
@@ -116,9 +109,6 @@ export function FinancialAvatarWidget({ onShowToast }) {
   const [isDamagedEffect, setIsDamagedEffect] = useState(false);
   const [levelUpBanner, setLevelUpBanner] = useState(false);
 
-  // Selected Attribute Inspector State: null | 'armor' | 'ward' | 'buff'
-  const [activeAttribute, setActiveAttribute] = useState(null);
-
   const containerRef = useRef(null);
 
   // Persist state changes
@@ -197,6 +187,11 @@ export function FinancialAvatarWidget({ onShowToast }) {
     return levelBonus + streakBonus + healthBonus;
   }, [gameState.level, gameState.streakDays, gameState.hp]);
 
+  // Dynamic XP calculation for a Good Day
+  const goodDayXpGain = useMemo(() => {
+    return 100 + Math.round(100 * (savingsBuff / 100));
+  }, [savingsBuff]);
+
   // 4. Prestige Tier based on Streak Days
   const currentTier = useMemo(() => {
     const streak = Math.max(0, gameState.streakDays);
@@ -209,52 +204,6 @@ export function FinancialAvatarWidget({ onShowToast }) {
     const scale = 0.96 + Math.min(0.16, Math.sqrt(s) * 0.035);
     return Number(scale.toFixed(2));
   }, [gameState.streakDays]);
-
-  // Interactive Streak Controller: Quick one-click testing of discipline tiers
-  const handleSetStreak = (newStreak) => {
-    const s = Math.max(0, newStreak);
-    setGameState((prev) => ({
-      ...prev,
-      streakDays: s,
-    }));
-
-    const tier = PRESTIGE_TIERS.find((t) => s <= t.maxStreak) || PRESTIGE_TIERS[0];
-
-    // Particle burst
-    const sparkles = Array.from({ length: 8 }, (_, i) => ({
-      id: Date.now() + i,
-      x: 30 + Math.random() * 40,
-      y: 25 + Math.random() * 50,
-      size: 14 + Math.random() * 16,
-      delay: Math.random() * 0.2,
-    }));
-    setSparkleParticles(sparkles);
-    setTimeout(() => setSparkleParticles([]), 1400);
-
-    confetti({
-      particleCount: 25,
-      spread: 50,
-      origin: { y: 0.65 },
-      colors: ['#E87952', '#059669', '#FBBF24'],
-    });
-
-    const notifId = Date.now();
-    setFloatingNotification({
-      id: notifId,
-      text: `Streak: ${s} Days`,
-      subtext: `${tier.title} Tier Active`,
-      type: 'heal',
-    });
-    setTimeout(() => setFloatingNotification(null), 1800);
-
-    if (onShowToast) {
-      onShowToast(
-        'info',
-        `Discipline streak updated to ${s} days. Active tier: ${tier.title}.`,
-        'Discipline Updated ⚔️'
-      );
-    }
-  };
 
   // Check and process Level Ups
   const checkLevelUp = (currentXp, currentLevel, currentMaxHp) => {
@@ -426,109 +375,20 @@ export function FinancialAvatarWidget({ onShowToast }) {
     }
   };
 
-  // Interactive Action on Budget Armor chip
-  const handleFortifyArmor = () => {
-    setGameState((prev) => ({
-      ...prev,
-      hp: Math.min(prev.maxHp, prev.hp + 15),
-    }));
-
-    confetti({
-      particleCount: 20,
-      spread: 40,
-      origin: { y: 0.6 },
-      colors: ['#38BDF8', '#60A5FA', '#93C5FD'],
-    });
-
-    const notifId = Date.now();
-    setFloatingNotification({
-      id: notifId,
-      text: '+15 HP Buffer',
-      subtext: 'Armor Fortified!',
-      type: 'heal',
-    });
-    setTimeout(() => setFloatingNotification(null), 1800);
-
-    if (onShowToast) {
-      onShowToast('success', 'Budget Armor fortified! Vitality buffer restored by +15 HP.', 'Armor Upgraded 🛡️');
-    }
-  };
-
-  // Interactive Action on Impulse Ward chip
-  const handleCastWard = () => {
-    setGameState((prev) => ({
-      ...prev,
-      streakDays: prev.streakDays + 1,
-    }));
-
-    confetti({
-      particleCount: 25,
-      spread: 50,
-      origin: { y: 0.6 },
-      colors: ['#F59E0B', '#FBBF24', '#FEF08A'],
-    });
-
-    const notifId = Date.now();
-    setFloatingNotification({
-      id: notifId,
-      text: '+1 Streak Shield',
-      subtext: 'Impulse Ward Charged!',
-      type: 'heal',
-    });
-    setTimeout(() => setFloatingNotification(null), 1800);
-
-    if (onShowToast) {
-      onShowToast('success', `Active Impulse Ward reinforced! Gained +1 day mental protection.`, 'Ward Activated ✨');
-    }
-  };
-
-  // Interactive Action on Savings Buff chip
-  const handleSurgeBuff = () => {
-    const surgeXp = 50;
-    setGameState((prev) => {
-      const addedXp = prev.xp + surgeXp;
-      const levelUpResult = checkLevelUp(addedXp, prev.level, prev.maxHp);
-      if (levelUpResult) {
-        return {
-          ...prev,
-          ...levelUpResult,
-        };
-      }
-      return {
-        ...prev,
-        xp: addedXp,
-      };
-    });
-
-    const notifId = Date.now();
-    setFloatingNotification({
-      id: notifId,
-      text: '+50 Surge XP',
-      subtext: 'Savings Multiplier Triggered!',
-      type: 'good',
-    });
-    setTimeout(() => setFloatingNotification(null), 1800);
-
-    if (onShowToast) {
-      onShowToast('success', 'Savings Buff surged! Gained +50 instant discipline experience.', 'Buff Surged ⚡');
-    }
-  };
-
-  // Reset / Rest at Inn
+  // Reset Guardian Baseline
   const handleRestAtInn = () => {
     setGameState(DEFAULT_STATE);
     setAvatarMood('normal');
-    setActiveAttribute(null);
     setFloatingNotification({
       id: Date.now(),
-      text: 'Full Recovery!',
-      subtext: 'Rested at Tavern',
+      text: 'Progress Reset',
+      subtext: 'Returned to Baseline',
       type: 'heal',
     });
     setTimeout(() => setFloatingNotification(null), 1600);
 
     if (onShowToast) {
-      onShowToast('info', 'Avatar vitality and trial states reset to default.', 'Restored');
+      onShowToast('info', 'Guardian state reset to initial baseline.', 'Reset Complete');
     }
   };
 
@@ -599,16 +459,6 @@ export function FinancialAvatarWidget({ onShowToast }) {
                 </div>
               ))}
 
-              {/* Top Floating Prestige Tier & Streak Indicator */}
-              <div className="avatar-prestige-pill animate-fade-in">
-                <span className="prestige-icon">{currentTier.icon}</span>
-                <div className="prestige-pill-text">
-                  <span className="prestige-title">{currentTier.title}</span>
-                  <span className="prestige-sub font-mono">
-                    Streak: {gameState.streakDays}d • {currentTier.prestigeLabel}
-                  </span>
-                </div>
-              </div>
 
               {/* Ambient Circular Runic Dial & Pedestal */}
               <div
@@ -1175,326 +1025,82 @@ export function FinancialAvatarWidget({ onShowToast }) {
               </div>
             </div>
 
-            {/* RPG Interactive Attribute Chips (Budget Armor, Impulse Ward, Savings Buff) */}
-            <div className="rpg-attributes-wrapper">
-              <div className="rpg-attributes-header">
-                <span className="attr-section-caption">ACTIVE ATTRIBUTES & WARDS (Click to Inspect / Use)</span>
-              </div>
-
-              <div className="rpg-attributes-grid">
-                {/* 1. Budget Armor Chip */}
-                <button
-                  type="button"
-                  id="chip-budget-armor"
-                  className={`rpg-attr-chip ${activeAttribute === 'armor' ? 'active-chip' : ''}`}
-                  onClick={() => setActiveAttribute(activeAttribute === 'armor' ? null : 'armor')}
-                  title="Click to inspect and reinforce Budget Armor"
-                >
-                  <Shield size={14} className="attr-icon icon-armor" />
-                  <span className="attr-label">Budget Armor:</span>
-                  <span className="attr-val font-mono">{budgetArmor}%</span>
-                  <span className="attr-hint-dot" />
-                </button>
-
-                {/* 2. Impulse Ward Chip */}
-                <button
-                  type="button"
-                  id="chip-impulse-ward"
-                  className={`rpg-attr-chip ${activeAttribute === 'ward' ? 'active-chip' : ''}`}
-                  onClick={() => setActiveAttribute(activeAttribute === 'ward' ? null : 'ward')}
-                  title="Click to inspect and cast Impulse Ward"
-                >
-                  <Sparkles size={14} className="attr-icon icon-ward" />
-                  <span className="attr-label">Impulse Ward:</span>
-                  <span className="attr-val font-mono">{impulseWard.tier}</span>
-                  <span className="attr-hint-dot" />
-                </button>
-
-                {/* 3. Savings Buff Chip */}
-                <button
-                  type="button"
-                  id="chip-savings-buff"
-                  className={`rpg-attr-chip ${activeAttribute === 'buff' ? 'active-chip' : ''}`}
-                  onClick={() => setActiveAttribute(activeAttribute === 'buff' ? null : 'buff')}
-                  title="Click to inspect and surge Savings Buff"
-                >
-                  <TrendingUp size={14} className="attr-icon icon-buff" />
-                  <span className="attr-label">Savings Buff:</span>
-                  <span className="attr-val font-mono">+{savingsBuff}%</span>
-                  <span className="attr-hint-dot" />
-                </button>
-              </div>
-
-              {/* Dynamic Interactive Detail Inspector Card */}
-              {activeAttribute && (
-                <div className="attribute-detail-card animate-fade-in">
-                  {/* Budget Armor Detail */}
-                  {activeAttribute === 'armor' && (
-                    <div className="attr-detail-content">
-                      <div className="detail-top-row">
-                        <div className="detail-title-group">
-                          <ShieldCheck size={18} className="detail-icon icon-armor" />
-                          <div>
-                            <h4 className="detail-title font-serif">Budget Armor ({budgetArmor}%)</h4>
-                            <span className="detail-sub">
-                              Damage Mitigation • Scales with Health & Level
-                            </span>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          className="btn-close-detail"
-                          onClick={() => setActiveAttribute(null)}
-                          title="Close"
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-
-                      <p className="detail-description">
-                        Budget Armor acts as your financial buffer. When an unexpected expense occurs,
-                        it absorbs up to <strong>{Math.round(budgetArmor * 0.45)}%</strong> of raw damage.
-                        Current strength: <strong>{gameState.hp} HP</strong> / Level {gameState.level}.
-                      </p>
-
-                      <div className="detail-action-bar">
-                        <div className="detail-stat-pill">
-                          <span>Absorbs ~{Math.round(budgetArmor * 0.45)}% Overspend Damage</span>
-                        </div>
-                        <button
-                          type="button"
-                          className="btn-attr-action btn-armor-action"
-                          onClick={handleFortifyArmor}
-                        >
-                          <Shield size={14} />
-                          <span>Fortify Armor (+15 HP)</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Impulse Ward Detail */}
-                  {activeAttribute === 'ward' && (
-                    <div className="attr-detail-content">
-                      <div className="detail-top-row">
-                        <div className="detail-title-group">
-                          <Sparkles size={18} className="detail-icon icon-ward" />
-                          <div>
-                            <h4 className="detail-title font-serif">
-                              Impulse Ward ({impulseWard.tier}: {impulseWard.name})
-                            </h4>
-                            <span className="detail-sub">
-                              {impulseWard.cooldown} • {impulseWard.mitigation}
-                            </span>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          className="btn-close-detail"
-                          onClick={() => setActiveAttribute(null)}
-                          title="Close"
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-
-                      <p className="detail-description">
-                        {impulseWard.description} Automatically shields your willpower during online browsing.
-                        Higher budget streaks level up your ward tier!
-                      </p>
-
-                      <div className="detail-action-bar">
-                        <div className="detail-stat-pill">
-                          <span>Streak: {gameState.streakDays} Days • Active Cooldown: {impulseWard.cooldown}</span>
-                        </div>
-                        <button
-                          type="button"
-                          className="btn-attr-action btn-ward-action"
-                          onClick={handleCastWard}
-                        >
-                          <Sparkles size={14} />
-                          <span>Cast Ward (+1 Streak Day)</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Savings Buff Detail */}
-                  {activeAttribute === 'buff' && (
-                    <div className="attr-detail-content">
-                      <div className="detail-top-row">
-                        <div className="detail-title-group">
-                          <TrendingUp size={18} className="detail-icon icon-buff" />
-                          <div>
-                            <h4 className="detail-title font-serif">Savings Buff (+{savingsBuff}%)</h4>
-                            <span className="detail-sub">
-                              Discipline Experience & Rewards Multiplier
-                            </span>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          className="btn-close-detail"
-                          onClick={() => setActiveAttribute(null)}
-                          title="Close"
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-
-                      <p className="detail-description">
-                        Active on all budget accomplishments. Every "Good Day" logged earns an extra{' '}
-                        <strong>+{savingsBuff}% XP</strong> bonus, speeding up your journey to the next Guardian rank.
-                      </p>
-
-                      <div className="detail-action-bar">
-                        <div className="detail-stat-pill">
-                          <span>Multiplier: {(1 + savingsBuff / 100).toFixed(2)}x on Good Days</span>
-                        </div>
-                        <button
-                          type="button"
-                          className="btn-attr-action btn-buff-action"
-                          onClick={handleSurgeBuff}
-                        >
-                          <Zap size={14} />
-                          <span>Surge Buff (+50 Bonus XP)</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
+            {/* Simplified 3 Core Guardian Attributes */}
+            <div className="guardian-stats-row">
+              <div className="guardian-stat-item">
+                <Shield size={15} className="stat-icon icon-armor" />
+                <div className="stat-meta">
+                  <span className="stat-title">Budget Armor</span>
+                  <span className="stat-value font-mono">{budgetArmor}%</span>
                 </div>
-              )}
+              </div>
+
+              <div className="guardian-stat-item">
+                <Sparkles size={15} className="stat-icon icon-ward" />
+                <div className="stat-meta">
+                  <span className="stat-title">Impulse Ward</span>
+                  <span className="stat-value font-mono">{impulseWard.tier}</span>
+                </div>
+              </div>
+
+              <div className="guardian-stat-item">
+                <TrendingUp size={15} className="stat-icon icon-buff" />
+                <div className="stat-meta">
+                  <span className="stat-title">Savings Boost</span>
+                  <span className="stat-value font-mono">+{savingsBuff}%</span>
+                </div>
+              </div>
             </div>
 
-            {/* Mock Demonstration Control Buttons & Discipline Benchmark */}
-            <div className="avatar-actions-dock">
-              <div className="dock-header">
-                <span className="dock-title">Demonstration Actions</span>
-                <button
-                  type="button"
-                  className="btn-rest-inn"
-                  onClick={handleRestAtInn}
-                  title="Reset state to default guardian demonstration settings"
-                >
-                  <RefreshCw size={12} />
-                  <span>Reset Strategy</span>
-                </button>
-              </div>
-
-              {/* Primary Action Buttons */}
-              <div className="dock-buttons-row">
-                {/* 1. Disciplined Day Button */}
+            {/* Simple Direct Actions */}
+            <div className="guardian-actions-section">
+              <div className="actions-primary-row">
+                {/* 1. Good Day Button */}
                 <button
                   type="button"
                   id="btn-simulate-good-day"
-                  className="btn-rpg-action btn-good-day"
+                  className="btn-guardian-primary btn-good-day"
                   onClick={handleSimulateGoodDay}
                 >
-                  <Sparkles size={16} className="btn-action-icon" />
+                  <CheckCircle2 size={17} className="btn-action-icon" />
                   <div className="btn-label-stack">
-                    <span className="main-action-text">Simulate Disciplined Day (Under Budget)</span>
+                    <span className="main-action-text">Log Within Budget</span>
                     <span className="sub-action-text">
-                      +{100 + Math.round(100 * (savingsBuff / 100))} XP • +5 HP • Streak +1 Day
+                      +{goodDayXpGain} XP • +5 HP • +1 Day Streak
                     </span>
                   </div>
                 </button>
 
-                {/* 2. Stress Test Overspend Button */}
+                {/* 2. Overspend Button */}
                 <button
                   type="button"
                   id="btn-simulate-overspend"
-                  className="btn-rpg-action btn-overspend"
+                  className="btn-guardian-primary btn-overspend"
                   onClick={handleSimulateOverspend}
                 >
-                  <AlertTriangle size={16} className="btn-action-icon" />
+                  <AlertTriangle size={17} className="btn-action-icon" />
                   <div className="btn-label-stack">
-                    <span className="main-action-text">Stress Test Budget (Overspend)</span>
+                    <span className="main-action-text">Log Overspend</span>
                     <span className="sub-action-text">
-                      Armor Mitigates Damage • Vitality Strained
+                      Armor Mitigates Damage
                     </span>
                   </div>
                 </button>
               </div>
 
-              {/* Discipline & Prestige Benchmark Controller */}
-              <div className="streak-growth-dock">
-                <div className="streak-growth-header">
-                  <span className="streak-growth-title">
-                    DISCIPLINE & PRESTIGE BENCHMARK
-                  </span>
-                  <span className="streak-current-readout font-mono">
-                    Day {gameState.streakDays} • Tier: {currentTier.title}
-                  </span>
-                </div>
-
-                <div className="streak-presets-grid">
-                  <button
-                    type="button"
-                    className={`btn-streak-preset ${gameState.streakDays <= 2 ? 'active-preset' : ''}`}
-                    onClick={() => handleSetStreak(1)}
-                    title="Set to Day 1 (The Aspirant)"
-                  >
-                    <span>⚡ Aspirant (1d)</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`btn-streak-preset ${gameState.streakDays >= 3 && gameState.streakDays <= 5 ? 'active-preset' : ''}`}
-                    onClick={() => handleSetStreak(4)}
-                    title="Set to Day 4 (The Tactician)"
-                  >
-                    <span>🎯 Tactician (4d)</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`btn-streak-preset ${gameState.streakDays >= 6 && gameState.streakDays <= 9 ? 'active-preset' : ''}`}
-                    onClick={() => handleSetStreak(7)}
-                    title="Set to Day 7 (The Vanguard)"
-                  >
-                    <span>🛡️ Vanguard (7d)</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`btn-streak-preset ${gameState.streakDays >= 10 && gameState.streakDays <= 15 ? 'active-preset' : ''}`}
-                    onClick={() => handleSetStreak(14)}
-                    title="Set to Day 14 (The Sentinel)"
-                  >
-                    <span>⚔️ Sentinel (14d)</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className={`btn-streak-preset ${gameState.streakDays >= 16 ? 'active-preset' : ''}`}
-                    onClick={() => handleSetStreak(21)}
-                    title="Set to Day 21+ (The Sovereign)"
-                  >
-                    <span>👑 Sovereign (21d+)</span>
-                  </button>
-                </div>
-
-                <div className="streak-stepper-row">
-                  <button
-                    type="button"
-                    className="btn-stepper btn-stepper-minus"
-                    onClick={() => handleSetStreak(Math.max(0, gameState.streakDays - 1))}
-                    title="Decrease Streak by 1 Day"
-                  >
-                    <Minus size={13} />
-                    <span>-1 Day</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className="btn-stepper btn-stepper-plus"
-                    onClick={() => handleSetStreak(gameState.streakDays + 1)}
-                    title="Increase Streak by 1 Day"
-                  >
-                    <Plus size={13} />
-                    <span>+1 Day</span>
-                  </button>
-                </div>
+              <div className="guardian-actions-subbar">
+                <span className="subbar-hint">
+                  Your guardian tracks your discipline across every budget cycle.
+                </span>
+                <button
+                  type="button"
+                  className="btn-reset-simple"
+                  onClick={handleRestAtInn}
+                  title="Reset guardian baseline"
+                >
+                  <RefreshCw size={11} />
+                  <span>Reset Progress</span>
+                </button>
               </div>
             </div>
           </div>
