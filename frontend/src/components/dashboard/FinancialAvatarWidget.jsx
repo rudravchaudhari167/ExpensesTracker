@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Sparkles,
   Heart,
@@ -11,6 +11,10 @@ import {
   Award,
   ChevronRight,
   TrendingUp,
+  X,
+  Info,
+  ShieldCheck,
+  CheckCircle2,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import './FinancialAvatarWidget.css';
@@ -56,10 +60,13 @@ export function FinancialAvatarWidget({ onShowToast }) {
 
   // Animation & Reaction State
   const [avatarMood, setAvatarMood] = useState('normal'); // 'normal' | 'happy' | 'hurt' | 'levelup'
-  const [floatingNotification, setFloatingNotification] = useState(null); // { text, type, id }
+  const [floatingNotification, setFloatingNotification] = useState(null); // { text, subtext, type, id }
   const [sparkleParticles, setSparkleParticles] = useState([]);
   const [isDamagedEffect, setIsDamagedEffect] = useState(false);
   const [levelUpBanner, setLevelUpBanner] = useState(false);
+
+  // Selected Attribute Inspector State: null | 'armor' | 'ward' | 'buff'
+  const [activeAttribute, setActiveAttribute] = useState(null);
 
   const containerRef = useRef(null);
 
@@ -72,7 +79,74 @@ export function FinancialAvatarWidget({ onShowToast }) {
     }
   }, [gameState]);
 
-  // Handle Level Progression
+  // =========================================================================
+  // DYNAMIC RPG ATTRIBUTES CALCULATION
+  // =========================================================================
+
+  // 1. Budget Armor: scales dynamically with remaining HP ratio, Level, and Streak
+  const budgetArmor = useMemo(() => {
+    const hpRatio = gameState.hp / gameState.maxHp;
+    const armor = Math.round(hpRatio * 60 + gameState.level * 4 + gameState.streakDays * 1.5);
+    return Math.min(99, Math.max(15, armor));
+  }, [gameState.hp, gameState.maxHp, gameState.level, gameState.streakDays]);
+
+  // 2. Impulse Ward: tiers dynamically based on Streak and Level
+  const impulseWard = useMemo(() => {
+    const score = gameState.streakDays + gameState.level;
+    if (score >= 14) {
+      return {
+        tier: 'Tier V',
+        name: 'Diamond Aegis',
+        cooldown: '72h Cooling',
+        mitigation: '50% Damage Absorb',
+        description: 'Elite mental barrier blocking impulsive checkouts. Peak resistance.',
+      };
+    }
+    if (score >= 10) {
+      return {
+        tier: 'Tier IV',
+        name: 'Obsidian Barrier',
+        cooldown: '48h Cooling',
+        mitigation: '35% Damage Absorb',
+        description: 'Heavy protective ward reinforcing your cooling periods against spontaneous urges.',
+      };
+    }
+    if (score >= 7) {
+      return {
+        tier: 'Tier III',
+        name: 'Runic Shield',
+        cooldown: '36h Cooling',
+        mitigation: '25% Damage Absorb',
+        description: 'Hardened shield forged by steady daily spending discipline.',
+      };
+    }
+    if (score >= 4) {
+      return {
+        tier: 'Tier II',
+        name: 'Iron Bastion',
+        cooldown: '24h Cooling',
+        mitigation: '15% Damage Absorb',
+        description: 'Reliable foundational ward shielding your budget against small slips.',
+      };
+    }
+    return {
+      tier: 'Tier I',
+      name: 'Wood Buckler',
+      cooldown: '12h Cooling',
+      mitigation: '5% Damage Absorb',
+      description: 'Introductory barrier. Build higher streaks to upgrade your tier.',
+    };
+  }, [gameState.streakDays, gameState.level]);
+
+  // 3. Savings Buff: scales dynamically with Level, Streak, and Health state
+  const savingsBuff = useMemo(() => {
+    const levelBonus = gameState.level * 2;
+    const streakBonus = Math.round(gameState.streakDays * 1.5);
+    const healthBonus = gameState.hp >= 75 ? 5 : 2;
+    return levelBonus + streakBonus + healthBonus;
+  }, [gameState.level, gameState.streakDays, gameState.hp]);
+
+  // Check and process Level Ups
   const checkLevelUp = (currentXp, currentLevel, currentMaxHp) => {
     const threshold = currentLevel * 250;
     if (currentXp >= threshold) {
@@ -140,21 +214,26 @@ export function FinancialAvatarWidget({ onShowToast }) {
     setAvatarMood('happy');
     setTimeout(() => setAvatarMood('normal'), 1800);
 
-    // Show floating +XP tag
+    // Dynamic XP calculation using active Savings Buff!
+    const baseBonusXp = 100;
+    const buffBonusXp = Math.round(baseBonusXp * (savingsBuff / 100));
+    const totalGainedXp = baseBonusXp + buffBonusXp;
+
+    // Show floating notification with active buff details
     const notifId = Date.now();
     setFloatingNotification({
       id: notifId,
-      text: '+100 XP • +5 HP',
-      subtext: 'Streak Maintained!',
+      text: `+${totalGainedXp} XP • +5 HP`,
+      subtext: `Boosted +${savingsBuff}% by Savings Buff!`,
       type: 'good',
     });
     setTimeout(() => {
       setFloatingNotification((curr) => (curr?.id === notifId ? null : curr));
-    }, 1800);
+    }, 2000);
 
     // Update stats
     setGameState((prev) => {
-      const addedXp = prev.xp + 100;
+      const addedXp = prev.xp + totalGainedXp;
       const addedHp = Math.min(prev.maxHp, prev.hp + 5);
       const newStreak = prev.streakDays + 1;
 
@@ -178,7 +257,7 @@ export function FinancialAvatarWidget({ onShowToast }) {
     if (onShowToast) {
       onShowToast(
         'success',
-        'Logged within budget! Earned +100 XP and reinforced your Financial Guardian.',
+        `Logged within budget! Earned +${totalGainedXp} XP (with +${savingsBuff}% Savings Buff) and fortified Budget Armor.`,
         'Good Day Logged ✨'
       );
     }
@@ -198,25 +277,29 @@ export function FinancialAvatarWidget({ onShowToast }) {
       setAvatarMood('normal');
     }, 1800);
 
-    // Show floating -HP tag
+    // Damage mitigated by active Budget Armor & Impulse Ward!
+    const rawDamage = 28;
+    const mitigatedAmount = Math.round((budgetArmor / 100) * 12);
+    const actualDamage = Math.max(8, rawDamage - mitigatedAmount);
+
+    // Show floating -HP tag noting armor absorption
     const notifId = Date.now();
     setFloatingNotification({
       id: notifId,
-      text: '-20 HP',
-      subtext: 'Impulse Breach!',
+      text: `-${actualDamage} HP`,
+      subtext: `Armor absorbed ${mitigatedAmount} damage!`,
       type: 'hurt',
     });
     setTimeout(() => {
       setFloatingNotification((curr) => (curr?.id === notifId ? null : curr));
-    }, 1800);
+    }, 2000);
 
     // Drop HP dynamically
     setGameState((prev) => {
-      const newHp = Math.max(0, prev.hp - 20);
+      const newHp = Math.max(0, prev.hp - actualDamage);
       return {
         ...prev,
         hp: newHp,
-        // If HP reaches 0, streak resets
         streakDays: newHp === 0 ? 0 : Math.max(0, prev.streakDays - 1),
       };
     });
@@ -224,9 +307,97 @@ export function FinancialAvatarWidget({ onShowToast }) {
     if (onShowToast) {
       onShowToast(
         'error',
-        'Overspend registered! Your avatar took -20 HP damage. Cooling periods recommended.',
-        'Budget Health Decreased ⚠️'
+        `Overspend registered! Budget Armor absorbed ${mitigatedAmount} damage, actual damage: -${actualDamage} HP.`,
+        'Budget Armor Strained ⚠️'
       );
+    }
+  };
+
+  // Interactive Action on Budget Armor chip
+  const handleFortifyArmor = () => {
+    setGameState((prev) => ({
+      ...prev,
+      hp: Math.min(prev.maxHp, prev.hp + 15),
+    }));
+
+    confetti({
+      particleCount: 20,
+      spread: 40,
+      origin: { y: 0.6 },
+      colors: ['#38BDF8', '#60A5FA', '#93C5FD'],
+    });
+
+    const notifId = Date.now();
+    setFloatingNotification({
+      id: notifId,
+      text: '+15 HP Buffer',
+      subtext: 'Armor Fortified!',
+      type: 'heal',
+    });
+    setTimeout(() => setFloatingNotification(null), 1800);
+
+    if (onShowToast) {
+      onShowToast('success', 'Budget Armor fortified! Vitality buffer restored by +15 HP.', 'Armor Upgraded 🛡️');
+    }
+  };
+
+  // Interactive Action on Impulse Ward chip
+  const handleCastWard = () => {
+    setGameState((prev) => ({
+      ...prev,
+      streakDays: prev.streakDays + 1,
+    }));
+
+    confetti({
+      particleCount: 25,
+      spread: 50,
+      origin: { y: 0.6 },
+      colors: ['#F59E0B', '#FBBF24', '#FEF08A'],
+    });
+
+    const notifId = Date.now();
+    setFloatingNotification({
+      id: notifId,
+      text: '+1 Streak Shield',
+      subtext: 'Impulse Ward Charged!',
+      type: 'heal',
+    });
+    setTimeout(() => setFloatingNotification(null), 1800);
+
+    if (onShowToast) {
+      onShowToast('success', `Active Impulse Ward reinforced! Gained +1 day mental protection.`, 'Ward Activated ✨');
+    }
+  };
+
+  // Interactive Action on Savings Buff chip
+  const handleSurgeBuff = () => {
+    const surgeXp = 50;
+    setGameState((prev) => {
+      const addedXp = prev.xp + surgeXp;
+      const levelUpResult = checkLevelUp(addedXp, prev.level, prev.maxHp);
+      if (levelUpResult) {
+        return {
+          ...prev,
+          ...levelUpResult,
+        };
+      }
+      return {
+        ...prev,
+        xp: addedXp,
+      };
+    });
+
+    const notifId = Date.now();
+    setFloatingNotification({
+      id: notifId,
+      text: '+50 Surge XP',
+      subtext: 'Savings Multiplier Triggered!',
+      type: 'good',
+    });
+    setTimeout(() => setFloatingNotification(null), 1800);
+
+    if (onShowToast) {
+      onShowToast('success', 'Savings Buff surged! Gained +50 instant discipline experience.', 'Buff Surged ⚡');
     }
   };
 
@@ -234,6 +405,7 @@ export function FinancialAvatarWidget({ onShowToast }) {
   const handleRestAtInn = () => {
     setGameState(DEFAULT_STATE);
     setAvatarMood('normal');
+    setActiveAttribute(null);
     setFloatingNotification({
       id: Date.now(),
       text: 'Full Recovery!',
@@ -680,23 +852,195 @@ export function FinancialAvatarWidget({ onShowToast }) {
               </div>
             </div>
 
-            {/* RPG Attribute Badges */}
-            <div className="rpg-attributes-grid">
-              <div className="rpg-attr-chip">
-                <Shield size={13} className="attr-icon" />
-                <span className="attr-label">Budget Armor:</span>
-                <span className="attr-val font-mono">88%</span>
+            {/* RPG Interactive Attribute Chips (Budget Armor, Impulse Ward, Savings Buff) */}
+            <div className="rpg-attributes-wrapper">
+              <div className="rpg-attributes-header">
+                <span className="attr-section-caption">ACTIVE ATTRIBUTES & WARDS (Click to Inspect / Use)</span>
               </div>
-              <div className="rpg-attr-chip">
-                <Sparkles size={13} className="attr-icon" />
-                <span className="attr-label">Impulse Ward:</span>
-                <span className="attr-val font-mono">Tier IV</span>
+
+              <div className="rpg-attributes-grid">
+                {/* 1. Budget Armor Chip */}
+                <button
+                  type="button"
+                  id="chip-budget-armor"
+                  className={`rpg-attr-chip ${activeAttribute === 'armor' ? 'active-chip' : ''}`}
+                  onClick={() => setActiveAttribute(activeAttribute === 'armor' ? null : 'armor')}
+                  title="Click to inspect and reinforce Budget Armor"
+                >
+                  <Shield size={14} className="attr-icon icon-armor" />
+                  <span className="attr-label">Budget Armor:</span>
+                  <span className="attr-val font-mono">{budgetArmor}%</span>
+                  <span className="attr-hint-dot" />
+                </button>
+
+                {/* 2. Impulse Ward Chip */}
+                <button
+                  type="button"
+                  id="chip-impulse-ward"
+                  className={`rpg-attr-chip ${activeAttribute === 'ward' ? 'active-chip' : ''}`}
+                  onClick={() => setActiveAttribute(activeAttribute === 'ward' ? null : 'ward')}
+                  title="Click to inspect and cast Impulse Ward"
+                >
+                  <Sparkles size={14} className="attr-icon icon-ward" />
+                  <span className="attr-label">Impulse Ward:</span>
+                  <span className="attr-val font-mono">{impulseWard.tier}</span>
+                  <span className="attr-hint-dot" />
+                </button>
+
+                {/* 3. Savings Buff Chip */}
+                <button
+                  type="button"
+                  id="chip-savings-buff"
+                  className={`rpg-attr-chip ${activeAttribute === 'buff' ? 'active-chip' : ''}`}
+                  onClick={() => setActiveAttribute(activeAttribute === 'buff' ? null : 'buff')}
+                  title="Click to inspect and surge Savings Buff"
+                >
+                  <TrendingUp size={14} className="attr-icon icon-buff" />
+                  <span className="attr-label">Savings Buff:</span>
+                  <span className="attr-val font-mono">+{savingsBuff}%</span>
+                  <span className="attr-hint-dot" />
+                </button>
               </div>
-              <div className="rpg-attr-chip">
-                <TrendingUp size={13} className="attr-icon" />
-                <span className="attr-label">Savings Buff:</span>
-                <span className="attr-val font-mono">+12%</span>
-              </div>
+
+              {/* Dynamic Interactive Detail Inspector Card */}
+              {activeAttribute && (
+                <div className="attribute-detail-card animate-fade-in">
+                  {/* Budget Armor Detail */}
+                  {activeAttribute === 'armor' && (
+                    <div className="attr-detail-content">
+                      <div className="detail-top-row">
+                        <div className="detail-title-group">
+                          <ShieldCheck size={18} className="detail-icon icon-armor" />
+                          <div>
+                            <h4 className="detail-title font-serif">Budget Armor ({budgetArmor}%)</h4>
+                            <span className="detail-sub">
+                              Damage Mitigation • Scales with Health & Level
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn-close-detail"
+                          onClick={() => setActiveAttribute(null)}
+                          title="Close"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+
+                      <p className="detail-description">
+                        Budget Armor acts as your financial buffer. When an unexpected expense occurs,
+                        it absorbs up to <strong>{Math.round(budgetArmor * 0.45)}%</strong> of raw damage.
+                        Current strength: <strong>{gameState.hp} HP</strong> / Level {gameState.level}.
+                      </p>
+
+                      <div className="detail-action-bar">
+                        <div className="detail-stat-pill">
+                          <span>Absorbs ~{Math.round(budgetArmor * 0.45)}% Overspend Damage</span>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn-attr-action btn-armor-action"
+                          onClick={handleFortifyArmor}
+                        >
+                          <Shield size={14} />
+                          <span>Fortify Armor (+15 HP)</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Impulse Ward Detail */}
+                  {activeAttribute === 'ward' && (
+                    <div className="attr-detail-content">
+                      <div className="detail-top-row">
+                        <div className="detail-title-group">
+                          <Sparkles size={18} className="detail-icon icon-ward" />
+                          <div>
+                            <h4 className="detail-title font-serif">
+                              Impulse Ward ({impulseWard.tier}: {impulseWard.name})
+                            </h4>
+                            <span className="detail-sub">
+                              {impulseWard.cooldown} • {impulseWard.mitigation}
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn-close-detail"
+                          onClick={() => setActiveAttribute(null)}
+                          title="Close"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+
+                      <p className="detail-description">
+                        {impulseWard.description} Automatically shields your willpower during online browsing.
+                        Higher budget streaks level up your ward tier!
+                      </p>
+
+                      <div className="detail-action-bar">
+                        <div className="detail-stat-pill">
+                          <span>Streak: {gameState.streakDays} Days • Active Cooldown: {impulseWard.cooldown}</span>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn-attr-action btn-ward-action"
+                          onClick={handleCastWard}
+                        >
+                          <Sparkles size={14} />
+                          <span>Cast Ward (+1 Streak Day)</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Savings Buff Detail */}
+                  {activeAttribute === 'buff' && (
+                    <div className="attr-detail-content">
+                      <div className="detail-top-row">
+                        <div className="detail-title-group">
+                          <TrendingUp size={18} className="detail-icon icon-buff" />
+                          <div>
+                            <h4 className="detail-title font-serif">Savings Buff (+{savingsBuff}%)</h4>
+                            <span className="detail-sub">
+                              Discipline Experience & Rewards Multiplier
+                            </span>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn-close-detail"
+                          onClick={() => setActiveAttribute(null)}
+                          title="Close"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+
+                      <p className="detail-description">
+                        Active on all budget accomplishments. Every "Good Day" logged earns an extra{' '}
+                        <strong>+{savingsBuff}% XP</strong> bonus, speeding up your journey to the next Guardian rank.
+                      </p>
+
+                      <div className="detail-action-bar">
+                        <div className="detail-stat-pill">
+                          <span>Multiplier: {(1 + savingsBuff / 100).toFixed(2)}x on Good Days</span>
+                        </div>
+                        <button
+                          type="button"
+                          className="btn-attr-action btn-buff-action"
+                          onClick={handleSurgeBuff}
+                        >
+                          <Zap size={14} />
+                          <span>Surge Buff (+50 Bonus XP)</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Mock Demonstration Control Buttons */}
@@ -725,7 +1069,9 @@ export function FinancialAvatarWidget({ onShowToast }) {
                   <Sparkles size={16} className="btn-action-icon" />
                   <div className="btn-label-stack">
                     <span className="main-action-text">Simulate Good Day</span>
-                    <span className="sub-action-text">+100 XP • +5 HP • Streak +1</span>
+                    <span className="sub-action-text">
+                      +{100 + Math.round(100 * (savingsBuff / 100))} XP (+{savingsBuff}% Buff) • +5 HP
+                    </span>
                   </div>
                 </button>
 
@@ -739,7 +1085,9 @@ export function FinancialAvatarWidget({ onShowToast }) {
                   <AlertTriangle size={16} className="btn-action-icon" />
                   <div className="btn-label-stack">
                     <span className="main-action-text">Simulate Overspend</span>
-                    <span className="sub-action-text">-20 HP • Damage Reaction</span>
+                    <span className="sub-action-text">
+                      Armor Mitigates Damage • Strains Shield
+                    </span>
                   </div>
                 </button>
               </div>
