@@ -44,6 +44,15 @@ export function MobileNav({ activeTab, onSelectTab, onOpenAddModal }) {
       </div>
 
       <button
+        id="mobile-nav-mood"
+        className={`mobile-nav-item ${activeTab === 'mood' ? 'active' : ''}`}
+        onClick={() => onSelectTab('mood')}
+      >
+        <Sparkles size={20} />
+        <span>Mood</span>
+      </button>
+
+      <button
         id="mobile-nav-guardian"
         className={`mobile-nav-item ${activeTab === 'guardian' ? 'active' : ''}`}
         onClick={() => onSelectTab('guardian')}

@@ -31,6 +31,7 @@ import {
   Activity,
   Layers,
 } from 'lucide-react';
+import MoodSpendMatrix from './MoodSpendMatrix';
 import './AnalyticsDeepDive.css';
 
 /**
@@ -364,6 +365,12 @@ export function AnalyticsDeepDive({ transactions = [], summary = {}, currency = 
               </div>
             </div>
           )}
+
+          {/* Psychological Outflow: Mood & Spend Matrix Micro-Analytics */}
+          <MoodSpendMatrix
+            transactions={transactions}
+            currency={currency}
+          />
         </>
       ) : (
         <div className="analytics-empty-state card-surface">
