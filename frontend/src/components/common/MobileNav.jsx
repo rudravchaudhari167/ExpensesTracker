@@ -7,6 +7,7 @@ import {
   Settings,
   Lock,
   Shield,
+  Sparkles,
 } from 'lucide-react';
 import './MobileNav.css';
 
