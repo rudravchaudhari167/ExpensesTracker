@@ -74,6 +74,7 @@ function getStudentCategoryIcon(categoryName = '') {
 export function StudentSurvivalDashboard({
   currency = 'INR',
   onShowToast,
+  transactions = [],
   transactionsVersion = 0, // Used to trigger refresh when transactions are added/edited/deleted
 }) {
   const [loading, setLoading] = useState(true);
@@ -87,16 +88,16 @@ export function StudentSurvivalDashboard({
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
-  // Load Active Survival Dashboard from Spring Boot backend
+  // Load Active Survival Dashboard from Spring Boot backend (with local fallback)
   const fetchSurvivalMetrics = useCallback(async (targetCycleId = null) => {
     setLoading(true);
     setError(null);
     try {
       let data;
       if (targetCycleId) {
-        data = await allowanceService.getSurvivalById(targetCycleId);
+        data = await allowanceService.getSurvivalById(targetCycleId, transactions);
       } else {
-        data = await allowanceService.getActiveSurvival();
+        data = await allowanceService.getActiveSurvival(transactions);
       }
       setDashboardData(data);
     } catch (err) {
@@ -104,13 +105,13 @@ export function StudentSurvivalDashboard({
       if (err.status === 404 || err.message?.includes('not found') || err.message?.includes('No active')) {
         setDashboardData(null);
       } else {
-        console.warn('Could not load survival metrics from backend:', err);
-        setError(err.message || 'Unable to connect to Student Survival backend.');
+        console.warn('Could not load survival metrics:', err);
+        setError(err.message || 'Unable to connect to Student Survival service.');
       }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [transactions]);
 
   // Load History list
   const fetchHistory = useCallback(async () => {

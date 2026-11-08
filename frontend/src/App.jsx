@@ -198,6 +198,7 @@ export function App() {
               <StudentSurvivalDashboard
                 currency={currency}
                 onShowToast={showToast}
+                transactions={transactions}
                 transactionsVersion={transactions.length}
               />
             </div>

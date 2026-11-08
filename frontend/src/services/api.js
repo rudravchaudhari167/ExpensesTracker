@@ -70,6 +70,21 @@ async function request(endpoint, options = {}) {
       }
     }
 
+    // Detect SPA fallback HTML response when calling API endpoints
+    const isHtmlResponse =
+      (contentType && contentType.includes('text/html')) ||
+      (typeof data === 'string' &&
+        (data.trim().toLowerCase().startsWith('<!doctype') ||
+          data.trim().toLowerCase().startsWith('<html')));
+
+    if (isHtmlResponse) {
+      throw new ApiError(
+        'Backend API endpoint not reachable (received SPA HTML page).',
+        404,
+        data
+      );
+    }
+
     if (!response.ok) {
       let errorMessage = `Request failed with status ${response.status}`;
       if (data) {
