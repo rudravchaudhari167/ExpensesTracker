@@ -20,7 +20,6 @@ import FinancialAvatarWidget from './components/dashboard/FinancialAvatarWidget'
 import TransactionTable from './components/transactions/TransactionTable';
 import TransactionModal from './components/transactions/TransactionModal';
 import AnalyticsDeepDive from './components/analytics/AnalyticsDeepDive';
-import MoodSpendMatrix from './components/analytics/MoodSpendMatrix';
 import BudgetsView from './components/budgets/BudgetsView';
 import SettingsView from './components/settings/SettingsView';
 import WishVault from './components/vault/WishVault';
@@ -156,13 +155,6 @@ export function App() {
                 />
               </div>
 
-              {/* Sophisticated Micro-Analytics: Mood & Spend Matrix */}
-              <MoodSpendMatrix
-                transactions={transactions}
-                currency={currency}
-                onShowToast={showToast}
-              />
-
               {/* 2-Column Activity & Budgets Row */}
               <div className="dashboard-bottom-grid">
                 <RecentTransactions
@@ -195,24 +187,6 @@ export function App() {
                 onOpenAddModal={handleOpenAddModal}
                 onEdit={handleOpenEditModal}
                 onDelete={handleRequestDelete}
-              />
-            </div>
-          )}
-
-          {/* Tab: Dedicated Mood & Spend Matrix Micro-Analytics Dashboard */}
-          {activeTab === 'mood' && (
-            <div className="tab-mood-matrix animate-fade-in">
-              <div className="page-header-simple">
-                <h2 className="page-heading font-serif">Mood & Spend Matrix</h2>
-                <p className="page-subheading">
-                  A micro-analytics dashboard uncovering how your psychological rhythms and moods drive spending spots.
-                </p>
-              </div>
-
-              <MoodSpendMatrix
-                transactions={transactions}
-                currency={currency}
-                onShowToast={showToast}
               />
             </div>
           )}

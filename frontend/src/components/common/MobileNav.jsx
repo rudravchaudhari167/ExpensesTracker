@@ -7,7 +7,6 @@ import {
   Settings,
   Lock,
   Shield,
-  Sparkles,
 } from 'lucide-react';
 import './MobileNav.css';
 
@@ -43,15 +42,6 @@ export function MobileNav({ activeTab, onSelectTab, onOpenAddModal }) {
           <Plus size={22} strokeWidth={2.6} />
         </button>
       </div>
-
-      <button
-        id="mobile-nav-mood"
-        className={`mobile-nav-item ${activeTab === 'mood' ? 'active' : ''}`}
-        onClick={() => onSelectTab('mood')}
-      >
-        <Sparkles size={20} />
-        <span>Mood</span>
-      </button>
 
       <button
         id="mobile-nav-guardian"

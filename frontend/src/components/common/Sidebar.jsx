@@ -16,7 +16,6 @@ export function Sidebar({ activeTab, onSelectTab, transactionCount = 0 }) {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'transactions', label: 'Transactions', icon: ArrowLeftRight, badge: transactionCount > 0 ? transactionCount : null },
-    { id: 'mood', label: 'Mood & Spend', icon: Sparkles, badge: 'Matrix' },
     { id: 'guardian', label: 'Financial Guardian', icon: Shield, badge: 'RPG' },
     { id: 'analytics', label: 'Analytics', icon: PieChart },
     { id: 'vault', label: 'Wish Vault', icon: Lock, badge: 'Vault' },
