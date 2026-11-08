@@ -1,0 +1,222 @@
+/* ========================================================
+   PENNYWISE WHAT IF SIMULATOR VIEW
+   ======================================================== */
+
+.what-if-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.simulator-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: var(--space-5);
+}
+
+.simulator-card,
+.projection-card {
+  padding: 24px 26px;
+  background: var(--color-surface);
+  border: 1px solid rgba(242, 139, 80, 0.16);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 24px -4px rgba(217, 104, 50, 0.08);
+}
+
+.sim-card-title,
+.projection-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+  margin-bottom: var(--space-4);
+}
+
+.sim-form-group {
+  margin-bottom: var(--space-4);
+}
+
+.sim-label {
+  display: block;
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  margin-bottom: 6px;
+}
+
+.sim-input {
+  width: 100%;
+  padding: 10px 16px;
+  border: 1px solid rgba(242, 139, 80, 0.22);
+  border-radius: var(--radius-pill);
+  background: #FFFFFF;
+  font-size: 0.925rem;
+  outline: none;
+}
+
+.sim-input:focus {
+  border-color: var(--color-accent);
+}
+
+.sim-amount-slider-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.sim-slider-val {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-deep-accent);
+  min-width: 100px;
+}
+
+.sim-range {
+  flex: 1;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.freq-pills-row {
+  display: flex;
+  gap: 8px;
+}
+
+.freq-pill {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: #FFF5EE;
+  border: 1px solid rgba(242, 139, 80, 0.18);
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.freq-pill.active {
+  background: var(--color-accent);
+  color: #FFFFFF;
+  border-color: var(--color-accent);
+  box-shadow: 0 3px 10px rgba(242, 139, 80, 0.3);
+}
+
+.quick-habits-box {
+  margin-top: var(--space-5);
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(242, 139, 80, 0.12);
+}
+
+.quick-habits-title {
+  font-size: 0.775rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.quick-habit-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.btn-quick-habit {
+  text-align: left;
+  padding: 7px 12px;
+  border-radius: var(--radius-md);
+  background: #FFF9F4;
+  border: 1px solid rgba(242, 139, 80, 0.12);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  transition: all var(--transition-fast);
+}
+
+.btn-quick-habit:hover {
+  background: #FFEEDB;
+  border-color: var(--color-accent);
+}
+
+/* Projection Card */
+.projection-card {
+  background: linear-gradient(145deg, #FFFAF6 0%, #FFF2E7 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+.projection-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #D96832;
+  margin-bottom: var(--space-1);
+}
+
+.projection-subtitle {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-4);
+}
+
+.projection-stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: var(--space-4);
+}
+
+.stat-pill-box {
+  padding: 14px 18px;
+  background: #FFFFFF;
+  border: 1px solid rgba(242, 139, 80, 0.16);
+  border-radius: var(--radius-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(48, 37, 31, 0.03);
+}
+
+.stat-pill-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.stat-pill-number {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #50963C;
+}
+
+.stat-pill-box.highlight-6m {
+  border-color: rgba(242, 139, 80, 0.35);
+  background: #FFFBF8;
+}
+
+.stat-pill-box.highlight-1y {
+  border-color: rgba(80, 150, 60, 0.35);
+  background: #F8FDF5;
+}
+
+.milestone-insight-box {
+  margin-top: auto;
+  padding: 14px;
+  background: #FFF0E4;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.825rem;
+  color: var(--color-text-main);
+}
+
+.insight-emoji {
+  font-size: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .simulator-grid {
+    grid-template-columns: 1fr;
+  }
+}

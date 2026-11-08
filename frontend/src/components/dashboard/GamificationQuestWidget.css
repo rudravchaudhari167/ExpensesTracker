@@ -1,0 +1,225 @@
+/* ========================================================
+   PENNYWISE GAMIFICATION & QUEST WIDGET
+   ======================================================== */
+
+.gamification-widget {
+  padding: 18px 22px;
+  background: linear-gradient(145deg, #FFFAF6 0%, #FFF3EA 100%);
+  border: 1px solid rgba(242, 139, 80, 0.18);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 24px -4px rgba(217, 104, 50, 0.08);
+  margin-bottom: var(--space-6);
+}
+
+.gamification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.level-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFF5ED;
+  border: 1px solid rgba(242, 139, 80, 0.22);
+  padding: 4px 12px 4px 6px;
+  border-radius: var(--radius-pill);
+}
+
+.level-number-badge {
+  background: linear-gradient(135deg, #F5975E 0%, #D96832 100%);
+  color: #FFFFFF;
+  font-size: 0.725rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.level-title-text {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.streak-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFF0E5;
+  color: #D96832;
+  font-size: 0.775rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(217, 104, 50, 0.2);
+}
+
+.flame-icon {
+  color: #F28B50;
+  animation: flameFlicker 1.8s infinite ease-in-out;
+}
+
+@keyframes flameFlicker {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15) rotate(4deg);
+  }
+}
+
+/* XP Bar */
+.xp-container {
+  margin-bottom: var(--space-3);
+}
+
+.xp-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: 5px;
+}
+
+.xp-score {
+  font-weight: 800;
+  color: var(--color-deep-accent);
+}
+
+.xp-track {
+  height: 8px;
+  background: #FFE9DB;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #A8C995 0%, #50963C 100%);
+  border-radius: var(--radius-pill);
+  transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Quest & Badges */
+.quest-and-badges {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.daily-quest-card {
+  background: #FFFCF8;
+  border: 1px solid rgba(242, 139, 80, 0.16);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+}
+
+.quest-tag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: #D96832;
+  margin-bottom: 2px;
+}
+
+.quest-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.quest-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.quest-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.quest-reward {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #50963C;
+}
+
+.quest-check-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #F5975E 0%, #D96832 100%);
+  color: #FFFFFF;
+  box-shadow: 0 3px 8px rgba(242, 139, 80, 0.3);
+  transition: all var(--transition-fast);
+}
+
+.quest-check-btn.completed {
+  background: #E5F4DC;
+  color: #3E792C;
+  box-shadow: none;
+  cursor: default;
+}
+
+/* Badges preview row */
+.badges-row {
+  display: flex;
+  justify-content: space-around;
+  gap: 6px;
+}
+
+.badge-icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 3px;
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.badge-icon-item:hover {
+  transform: translateY(-2px);
+}
+
+.badge-emoji {
+  font-size: 1.35rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FFFCF8;
+  border: 1px solid rgba(242, 139, 80, 0.16);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(48, 37, 31, 0.04);
+}
+
+.badge-icon-item.locked .badge-emoji {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.badge-name-micro {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  max-width: 60px;
+  line-height: 1.15;
+}
+
+@media (max-width: 768px) {
+  .quest-and-badges {
+    grid-template-columns: 1fr;
+  }
+}

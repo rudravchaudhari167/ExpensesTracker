@@ -1,0 +1,265 @@
+/* ========================================================
+   PENNYWISE BOTTOM WIDGETS ROW — Transactions, Actions, Insights
+   ======================================================== */
+
+.bottom-widgets-grid {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr 1.15fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.bottom-widget-card {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid rgba(242, 139, 80, 0.14);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 24px -4px rgba(217, 104, 50, 0.07);
+}
+
+.widget-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.widget-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+  margin: 0;
+}
+
+.widget-action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  transition: all var(--transition-fast);
+}
+
+.widget-action-link:hover {
+  color: var(--color-deep-accent);
+  transform: translateX(2px);
+}
+
+/* 1. Recent Transactions */
+.recent-tx-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.recent-tx-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  background: #FFF9F4;
+  border: 1px solid rgba(242, 139, 80, 0.08);
+  transition: all var(--transition-fast);
+}
+
+.recent-tx-item:hover {
+  background: #FFF3EB;
+  border-color: rgba(242, 139, 80, 0.18);
+  transform: translateX(2px);
+}
+
+.tx-icon-pill {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: #FFEEDB;
+  color: var(--color-deep-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tx-meta-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.tx-title-text {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tx-subtitle-text {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-top: 1px;
+}
+
+.tx-amount-side {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.tx-amount-text {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.tx-date-text {
+  font-size: 0.7rem;
+  color: #B5A69B;
+  margin-top: 1px;
+}
+
+/* 2. Quick Actions 2x2 */
+.quick-actions-2x2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.quick-action-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 10px;
+  border-radius: var(--radius-lg);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.quick-action-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(48, 37, 31, 0.08);
+}
+
+.tile-icon-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  transition: transform var(--transition-fast);
+}
+
+.quick-action-tile:hover .tile-icon-circle {
+  transform: scale(1.1);
+}
+
+.tile-label {
+  font-size: 0.775rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+/* 4 Pastels */
+.tile-expense {
+  background: #FFEBEB;
+  border-color: rgba(232, 91, 91, 0.15);
+}
+.circle-expense {
+  background: #E85B5B;
+}
+
+.tile-budget {
+  background: #F3EDFB;
+  border-color: rgba(138, 104, 214, 0.15);
+}
+.circle-budget {
+  background: #8A68D6;
+}
+
+.tile-goal {
+  background: #F5F8E4;
+  border-color: rgba(125, 168, 72, 0.15);
+}
+.circle-goal {
+  background: #7DA848;
+}
+
+.tile-money {
+  background: #FFEEDF;
+  border-color: rgba(224, 122, 62, 0.15);
+}
+.circle-money {
+  background: #E07A3E;
+}
+
+/* 3. Smart Insights */
+.smart-insights-widget {
+  justify-content: space-between;
+}
+
+.insights-trend-pill {
+  color: #8A68D6;
+}
+
+.insights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.insight-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--color-text-main);
+}
+
+.insight-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.green-indicator {
+  background: #E5F4DC;
+  color: #3E792C;
+  font-weight: 800;
+}
+
+.food-indicator {
+  font-size: 0.95rem;
+}
+
+.star-indicator {
+  font-size: 0.95rem;
+}
+
+.insight-text strong {
+  color: #2A201A;
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .bottom-widgets-grid {
+    grid-template-columns: 1fr;
+  }
+}

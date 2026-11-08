@@ -1,56 +1,44 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
-import { getCurrentMonthFormatted } from '../../utils/date';
+import boyIllustration from '../../assets/guardian-boy-full.png';
 import './HeroBanner.css';
 
-export function HeroBanner({ totalTransactions = 0, balance = 0, currency = 'USD' }) {
-  const currentMonth = getCurrentMonthFormatted();
-
+export function HeroBanner({ totalTransactions = 0, balance = 0, currency = 'INR' }) {
   return (
-    <div className="hero-banner-container card-surface animate-fade-in">
-      <div className="hero-banner-content">
-        <div className="hero-tag-wrapper">
-          <span className="hero-tag-pill">
-            <Sparkles size={13} className="hero-tag-icon" />
-            <span>Spendl Editorial</span>
-          </span>
-          <span className="hero-month-pill">{currentMonth}</span>
-        </div>
-
-        <h2 className="hero-title font-serif">
-          Keep your finances in a steady, intentional rhythm.
-        </h2>
-
-        <p className="hero-subtitle">
-          {totalTransactions === 0
-            ? 'Your ledger is clean and ready. Use the "+ Add transaction" button in the header to start mapping your spending rhythm.'
-            : `Tracking ${totalTransactions} verified entries against your Spring Boot & MySQL ledger.`}
+    <div className="pennywise-hero-card">
+      <div className="hero-text-side">
+        <h2 className="hero-main-title">Welcome back!</h2>
+        <p className="hero-main-subtitle">
+          Track your expenses, stay on budget, and make every rupee count. 🌿
         </p>
       </div>
 
-      <div className="hero-banner-graphic" aria-hidden="true">
-        <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg" className="hero-rhythm-svg">
-          <path
-            d="M10 120 C 40 140, 70 60, 100 90 C 130 120, 160 30, 190 50"
-            stroke="#E87952"
-            strokeWidth="3.5"
-            strokeLinecap="round"
-            fill="none"
+      <div className="hero-character-side" aria-hidden="true">
+        {/* Soft background glow */}
+        <div className="character-aura-glow" />
+
+        {/* Playful Doodles & Sparkles */}
+        <span className="hero-sparkle sparkle-1">✦</span>
+        <span className="hero-sparkle sparkle-2">★</span>
+        <span className="hero-sparkle sparkle-3">✦</span>
+        <span className="hero-doodle-loop doodle-left">
+          <svg width="40" height="30" viewBox="0 0 40 30" fill="none">
+            <path d="M5 25C15 28 25 10 15 5C5 0 2 15 20 20C32 23 38 18 36 10" stroke="#E58448" strokeWidth="2" strokeLinecap="round" opacity="0.6" />
+          </svg>
+        </span>
+        <span className="hero-doodle-loop doodle-right">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+            <path d="M10 5L12 12L19 14L12 16L10 23L8 16L1 14L8 12Z" fill="#F8C76A" opacity="0.8" />
+          </svg>
+        </span>
+
+        {/* 3D Boy Illustration */}
+        <div className="character-img-wrapper">
+          <img
+            src={boyIllustration}
+            alt="Friendly Financial Companion"
+            className="character-main-img"
           />
-          <path
-            d="M10 120 C 40 140, 70 60, 100 90 C 130 120, 160 30, 190 50 L 190 160 L 10 160 Z"
-            fill="url(#rhythm-gradient)"
-            opacity="0.15"
-          />
-          <circle cx="100" cy="90" r="6" fill="#B95337" />
-          <circle cx="190" cy="50" r="7" fill="#E87952" />
-          <defs>
-            <linearGradient id="rhythm-gradient" x1="100" y1="30" x2="100" y2="160" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#E87952" />
-              <stop offset="1" stopColor="#E87952" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-        </svg>
+        </div>
       </div>
     </div>
   );

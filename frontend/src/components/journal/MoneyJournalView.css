@@ -1,0 +1,179 @@
+/* ========================================================
+   PENNYWISE MONEY JOURNAL VIEW
+   ======================================================== */
+
+.money-journal-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.journal-layout-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.3fr;
+  gap: var(--space-5);
+}
+
+.new-journal-card {
+  padding: 24px 26px;
+  background: var(--color-surface);
+  border: 1px solid rgba(242, 139, 80, 0.16);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 24px -4px rgba(217, 104, 50, 0.08);
+  height: fit-content;
+}
+
+.journal-form-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+  margin-bottom: var(--space-4);
+}
+
+.picker-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+}
+
+.mood-buttons-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.mood-btn {
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  background: #FFF5EE;
+  border: 1px solid rgba(242, 139, 80, 0.18);
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.mood-btn.active {
+  background: var(--color-accent);
+  color: #FFFFFF;
+  border-color: var(--color-accent);
+}
+
+.journal-textarea-wrapper {
+  margin-bottom: var(--space-4);
+}
+
+.journal-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid rgba(242, 139, 80, 0.22);
+  border-radius: var(--radius-lg);
+  font-family: inherit;
+  font-size: 0.925rem;
+  outline: none;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.journal-textarea:focus {
+  border-color: var(--color-accent);
+}
+
+.tag-chips-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-5);
+}
+
+.tag-chip {
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.775rem;
+  font-weight: 700;
+  background: #F3EDFB;
+  border: 1px solid rgba(138, 104, 214, 0.18);
+  color: #6D5691;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tag-chip.active {
+  background: #8A68D6;
+  color: #FFFFFF;
+  border-color: #8A68D6;
+}
+
+.btn-save-journal {
+  width: 100%;
+}
+
+/* Entries Stream */
+.entries-list-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+  margin-bottom: var(--space-3);
+}
+
+.entries-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.entry-card {
+  padding: 18px 20px;
+  background: var(--color-surface);
+  border: 1px solid rgba(242, 139, 80, 0.14);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 14px rgba(48, 37, 31, 0.03);
+}
+
+.entry-top-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: var(--space-2);
+}
+
+.entry-mood-pill {
+  font-size: 0.775rem;
+  font-weight: 700;
+  background: #FFF5EE;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  color: #D96832;
+}
+
+.entry-tag-pill {
+  font-size: 0.725rem;
+  font-weight: 700;
+  background: #F3EDFB;
+  color: #6D5691;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.entry-date-pill {
+  font-size: 0.725rem;
+  color: #A8988C;
+  margin-left: auto;
+}
+
+.entry-body-text {
+  font-size: 0.9rem;
+  color: var(--color-text-main);
+  line-height: 1.5;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .journal-layout-grid {
+    grid-template-columns: 1fr;
+  }
+}

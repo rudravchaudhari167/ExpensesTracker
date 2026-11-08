@@ -1,42 +1,44 @@
-.summary-cards-grid {
+/* ========================================================
+   PENNYWISE SUMMARY CARDS — Matches Reference UI
+   ======================================================== */
+
+.summary-cards-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: var(--space-4);
   margin-bottom: var(--space-6);
 }
 
-.summary-card {
-  padding: var(--space-5);
-  border-radius: var(--radius-lg);
+.penny-summary-card {
+  padding: 18px 20px 14px;
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  border: 1px solid rgba(242, 139, 80, 0.14);
+  box-shadow: 0 8px 24px -4px rgba(217, 104, 50, 0.07), 0 2px 6px rgba(48, 37, 31, 0.02);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
 }
 
-.summary-card:hover {
+.penny-summary-card:hover {
   transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 14px 32px -4px rgba(217, 104, 50, 0.14);
+  border-color: rgba(242, 139, 80, 0.25);
 }
 
 .card-top-row {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-2);
+  align-items: center;
+  margin-bottom: var(--space-3);
 }
 
-.card-label {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-}
-
-.card-icon-bubble {
+.card-icon-pill {
   width: 38px;
   height: 38px;
-  border-radius: 50%;
+  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,133 +46,121 @@
   transition: transform var(--transition-fast);
 }
 
-.summary-card:hover .card-icon-bubble {
+.penny-summary-card:hover .card-icon-pill {
   transform: scale(1.08);
 }
 
-.card-amount {
-  font-size: 1.85rem;
-  font-weight: 700;
-  color: var(--color-text-main);
-  line-height: 1.15;
-  margin-bottom: var(--space-3);
-  letter-spacing: -0.02em;
+.icon-wallet-3d {
+  background: #FFEEDB;
 }
 
-.card-footer-row {
-  display: flex;
+.icon-receipt-3d {
+  background: #FFEADB;
+}
+
+.icon-piggy-3d {
+  background: #FFF3DB;
+}
+
+.icon-target-3d {
+  background: #FFEADB;
+}
+
+/* Trend Badges */
+.card-trend-badge {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  margin-top: auto;
-  gap: var(--space-2);
-  z-index: 2;
-}
-
-.card-subtitle {
-  font-size: 0.775rem;
-  color: var(--color-text-muted);
-}
-
-.card-badge {
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 2px 8px;
+  font-size: 0.725rem;
+  font-weight: 700;
+  padding: 3px 8px;
   border-radius: var(--radius-pill);
 }
 
-/* Color Themes for Cards */
-.theme-terracotta .card-icon-bubble {
-  background: var(--color-accent-subtle);
-  color: var(--color-deep-accent);
-}
-.theme-terracotta .badge-terracotta {
-  background: var(--color-accent-subtle);
-  color: var(--color-deep-accent);
+.trend-up-green {
+  background: #E5F4DC;
+  color: #3E792C;
 }
 
-.theme-sage .card-icon-bubble {
-  background: var(--color-sage-subtle);
-  color: var(--color-sage-dark);
-}
-.theme-sage .badge-sage {
-  background: var(--color-sage-subtle);
-  color: var(--color-sage-dark);
+.trend-up-orange {
+  background: #FFE8D6;
+  color: #D96832;
 }
 
-.theme-terracotta-soft .card-icon-bubble {
-  background: #FDEAE3;
-  color: #B95337;
-}
-.theme-terracotta-soft .badge-terracotta-soft {
-  background: #FDEAE3;
-  color: #B95337;
+.goal-pct-text {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #D96832;
 }
 
-.theme-lavender .card-icon-bubble {
-  background: var(--color-lavender-subtle);
-  color: var(--color-lavender-dark);
-}
-.theme-lavender .badge-lavender {
-  background: var(--color-lavender-subtle);
-  color: var(--color-lavender-dark);
+/* Amounts & Labels */
+.card-info-block {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--space-2);
 }
 
-/* Decorative Accent Shapes */
-.card-accent-shape {
-  position: absolute;
-  pointer-events: none;
-  opacity: 0.45;
-  transition: transform var(--transition-smooth);
+.card-label {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
 }
 
-.summary-card:hover .card-accent-shape {
-  transform: scale(1.15);
+.card-amount {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-top: 2px;
 }
 
-.shape-circle {
-  top: -24px;
-  right: -24px;
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  background: var(--color-accent-subtle);
+/* Wavy Sparklines */
+.card-sparkline-wrapper {
+  margin-top: auto;
+  padding-top: 4px;
+  height: 34px;
+  display: flex;
+  align-items: flex-end;
 }
 
-.shape-pill {
-  top: -20px;
-  right: -20px;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: var(--color-sage-subtle);
+.sparkline-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
-.shape-wave {
-  top: -20px;
-  right: -20px;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: #FDEAE3;
+/* Goal Progress Bar */
+.goal-progress-track {
+  margin-top: auto;
+  margin-bottom: 6px;
+  height: 8px;
+  background: #FFEADA;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  width: 100%;
 }
 
-.shape-donut {
-  top: -20px;
-  right: -20px;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  border: 12px solid var(--color-lavender-subtle);
+.goal-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #F5975E 0%, #D96832 100%);
+  border-radius: var(--radius-pill);
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@media (max-width: 1200px) {
-  .summary-cards-grid {
+/* Responsive */
+@media (max-width: 1100px) {
+  .summary-cards-row {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 640px) {
-  .summary-cards-grid {
+@media (max-width: 600px) {
+  .summary-cards-row {
     grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .card-amount {
+    font-size: 1.45rem;
   }
 }

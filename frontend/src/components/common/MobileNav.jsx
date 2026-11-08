@@ -4,10 +4,8 @@ import {
   ArrowLeftRight,
   GraduationCap,
   Plus,
-  PieChart,
+  Target,
   Settings,
-  Lock,
-  Shield,
 } from 'lucide-react';
 import './MobileNav.css';
 
@@ -32,15 +30,6 @@ export function MobileNav({ activeTab, onSelectTab, onOpenAddModal }) {
         <span>Activity</span>
       </button>
 
-      <button
-        id="mobile-nav-survival"
-        className={`mobile-nav-item ${activeTab === 'survival' ? 'active' : ''}`}
-        onClick={() => onSelectTab('survival')}
-      >
-        <GraduationCap size={20} />
-        <span>Survival</span>
-      </button>
-
       {/* Floating Center Add Button */}
       <div className="mobile-add-wrapper">
         <button
@@ -54,30 +43,21 @@ export function MobileNav({ activeTab, onSelectTab, onOpenAddModal }) {
       </div>
 
       <button
-        id="mobile-nav-guardian"
-        className={`mobile-nav-item ${activeTab === 'guardian' ? 'active' : ''}`}
-        onClick={() => onSelectTab('guardian')}
+        id="mobile-nav-survival"
+        className={`mobile-nav-item ${activeTab === 'survival' ? 'active' : ''}`}
+        onClick={() => onSelectTab('survival')}
       >
-        <Shield size={20} />
-        <span>Guardian</span>
+        <GraduationCap size={20} />
+        <span>Survival</span>
       </button>
 
       <button
-        id="mobile-nav-vault"
-        className={`mobile-nav-item ${activeTab === 'vault' ? 'active' : ''}`}
-        onClick={() => onSelectTab('vault')}
+        id="mobile-nav-goals"
+        className={`mobile-nav-item ${activeTab === 'goals' ? 'active' : ''}`}
+        onClick={() => onSelectTab('goals')}
       >
-        <Lock size={20} />
-        <span>Vault</span>
-      </button>
-
-      <button
-        id="mobile-nav-analytics"
-        className={`mobile-nav-item ${activeTab === 'analytics' ? 'active' : ''}`}
-        onClick={() => onSelectTab('analytics')}
-      >
-        <PieChart size={20} />
-        <span>Insights</span>
+        <Target size={20} />
+        <span>Goals</span>
       </button>
 
       <button

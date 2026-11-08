@@ -7,14 +7,12 @@ import Toast from './components/common/Toast';
 import ConfirmModal from './components/common/ConfirmModal';
 import { SummaryCardsSkeleton } from './components/common/Skeleton';
 
-// Dashboard Views
+// Pennywise Dashboard Views
 import HeroBanner from './components/dashboard/HeroBanner';
 import SummaryCards from './components/dashboard/SummaryCards';
-import SpendingChart from './components/dashboard/SpendingChart';
-import CategoryDonutChart from './components/dashboard/CategoryDonutChart';
-import RecentTransactions from './components/dashboard/RecentTransactions';
-import BudgetTeaserCard from './components/dashboard/BudgetTeaserCard';
-import FinancialAvatarWidget from './components/dashboard/FinancialAvatarWidget';
+import GamificationQuestWidget from './components/dashboard/GamificationQuestWidget';
+import MiddleOverviewRow from './components/dashboard/MiddleOverviewRow';
+import BottomWidgetsRow from './components/dashboard/BottomWidgetsRow';
 
 // Pages
 import TransactionTable from './components/transactions/TransactionTable';
@@ -22,10 +20,16 @@ import TransactionModal from './components/transactions/TransactionModal';
 import AnalyticsDeepDive from './components/analytics/AnalyticsDeepDive';
 import BudgetsView from './components/budgets/BudgetsView';
 import SettingsView from './components/settings/SettingsView';
-import WishVault from './components/vault/WishVault';
 import StudentSurvivalDashboard from './components/survival/StudentSurvivalDashboard';
+import AllowanceTopUpModal from './components/survival/AllowanceTopUpModal';
+import allowanceService from './services/allowanceService';
 
-import { formatAmountWithSign } from './utils/currency';
+// Dedicated Gamified Views
+import SavingsGoalsView from './components/goals/SavingsGoalsView';
+import WhatIfSimulatorView from './components/simulator/WhatIfSimulatorView';
+import MoneyJournalView from './components/journal/MoneyJournalView';
+
+import { formatAmountWithSign, formatCurrency } from './utils/currency';
 import './App.css';
 
 export function App() {
@@ -33,13 +37,11 @@ export function App() {
     transactions,
     summary,
     loading,
-    error,
     isBackendHealthy,
     isDemoMode,
     setDemoMode,
     currency,
     setCurrency,
-    refresh,
     addTransaction,
     updateTransaction,
     deleteTransaction,
@@ -48,6 +50,7 @@ export function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalInitialData, setModalInitialData] = useState(null);
+  const [isTopUpOpen, setIsTopUpOpen] = useState(false);
 
   // Delete confirmation modal state
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -84,6 +87,12 @@ export function App() {
       await addTransaction(formData);
       showToast('success', `"${formData.title}" saved to your Spring Boot ledger.`, 'Transaction Recorded');
     }
+  };
+
+  // Top-up handler for quick "Add Money"
+  const handleTopUpSubmit = async (cycleId, topUpData) => {
+    await allowanceService.addTopUp(cycleId, topUpData);
+    showToast('success', `Added ${formatCurrency(topUpData.amount, currency)} to your allowance!`, 'Allowance Top-up Recorded');
   };
 
   // Delete initiation
@@ -125,7 +134,6 @@ export function App() {
         />
 
         <main className="app-content">
-
           {/* Tab 1: Dashboard */}
           {activeTab === 'dashboard' && (
             <div className="tab-dashboard animate-fade-in">
@@ -144,31 +152,26 @@ export function App() {
                 />
               )}
 
-              {/* 2-Column Analytics Charts Row */}
-              <div className="dashboard-charts-grid">
-                <SpendingChart
-                  transactions={transactions}
-                  currency={currency}
-                />
-                <CategoryDonutChart
-                  transactions={transactions}
-                  currency={currency}
-                />
-              </div>
+              {/* Gamification Level & Quests */}
+              <GamificationQuestWidget onShowToast={showToast} />
 
-              {/* 2-Column Activity & Budgets Row */}
-              <div className="dashboard-bottom-grid">
-                <RecentTransactions
-                  transactions={transactions}
-                  currency={currency}
-                  onViewAll={() => setActiveTab('transactions')}
-                  onEdit={handleOpenEditModal}
-                  onDelete={handleRequestDelete}
-                />
-                <BudgetTeaserCard
-                  onNavigateBudgets={() => setActiveTab('budgets')}
-                />
-              </div>
+              {/* Middle Section: Spending Overview Donut & Bar + Student Survival Teaser */}
+              <MiddleOverviewRow
+                transactions={transactions}
+                currency={currency}
+                onNavigateSurvival={() => setActiveTab('survival')}
+              />
+
+              {/* Bottom Section: Recent Transactions + Quick Actions 2x2 + Smart Insights */}
+              <BottomWidgetsRow
+                transactions={transactions}
+                currency={currency}
+                onViewAll={() => setActiveTab('transactions')}
+                onOpenAddExpense={handleOpenAddModal}
+                onNavigateBudgets={() => setActiveTab('budgets')}
+                onNavigateGoals={() => setActiveTab('goals')}
+                onOpenAddMoney={() => setIsTopUpOpen(true)}
+              />
             </div>
           )}
 
@@ -192,7 +195,7 @@ export function App() {
             </div>
           )}
 
-          {/* Tab: Student Survival Mode */}
+          {/* Tab 3: Student Survival Mode */}
           {activeTab === 'survival' && (
             <div className="tab-survival animate-fade-in">
               <StudentSurvivalDashboard
@@ -204,7 +207,7 @@ export function App() {
             </div>
           )}
 
-          {/* Tab 3: Analytics Page */}
+          {/* Tab 4: Analytics Page */}
           {activeTab === 'analytics' && (
             <div className="tab-analytics animate-fade-in">
               <AnalyticsDeepDive
@@ -215,32 +218,7 @@ export function App() {
             </div>
           )}
 
-          {/* Tab: Dedicated RPG Financial Guardian */}
-          {activeTab === 'guardian' && (
-            <div className="tab-guardian animate-fade-in">
-              <div className="page-header-simple">
-                <h2 className="page-heading font-serif">RPG Financial Guardian</h2>
-                <p className="page-subheading">
-                  Nurture your financial life spirit, level up your spending discipline, and maintain your budget streak.
-                </p>
-              </div>
-
-              <FinancialAvatarWidget onShowToast={showToast} />
-            </div>
-          )}
-
-          {/* Tab: Dedicated Wish Vault */}
-          {activeTab === 'vault' && (
-            <div className="tab-vault animate-fade-in">
-              <WishVault
-                currency={currency}
-                onLogExpense={(itemData) => handleModalSubmit(itemData)}
-                onShowToast={showToast}
-              />
-            </div>
-          )}
-
-          {/* Tab 4: Budgets Page */}
+          {/* Tab 5: Budgets Page */}
           {activeTab === 'budgets' && (
             <div className="tab-budgets animate-fade-in">
               <BudgetsView
@@ -251,7 +229,35 @@ export function App() {
             </div>
           )}
 
-          {/* Tab 5: Settings Page */}
+          {/* Tab 6: Savings Goals Page */}
+          {activeTab === 'goals' && (
+            <div className="tab-goals animate-fade-in">
+              <SavingsGoalsView
+                currency={currency}
+                onShowToast={showToast}
+              />
+            </div>
+          )}
+
+          {/* Tab 7: What If Simulator */}
+          {activeTab === 'simulator' && (
+            <div className="tab-simulator animate-fade-in">
+              <WhatIfSimulatorView
+                currency={currency}
+              />
+            </div>
+          )}
+
+          {/* Tab 8: Money Journal */}
+          {activeTab === 'journal' && (
+            <div className="tab-journal animate-fade-in">
+              <MoneyJournalView
+                onShowToast={showToast}
+              />
+            </div>
+          )}
+
+          {/* Tab 9: Settings Page */}
           {activeTab === 'settings' && (
             <div className="tab-settings animate-fade-in">
               <SettingsView
@@ -280,6 +286,15 @@ export function App() {
         initialData={modalInitialData}
         currency={currency}
         onCurrencyChange={setCurrency}
+      />
+
+      {/* Add Money / Top-up Modal */}
+      <AllowanceTopUpModal
+        isOpen={isTopUpOpen}
+        onClose={() => setIsTopUpOpen(false)}
+        onSubmit={handleTopUpSubmit}
+        cycleId={null}
+        currency={currency}
       />
 
       {/* Delete Confirmation Dialog */}

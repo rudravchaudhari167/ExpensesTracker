@@ -1,66 +1,92 @@
 :root {
-  /* Core Color Palette per Spendl Art Direction */
-  --color-bg: #F8F5EF;
-  --color-surface: #FFFFFF;
-  --color-surface-translucent: rgba(255, 255, 255, 0.85);
-  --color-surface-hover: #FAF7F2;
-  --color-surface-muted: #F2ECE1;
-  
-  /* Primary Terracotta Accents */
-  --color-accent: #E87952;
-  --color-accent-hover: #D76842;
-  --color-accent-subtle: rgba(232, 121, 82, 0.12);
-  --color-deep-accent: #B95337;
-  
+  /* ========================================================
+     PENNYWISE DESIGN SYSTEM — "Spend Smart. Live Better."
+     Exact palette matching reference aesthetic
+     ======================================================== */
+
+  /* Backgrounds */
+  --color-bg: #FFF5ED;
+  --color-bg-secondary: #FAF0E6;
+  --color-sidebar-bg: #FCE9DC;
+  --color-surface: #FFFCF8;
+  --color-surface-translucent: rgba(255, 252, 248, 0.88);
+  --color-surface-hover: #FFF8F2;
+  --color-surface-muted: #F8ECE1;
+  --color-surface-subtle: #FFF3EB;
+
+  /* Primary Brand Warm Orange & Terracotta */
+  --color-accent: #F28B50;
+  --color-accent-hover: #E3793D;
+  --color-accent-subtle: rgba(242, 139, 80, 0.12);
+  --color-deep-accent: #D96832;
+  --color-peach: #FFD8C2;
+  --color-peach-light: #FFEEDB;
+  --color-peach-dark: #C65A28;
+
   /* Typography Colors */
-  --color-text-main: #282820;
-  --color-text-secondary: #858276;
-  --color-text-muted: #A3A094;
+  --color-text-main: #30251F;
+  --color-text-secondary: #8B786C;
+  --color-text-muted: #A8988C;
+  --color-text-light: #BDB0A6;
   --color-text-inverse: #FFFFFF;
-  
-  /* Harmonious Functional Colors */
-  --color-sage: #DDE8D8;
-  --color-sage-dark: #3E6B3B;
-  --color-sage-subtle: rgba(221, 232, 216, 0.55);
-  
-  --color-lavender: #EAE3F7;
-  --color-lavender-dark: #5B4E7E;
-  --color-lavender-subtle: rgba(234, 227, 247, 0.55);
-  
-  --color-yellow: #F6E6A9;
-  --color-yellow-dark: #8C731A;
-  --color-yellow-subtle: rgba(246, 230, 169, 0.55);
-  
-  --color-expense: #E87952;
-  --color-income: #3E6B3B;
-  --color-danger: #D9483B;
-  --color-danger-subtle: rgba(217, 72, 59, 0.12);
-  
+
+  /* Harmonious Functional Pastel Accents */
+  --color-sage: #A8C995;
+  --color-sage-light: #E8F5E1;
+  --color-sage-dark: #4B7838;
+  --color-sage-subtle: rgba(168, 201, 149, 0.25);
+
+  --color-lavender: #E8DDF4;
+  --color-lavender-light: #F3EDFB;
+  --color-lavender-dark: #6D5691;
+  --color-lavender-subtle: rgba(232, 221, 244, 0.35);
+
+  --color-yellow: #F8E7B2;
+  --color-yellow-light: #FDF7E2;
+  --color-yellow-dark: #8C701B;
+  --color-yellow-subtle: rgba(248, 231, 178, 0.35);
+
+  --color-pink: #FFD4D0;
+  --color-pink-light: #FFEBEA;
+  --color-pink-dark: #C85049;
+
+  --color-sky: #CDE6FA;
+  --color-sky-light: #EBF4FD;
+  --color-sky-dark: #3776A8;
+
+  /* Financial Status */
+  --color-expense: #E86B43;
+  --color-income: #50963C;
+  --color-danger: #D9534F;
+  --color-danger-subtle: rgba(217, 83, 79, 0.12);
+
   /* Borders & Dividers */
-  --color-border: #EAE5DC;
-  --color-border-hover: #DBD4C7;
-  --color-border-focus: #E87952;
-  
-  /* Shadows */
-  --shadow-sm: 0 2px 6px -1px rgba(40, 40, 32, 0.04);
-  --shadow-md: 0 6px 18px -2px rgba(40, 40, 32, 0.06), 0 2px 6px rgba(40, 40, 32, 0.02);
-  --shadow-lg: 0 16px 36px -4px rgba(40, 40, 32, 0.09), 0 4px 12px rgba(40, 40, 32, 0.03);
-  --shadow-xl: 0 24px 48px -6px rgba(40, 40, 32, 0.14), 0 8px 18px rgba(40, 40, 32, 0.04);
-  --shadow-accent: 0 8px 24px -4px rgba(232, 121, 82, 0.35);
-  
-  /* Radii */
-  --radius-xs: 6px;
-  --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
+  --color-border: #F3E3D5;
+  --color-border-hover: #EAD1BF;
+  --color-border-focus: #F28B50;
+
+  /* Layered Depth Shadows (Warm, soft, game-like) */
+  --shadow-sm: 0 2px 8px -1px rgba(48, 37, 31, 0.04), 0 1px 3px rgba(242, 139, 80, 0.04);
+  --shadow-md: 0 8px 24px -4px rgba(217, 104, 50, 0.08), 0 3px 8px -2px rgba(48, 37, 31, 0.04);
+  --shadow-lg: 0 16px 38px -6px rgba(217, 104, 50, 0.11), 0 6px 16px -3px rgba(48, 37, 31, 0.05);
+  --shadow-xl: 0 24px 50px -8px rgba(217, 104, 50, 0.16), 0 8px 22px -4px rgba(48, 37, 31, 0.06);
+  --shadow-accent: 0 8px 24px -4px rgba(242, 139, 80, 0.38);
+  --shadow-card: 0 6px 20px -2px rgba(200, 120, 80, 0.07), 0 2px 6px rgba(48, 37, 31, 0.03);
+
+  /* Border Radii (Friendly rounded game look) */
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
   --radius-xl: 28px;
+  --radius-2xl: 34px;
   --radius-pill: 9999px;
-  
-  /* Fonts */
-  --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-serif: 'Fraunces', Georgia, serif;
+
+  /* Typography */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Plus Jakarta Sans', Georgia, serif;
   --font-mono: 'JetBrains Mono', monospace;
-  
+
   /* Spacing Scale */
   --space-1: 4px;
   --space-2: 8px;
@@ -71,14 +97,14 @@
   --space-8: 32px;
   --space-10: 40px;
   --space-12: 48px;
-  
+
   /* Layout Sizing */
-  --sidebar-width: 250px;
-  --header-height: 76px;
-  --content-max-width: 1400px;
-  
+  --sidebar-width: 256px;
+  --header-height: 80px;
+  --content-max-width: 1440px;
+
   /* Transitions */
-  --transition-fast: 160ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-normal: 260ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-smooth: 360ms cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --transition-normal: 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --transition-smooth: 380ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
