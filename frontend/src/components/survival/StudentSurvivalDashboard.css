@@ -1,0 +1,648 @@
+/* ==============================================================================
+   Student Survival Mode Dashboard Styles
+   Editorial design system: Warm minimalism, Fraunces serif, responsive grids
+   ============================================================================== */
+
+.survival-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  width: 100%;
+}
+
+/* 1. Header Banner */
+.survival-hero-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-8);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, #FAF7F2 0%, #F5EFE6 100%);
+  border: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.survival-hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.survival-tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--color-accent-subtle);
+  color: var(--color-accent);
+  border: 1px solid rgba(232, 121, 82, 0.25);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  width: fit-content;
+  margin-bottom: 2px;
+}
+
+.survival-title {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  letter-spacing: -0.02em;
+}
+
+.survival-subtitle {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+}
+
+.survival-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* 2. Onboarding Empty State Screen */
+.survival-onboarding-card {
+  padding: var(--space-10) var(--space-8);
+  border-radius: var(--radius-xl);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 720px;
+  margin: var(--space-6) auto;
+  border: 1.5px dashed rgba(232, 121, 82, 0.35);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAF7F2 100%);
+}
+
+.onboarding-cap-circle {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: var(--color-accent-subtle);
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-4);
+  box-shadow: 0 8px 24px -6px rgba(232, 121, 82, 0.3);
+}
+
+.onboarding-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: var(--space-2);
+}
+
+.onboarding-desc {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  max-width: 520px;
+  margin-bottom: var(--space-6);
+}
+
+.onboarding-features-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  width: 100%;
+  margin-bottom: var(--space-6);
+  text-align: left;
+}
+
+.onboarding-feature-item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.feature-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.feature-text {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+/* 3. Four Core Summary Cards Grid */
+.survival-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+.survival-summary-card {
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  border: 1px solid var(--color-border);
+}
+
+.survival-summary-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-hover);
+}
+
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-icon-bubble {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bubble-allowance {
+  background: rgba(232, 121, 82, 0.12);
+  color: var(--color-accent);
+}
+
+.bubble-spent {
+  background: rgba(217, 72, 59, 0.12);
+  color: var(--color-danger);
+}
+
+.bubble-flexible {
+  background: rgba(62, 107, 59, 0.12);
+  color: var(--color-sage-dark);
+}
+
+.bubble-daily {
+  background: rgba(246, 230, 169, 0.4);
+  color: #8C731A;
+}
+
+.card-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-secondary);
+}
+
+.card-amount {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  line-height: 1.1;
+}
+
+.card-footnote {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* 4. Can You Survive Section */
+.survival-meter-section {
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  border: 1px solid var(--color-border);
+  position: relative;
+}
+
+.meter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.meter-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.meter-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.meter-badge.status-green {
+  background: var(--color-sage-subtle);
+  color: var(--color-sage-dark);
+  border: 1px solid rgba(62, 107, 59, 0.25);
+}
+
+.meter-badge.status-yellow {
+  background: var(--color-yellow-subtle);
+  color: var(--color-yellow-dark);
+  border: 1px solid rgba(140, 115, 26, 0.3);
+}
+
+.meter-badge.status-red {
+  background: var(--color-danger-subtle);
+  color: var(--color-danger);
+  border: 1px solid rgba(217, 72, 59, 0.3);
+}
+
+.meter-track-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.meter-track {
+  width: 100%;
+  height: 14px;
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  position: relative;
+}
+
+.meter-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.meter-fill.fill-green {
+  background: linear-gradient(90deg, #3E6B3B 0%, #528C4F 100%);
+}
+
+.meter-fill.fill-yellow {
+  background: linear-gradient(90deg, #E6A700 0%, #F59E0B 100%);
+}
+
+.meter-fill.fill-red {
+  background: linear-gradient(90deg, #D9483B 0%, #B95337 100%);
+}
+
+.meter-labels-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
+.meter-message-bubble {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.meter-message-bubble.status-green {
+  background: var(--color-sage-subtle);
+  color: var(--color-sage-dark);
+}
+
+.meter-message-bubble.status-yellow {
+  background: var(--color-yellow-subtle);
+  color: #725D11;
+}
+
+.meter-message-bubble.status-red {
+  background: var(--color-danger-subtle);
+  color: var(--color-danger);
+}
+
+/* Secondary Metrics Row inside Survival Meter */
+.meter-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+  margin-top: 4px;
+  padding-top: var(--space-4);
+  border-top: 1px dashed var(--color-border);
+}
+
+.stat-metric-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.stat-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+/* 5. Middle 2-Column Grid: Daily Spending & Category Breakdown */
+.survival-middle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+}
+
+.daily-spending-card,
+.category-spending-card {
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  border: 1px solid var(--color-border);
+}
+
+.section-head-with-icon {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.section-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted);
+  color: var(--color-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.section-desc {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+}
+
+/* Daily Spending Detail Content */
+.today-limit-display {
+  background: linear-gradient(135deg, #FAF7F2 0%, #F5EFE6 100%);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.today-limit-label {
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.today-limit-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.daily-equation-box {
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.825rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.daily-equation-formula {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--color-text-main);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Category Breakdown List */
+.survival-categories-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.category-row-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-hover);
+  border: 1px solid var(--color-border);
+}
+
+.category-row-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category-info-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.category-badge-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+}
+
+.category-row-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.category-amounts {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.cat-spent-amt {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.cat-spent-pct {
+  font-size: 0.72rem;
+  color: var(--color-text-secondary);
+}
+
+.category-progress-track {
+  width: 100%;
+  height: 6px;
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.category-progress-bar {
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: var(--radius-pill);
+  transition: width 0.5s ease;
+}
+
+/* 6. Weekly Survival Report */
+.weekly-report-card {
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  border: 1px solid var(--color-border);
+}
+
+.weekly-stats-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+  background: var(--color-surface-muted);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+}
+
+.weekly-metric-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.weekly-chart-wrapper {
+  width: 100%;
+  height: 240px;
+  margin-top: var(--space-2);
+}
+
+.weekly-insight-box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-subtle);
+  border: 1px solid rgba(232, 121, 82, 0.2);
+  color: var(--color-text-main);
+  font-size: 0.88rem;
+}
+
+/* 7. Top-ups History Strip */
+.topups-strip-card {
+  padding: var(--space-5) var(--space-6);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border: 1px solid var(--color-border);
+}
+
+.topups-items-list {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.topup-chip-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-surface-hover);
+  border: 1px solid var(--color-border);
+  padding: 8px 12px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  font-size: 0.82rem;
+}
+
+.topup-amt {
+  color: var(--color-sage-dark);
+  font-weight: 700;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 1024px) {
+  .survival-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .survival-middle-grid {
+    grid-template-columns: 1fr;
+  }
+  .meter-stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .weekly-stats-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .survival-hero-banner {
+    padding: var(--space-5);
+  }
+  .survival-summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .onboarding-features-list {
+    grid-template-columns: 1fr;
+  }
+  .meter-stats-row {
+    grid-template-columns: 1fr;
+  }
+  .weekly-stats-strip {
+    grid-template-columns: 1fr;
+  }
+}

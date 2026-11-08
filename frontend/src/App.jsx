@@ -23,6 +23,7 @@ import AnalyticsDeepDive from './components/analytics/AnalyticsDeepDive';
 import BudgetsView from './components/budgets/BudgetsView';
 import SettingsView from './components/settings/SettingsView';
 import WishVault from './components/vault/WishVault';
+import StudentSurvivalDashboard from './components/survival/StudentSurvivalDashboard';
 
 import { formatAmountWithSign } from './utils/currency';
 import './App.css';
@@ -187,6 +188,17 @@ export function App() {
                 onOpenAddModal={handleOpenAddModal}
                 onEdit={handleOpenEditModal}
                 onDelete={handleRequestDelete}
+              />
+            </div>
+          )}
+
+          {/* Tab: Student Survival Mode */}
+          {activeTab === 'survival' && (
+            <div className="tab-survival animate-fade-in">
+              <StudentSurvivalDashboard
+                currency={currency}
+                onShowToast={showToast}
+                transactionsVersion={transactions.length}
               />
             </div>
           )}

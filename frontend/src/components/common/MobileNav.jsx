@@ -2,6 +2,7 @@ import React from 'react';
 import {
   LayoutDashboard,
   ArrowLeftRight,
+  GraduationCap,
   Plus,
   PieChart,
   Settings,
@@ -29,6 +30,15 @@ export function MobileNav({ activeTab, onSelectTab, onOpenAddModal }) {
       >
         <ArrowLeftRight size={20} />
         <span>Activity</span>
+      </button>
+
+      <button
+        id="mobile-nav-survival"
+        className={`mobile-nav-item ${activeTab === 'survival' ? 'active' : ''}`}
+        onClick={() => onSelectTab('survival')}
+      >
+        <GraduationCap size={20} />
+        <span>Survival</span>
       </button>
 
       {/* Floating Center Add Button */}
