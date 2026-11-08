@@ -1,68 +1,204 @@
-import React from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { Check } from 'lucide-react';
 import { formatCurrency } from '../../utils/currency';
 import './MiddleOverviewRow.css';
 
 const DEFAULT_CATEGORY_COLORS = {
   'Food & Dining': '#F28B50',
+  'Groceries': '#E87952',
   'Transport': '#A8C995',
   'Shopping': '#F8E7B2',
   'Entertainment': '#C2B5DE',
-  'Others': '#9BC5E8',
-  'Education': '#E37435',
+  'Drinks': '#E5A070',
+  'Coffee': '#D96832',
+  'Utilities': '#B87A5E',
   'Bills & Utilities': '#F2A07B',
+  'Education': '#E37435',
   'Health & Fitness': '#7BAE7F',
   'Travel': '#7CB4DE',
+  'Others': '#9BC5E8',
 };
+
+const RANGE_OPTIONS = [
+  { id: 'this-month', label: 'This Month' },
+  { id: 'all', label: 'All Time' },
+  { id: '0', label: 'January' },
+  { id: '1', label: 'February' },
+  { id: '2', label: 'March' },
+  { id: '3', label: 'April' },
+  { id: '4', label: 'May' },
+  { id: '5', label: 'June' },
+  { id: '6', label: 'July' },
+  { id: '7', label: 'August' },
+  { id: '8', label: 'September' },
+  { id: '9', label: 'October' },
+  { id: '10', label: 'November' },
+  { id: '11', label: 'December' },
+];
 
 export function MiddleOverviewRow({
   transactions = [],
   currency = 'INR',
   onNavigateSurvival,
 }) {
-  const selectedRange = 'This Month';
+  const [selectedRange, setSelectedRange] = useState('this-month');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-  // Compute category totals from transactions
-  const expenseTransactions = transactions.filter((t) => t.type === 'EXPENSE');
-  const totalSpent = expenseTransactions.reduce((acc, t) => acc + (parseFloat(t.amount) || 0), 0);
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
-  // Group by category
-  const categoryMap = {};
-  expenseTransactions.forEach((t) => {
-    const cat = t.category || 'Others';
-    categoryMap[cat] = (categoryMap[cat] || 0) + (parseFloat(t.amount) || 0);
-  });
+  const activeOption = RANGE_OPTIONS.find((opt) => opt.id === selectedRange) || RANGE_OPTIONS[0];
 
-  let categoryData = Object.keys(categoryMap).map((cat) => ({
-    name: cat,
-    value: categoryMap[cat],
-    percentage: totalSpent > 0 ? Math.round((categoryMap[cat] / totalSpent) * 100) : 0,
-    color: DEFAULT_CATEGORY_COLORS[cat] || '#E0926C',
-  })).sort((a, b) => b.value - a.value);
+  const hasAnyTransactions = transactions.some((t) => t.type === 'EXPENSE');
 
-  // Fallback if no transactions yet
-  if (categoryData.length === 0) {
-    categoryData = [
-      { name: 'Food & Dining', value: 816, percentage: 32, color: '#F28B50' },
-      { name: 'Transport', value: 612, percentage: 24, color: '#A8C995' },
-      { name: 'Shopping', value: 459, percentage: 18, color: '#F8E7B2' },
-      { name: 'Entertainment', value: 357, percentage: 14, color: '#C2B5DE' },
-      { name: 'Others', value: 306, percentage: 12, color: '#9BC5E8' },
-    ];
-  }
+  // Filter expenses based on selected timeframe or month
+  const filteredExpenses = useMemo(() => {
+    const allExpenses = transactions.filter((t) => t.type === 'EXPENSE');
 
-  // Weekly bar data (Mon - Sun)
-  const weeklyData = [
-    { day: 'Mon', amount: 280, heightPct: 40 },
-    { day: 'Tue', amount: 150, heightPct: 20 },
-    { day: 'Wed', amount: 420, heightPct: 58 },
-    { day: 'Thu', amount: 480, heightPct: 65 },
-    { day: 'Fri', amount: 720, heightPct: 95, isPeak: true },
-    { day: 'Sat', amount: 360, heightPct: 48 },
-    { day: 'Sun', amount: 140, heightPct: 18 },
-  ];
+    if (selectedRange === 'all') {
+      return allExpenses;
+    }
 
-  const displaySpent = totalSpent > 0 ? totalSpent : 2550;
+    if (selectedRange === 'this-month') {
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth(); // 0-indexed
+
+      return allExpenses.filter((t) => {
+        if (!t.date) return false;
+        const parts = t.date.split('-');
+        if (parts.length < 2) return false;
+        const y = parseInt(parts[0], 10);
+        const m = parseInt(parts[1], 10) - 1;
+        return y === currentYear && m === currentMonth;
+      });
+    }
+
+    // Specific month selected (0 to 11)
+    const monthIndex = parseInt(selectedRange, 10);
+    if (!isNaN(monthIndex)) {
+      return allExpenses.filter((t) => {
+        if (!t.date) return false;
+        const parts = t.date.split('-');
+        if (parts.length < 2) return false;
+        const m = parseInt(parts[1], 10) - 1;
+        return m === monthIndex;
+      });
+    }
+
+    return allExpenses;
+  }, [transactions, selectedRange]);
+
+  // Compute category breakdown and total spent
+  const { categoryData, totalSpent } = useMemo(() => {
+    if (!hasAnyTransactions) {
+      // Clean sample breakdown when no transactions exist in the database
+      return {
+        categoryData: [
+          { name: 'Food & Dining', value: 816, percentage: 32, color: '#F28B50' },
+          { name: 'Transport', value: 612, percentage: 24, color: '#A8C995' },
+          { name: 'Shopping', value: 459, percentage: 18, color: '#F8E7B2' },
+          { name: 'Entertainment', value: 357, percentage: 14, color: '#C2B5DE' },
+          { name: 'Others', value: 306, percentage: 12, color: '#9BC5E8' },
+        ],
+        totalSpent: 2550,
+      };
+    }
+
+    const sum = filteredExpenses.reduce((acc, t) => acc + (parseFloat(t.amount) || 0), 0);
+
+    const categoryMap = {};
+    filteredExpenses.forEach((t) => {
+      const cat = t.category || 'Others';
+      categoryMap[cat] = (categoryMap[cat] || 0) + (parseFloat(t.amount) || 0);
+    });
+
+    const list = Object.keys(categoryMap)
+      .map((cat) => ({
+        name: cat,
+        value: categoryMap[cat],
+        percentage: sum > 0 ? Math.round((categoryMap[cat] / sum) * 100) : 0,
+        color: DEFAULT_CATEGORY_COLORS[cat] || '#E0926C',
+      }))
+      .sort((a, b) => b.value - a.value);
+
+    return { categoryData: list, totalSpent: sum };
+  }, [filteredExpenses, hasAnyTransactions]);
+
+  // Compute Weekly (Mon-Sun) breakdown
+  const { weeklyData, yAxisMax } = useMemo(() => {
+    if (!hasAnyTransactions) {
+      return {
+        weeklyData: [
+          { day: 'Mon', amount: 280, heightPct: 40 },
+          { day: 'Tue', amount: 150, heightPct: 20 },
+          { day: 'Wed', amount: 420, heightPct: 58 },
+          { day: 'Thu', amount: 480, heightPct: 65 },
+          { day: 'Fri', amount: 720, heightPct: 95, isPeak: true },
+          { day: 'Sat', amount: 360, heightPct: 48 },
+          { day: 'Sun', amount: 140, heightPct: 18 },
+        ],
+        yAxisMax: 750,
+      };
+    }
+
+    const dayTotals = {
+      Mon: 0,
+      Tue: 0,
+      Wed: 0,
+      Thu: 0,
+      Fri: 0,
+      Sat: 0,
+      Sun: 0,
+    };
+
+    filteredExpenses.forEach((t) => {
+      if (t.date) {
+        const parts = t.date.split('-');
+        if (parts.length === 3) {
+          const dt = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+          const dayIndex = dt.getDay(); // 0 = Sun, 1 = Mon, ...
+          const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          const dayName = dayNames[dayIndex];
+          dayTotals[dayName] += (parseFloat(t.amount) || 0);
+        }
+      }
+    });
+
+    const maxVal = Math.max(...Object.values(dayTotals), 0);
+    const chartMax = maxVal > 0 ? Math.ceil(maxVal / 50) * 50 : 750;
+
+    const daysOrder = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const data = daysOrder.map((day) => {
+      const amt = dayTotals[day];
+      const isPeak = maxVal > 0 && amt === maxVal;
+      const heightPct = maxVal > 0 ? Math.max(12, Math.round((amt / chartMax) * 92)) : 8;
+      return {
+        day,
+        amount: amt,
+        heightPct,
+        isPeak,
+      };
+    });
+
+    return { weeklyData: data, yAxisMax: chartMax };
+  }, [filteredExpenses, hasAnyTransactions]);
+
+  const peakAmount = weeklyData.find((d) => d.isPeak)?.amount || 0;
 
   return (
     <div className="middle-overview-grid">
@@ -70,9 +206,66 @@ export function MiddleOverviewRow({
       <div className="spending-overview-card card-surface">
         <div className="overview-header">
           <h3 className="overview-title">Your Spending Overview</h3>
-          <div className="overview-filter-pill">
-            <span>📅 {selectedRange}</span>
-            <span className="filter-chevron">⌄</span>
+
+          {/* Interactive Month Selector Dropdown */}
+          <div className="overview-filter-wrapper" ref={dropdownRef}>
+            <button
+              type="button"
+              className={`overview-filter-pill ${isDropdownOpen ? 'open' : ''}`}
+              onClick={() => setIsDropdownOpen((prev) => !prev)}
+              aria-haspopup="listbox"
+              aria-expanded={isDropdownOpen}
+              aria-label="Filter spending by month"
+            >
+              <span>📅 {activeOption.label}</span>
+              <span className="filter-chevron">⌄</span>
+            </button>
+
+            {isDropdownOpen && (
+              <div className="overview-dropdown-menu animate-scale-up" role="listbox">
+                <div className="dropdown-section-title">Timeframe</div>
+                <button
+                  type="button"
+                  className={`overview-dropdown-item ${selectedRange === 'this-month' ? 'active' : ''}`}
+                  onClick={() => {
+                    setSelectedRange('this-month');
+                    setIsDropdownOpen(false);
+                  }}
+                >
+                  <span>This Month</span>
+                  {selectedRange === 'this-month' && <Check size={14} className="dropdown-check-icon" />}
+                </button>
+                <button
+                  type="button"
+                  className={`overview-dropdown-item ${selectedRange === 'all' ? 'active' : ''}`}
+                  onClick={() => {
+                    setSelectedRange('all');
+                    setIsDropdownOpen(false);
+                  }}
+                >
+                  <span>All Time</span>
+                  {selectedRange === 'all' && <Check size={14} className="dropdown-check-icon" />}
+                </button>
+
+                <div className="dropdown-divider" />
+                <div className="dropdown-section-title">Select Month</div>
+
+                {RANGE_OPTIONS.slice(2).map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    className={`overview-dropdown-item ${selectedRange === opt.id ? 'active' : ''}`}
+                    onClick={() => {
+                      setSelectedRange(opt.id);
+                      setIsDropdownOpen(false);
+                    }}
+                  >
+                    <span>{opt.label}</span>
+                    {selectedRange === opt.id && <Check size={14} className="dropdown-check-icon" />}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -82,26 +275,40 @@ export function MiddleOverviewRow({
             <div className="donut-canvas-wrapper">
               <ResponsiveContainer width={150} height={150}>
                 <PieChart>
-                  <Pie
-                    data={categoryData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={46}
-                    outerRadius={68}
-                    paddingAngle={3}
-                    dataKey="value"
-                    stroke="#FFFCF8"
-                    strokeWidth={2}
-                  >
-                    {categoryData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
+                  {categoryData.length > 0 ? (
+                    <Pie
+                      data={categoryData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={46}
+                      outerRadius={68}
+                      paddingAngle={categoryData.length > 1 ? 3 : 0}
+                      dataKey="value"
+                      stroke="#FFFCF8"
+                      strokeWidth={2}
+                    >
+                      {categoryData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                  ) : (
+                    <Pie
+                      data={[{ value: 1 }]}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={46}
+                      outerRadius={68}
+                      dataKey="value"
+                      stroke="none"
+                    >
+                      <Cell fill="#F5ECE4" />
+                    </Pie>
+                  )}
                 </PieChart>
               </ResponsiveContainer>
               <div className="donut-center-text">
                 <span className="donut-amount tabular-nums">
-                  {formatCurrency(displaySpent, currency)}
+                  {formatCurrency(totalSpent, currency)}
                 </span>
                 <span className="donut-sublabel">Total Spent</span>
               </div>
@@ -110,34 +317,41 @@ export function MiddleOverviewRow({
 
           {/* Category Breakdown Legend */}
           <div className="category-legend-list">
-            {categoryData.slice(0, 5).map((cat) => (
-              <div key={cat.name} className="legend-row">
-                <span className="legend-dot" style={{ backgroundColor: cat.color }} />
-                <span className="legend-name">{cat.name}</span>
-                <span className="legend-pct tabular-nums">{cat.percentage}%</span>
+            {categoryData.length > 0 ? (
+              categoryData.slice(0, 5).map((cat) => (
+                <div key={cat.name} className="legend-row">
+                  <span className="legend-dot" style={{ backgroundColor: cat.color }} />
+                  <span className="legend-name" title={cat.name}>{cat.name}</span>
+                  <span className="legend-pct tabular-nums">{cat.percentage}%</span>
+                </div>
+              ))
+            ) : (
+              <div className="empty-overview-legend">
+                <span className="empty-legend-title">No expenses</span>
+                <span className="empty-legend-sub">Recorded in {activeOption.label}</span>
               </div>
-            ))}
+            )}
           </div>
 
           {/* Weekly Bar Chart */}
           <div className="weekly-bars-section">
             <div className="bars-y-axis">
-              <span>750</span>
-              <span>500</span>
-              <span>250</span>
+              <span>{yAxisMax}</span>
+              <span>{Math.round(yAxisMax * 0.66)}</span>
+              <span>{Math.round(yAxisMax * 0.33)}</span>
               <span>0</span>
             </div>
             <div className="bars-columns-wrapper">
               {weeklyData.map((d) => (
                 <div key={d.day} className="bar-column">
                   <div className="bar-track">
-                    {d.isPeak && (
+                    {d.isPeak && peakAmount > 0 && (
                       <div className="bar-tooltip-pill animate-fade-in">
-                        ₹{d.amount}
+                        {formatCurrency(peakAmount, currency, { fractionDigits: 0 })}
                       </div>
                     )}
                     <div
-                      className={`bar-fill ${d.isPeak ? 'peak-bar' : ''}`}
+                      className={`bar-fill ${d.isPeak && peakAmount > 0 ? 'peak-bar' : ''}`}
                       style={{ height: `${d.heightPct}%` }}
                     />
                   </div>
