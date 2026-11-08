@@ -317,8 +317,8 @@
 }
 
 .profile-avatar-circle {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   overflow: hidden;
   background: #FEE7D6;
@@ -329,8 +329,8 @@
   flex-shrink: 0;
 }
 
-.profile-avatar-circle originkit-avatar {
-  display: flex;
+.profile-avatar-circle span {
+  display: flex !important;
   align-items: center;
   justify-content: center;
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Bell, Plus, ChevronDown, CheckCircle2, Sparkles, X } from 'lucide-react';
-import '@originkit/avatars/element';
+import { UserAvatar } from './UserAvatar';
 import './Header.css';
 
 export function Header({
@@ -9,6 +9,7 @@ export function Header({
   searchQuery = '',
   onSearchChange,
   activeTab = 'dashboard',
+  user,
 }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([
@@ -125,12 +126,7 @@ export function Header({
         {/* Profile Avatar Pill */}
         <div className="header-profile-pill" tabIndex={0} role="button">
           <div className="profile-avatar-circle">
-            <originkit-avatar
-              type="mallows"
-              name="Momo"
-              overrides='{"type":0.8333,"face":0.4583,"eyes":0.5,"pose":0.375,"color:tint":11818080,"color:colour":12775128}'
-              size="32"
-            ></originkit-avatar>
+            <UserAvatar user={user} size={36} />
           </div>
           <span className="profile-greeting-text">Hey, Buddy! 👋</span>
           <ChevronDown size={15} className="profile-chevron" />
