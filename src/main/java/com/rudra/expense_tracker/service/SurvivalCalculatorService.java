@@ -32,6 +32,10 @@ public class SurvivalCalculatorService {
             List<Transaction> cycleExpenses,
             List<AllowanceEvent> topUpEvents) {
 
+        if (cycle == null) {
+            return null;
+        }
+
         LocalDate today = LocalDate.now();
 
         // 1. Monetary Inputs with BigDecimal precision
@@ -358,8 +362,12 @@ public class SurvivalCalculatorService {
     }
 
     public AllowanceResponse mapCycleToResponse(AllowanceCycle cycle, List<AllowanceEvent> events) {
+        if (cycle == null) {
+            return null;
+        }
+
         List<AllowanceEventResponse> eventDtos = new ArrayList<>();
-        List<AllowanceEvent> sourceEvents = events != null ? events : (cycle != null ? cycle.getEvents() : null);
+        List<AllowanceEvent> sourceEvents = events != null ? events : cycle.getEvents();
         if (sourceEvents != null) {
             for (AllowanceEvent e : sourceEvents) {
                 if (e != null) {
