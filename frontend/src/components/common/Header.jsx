@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Bell, Plus, ChevronDown, CheckCircle2, Sparkles, X } from 'lucide-react';
-import boyAvatar from '../../assets/guardian-boy.png';
+import '@originkit/avatars/element';
 import './Header.css';
 
 export function Header({
@@ -125,7 +125,12 @@ export function Header({
         {/* Profile Avatar Pill */}
         <div className="header-profile-pill" tabIndex={0} role="button">
           <div className="profile-avatar-circle">
-            <img src={boyAvatar} alt="User Avatar" className="avatar-img" />
+            <originkit-avatar
+              type="mallows"
+              name="Momo"
+              overrides='{"type":0.8333,"face":0.4583,"eyes":0.5,"pose":0.375,"color:tint":11818080,"color:colour":12775128}'
+              size="32"
+            ></originkit-avatar>
           </div>
           <span className="profile-greeting-text">Hey, Buddy! 👋</span>
           <ChevronDown size={15} className="profile-chevron" />

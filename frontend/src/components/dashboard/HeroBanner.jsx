@@ -1,5 +1,5 @@
 import React from 'react';
-import boyIllustration from '../../assets/guardian-boy-full.png';
+import '@originkit/avatars/element';
 import './HeroBanner.css';
 
 export function HeroBanner({ totalTransactions = 0, balance = 0, currency = 'INR' }) {
@@ -31,13 +31,14 @@ export function HeroBanner({ totalTransactions = 0, balance = 0, currency = 'INR
           </svg>
         </span>
 
-        {/* 3D Boy Illustration */}
+        {/* OriginKit Interactive 3D Avatar */}
         <div className="character-img-wrapper">
-          <img
-            src={boyIllustration}
-            alt="Friendly Financial Companion"
-            className="character-main-img"
-          />
+          <originkit-avatar
+            type="mallows"
+            name="Momo"
+            overrides='{"type":0.8333,"face":0.4583,"eyes":0.5,"pose":0.375,"color:tint":11818080,"color:colour":12775128}'
+            size="96"
+          ></originkit-avatar>
         </div>
       </div>
     </div>

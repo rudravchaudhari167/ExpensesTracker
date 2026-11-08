@@ -61,19 +61,18 @@
   z-index: 2;
   height: 100%;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
   filter: drop-shadow(0 10px 20px rgba(217, 104, 50, 0.16));
-}
-
-.character-main-img {
-  max-height: 155px;
-  width: auto;
-  object-fit: contain;
   transition: transform var(--transition-normal);
 }
 
-.pennywise-hero-card:hover .character-main-img {
+.pennywise-hero-card:hover .character-img-wrapper {
   transform: translateY(-3px) scale(1.02);
+}
+
+originkit-avatar {
+  display: inline-block;
 }
 
 /* Sparkles & Doodles */
