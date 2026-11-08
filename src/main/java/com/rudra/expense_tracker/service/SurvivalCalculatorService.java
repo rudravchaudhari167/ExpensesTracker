@@ -19,13 +19,10 @@ import java.time.LocalDate;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class SurvivalCalculatorService {
@@ -51,22 +48,30 @@ public class SurvivalCalculatorService {
                 ? cycle.getFixedExpenses()
                 : BigDecimal.ZERO;
 
-        BigDecimal totalTopUps = topUpEvents.stream()
-                .map(AllowanceEvent::getAmount)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .setScale(2, RoundingMode.HALF_UP);
+        BigDecimal totalTopUps = BigDecimal.ZERO;
+        if (topUpEvents != null) {
+            for (AllowanceEvent event : topUpEvents) {
+                if (event != null && event.getAmount() != null) {
+                    totalTopUps = totalTopUps.add(event.getAmount());
+                }
+            }
+        }
+        totalTopUps = totalTopUps.setScale(2, RoundingMode.HALF_UP);
 
         BigDecimal totalAllowance = allowanceAmount
                 .add(openingBalance)
                 .add(totalTopUps)
                 .setScale(2, RoundingMode.HALF_UP);
 
-        BigDecimal totalSpent = cycleExpenses.stream()
-                .map(Transaction::getAmount)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .setScale(2, RoundingMode.HALF_UP);
+        BigDecimal totalSpent = BigDecimal.ZERO;
+        if (cycleExpenses != null) {
+            for (Transaction tx : cycleExpenses) {
+                if (tx != null && tx.getAmount() != null) {
+                    totalSpent = totalSpent.add(tx.getAmount());
+                }
+            }
+        }
+        totalSpent = totalSpent.setScale(2, RoundingMode.HALF_UP);
 
         // Formula: Remaining Flexible Money = Allowance + Opening Balance + Top-ups - Fixed Expenses - Eligible Expenses - Emergency Reserve
         BigDecimal remainingFlexibleMoney = totalAllowance
@@ -106,12 +111,15 @@ public class SurvivalCalculatorService {
         }
 
         // 4. Today's Specific Spend and Limit
-        BigDecimal todaySpent = cycleExpenses.stream()
-                .filter(t -> t.getDate() != null && t.getDate().isEqual(today))
-                .map(Transaction::getAmount)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .setScale(2, RoundingMode.HALF_UP);
+        BigDecimal todaySpent = BigDecimal.ZERO;
+        if (cycleExpenses != null) {
+            for (Transaction tx : cycleExpenses) {
+                if (tx != null && tx.getDate() != null && tx.getDate().isEqual(today) && tx.getAmount() != null) {
+                    todaySpent = todaySpent.add(tx.getAmount());
+                }
+            }
+        }
+        todaySpent = todaySpent.setScale(2, RoundingMode.HALF_UP);
 
         BigDecimal todayRemainingLimit = dailySafeSpendingLimit.subtract(todaySpent).setScale(2, RoundingMode.HALF_UP);
 
@@ -187,36 +195,46 @@ public class SurvivalCalculatorService {
     }
 
     private List<CategoryBreakdownDto> buildCategoryBreakdown(List<Transaction> expenses, BigDecimal totalSpent) {
-        Map<String, List<Transaction>> grouped = expenses.stream()
-                .filter(t -> t.getCategory() != null && !t.getCategory().isBlank())
-                .collect(Collectors.groupingBy(
-                        t -> t.getCategory().trim(),
-                        LinkedHashMap::new,
-                        Collectors.toList()
-                ));
+        Map<String, List<Transaction>> grouped = new LinkedHashMap<>();
+        if (expenses != null) {
+            for (Transaction tx : expenses) {
+                if (tx != null && tx.getCategory() != null && !tx.getCategory().isBlank()) {
+                    String cat = tx.getCategory().trim();
+                    grouped.computeIfAbsent(cat, k -> new ArrayList<>()).add(tx);
+                }
+            }
+        }
 
         List<CategoryBreakdownDto> breakdown = new ArrayList<>();
         for (Map.Entry<String, List<Transaction>> entry : grouped.entrySet()) {
             String category = entry.getKey();
             List<Transaction> txList = entry.getValue();
 
-            BigDecimal catAmount = txList.stream()
-                    .map(Transaction::getAmount)
-                    .filter(Objects::nonNull)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add)
-                    .setScale(2, RoundingMode.HALF_UP);
+            BigDecimal catAmount = BigDecimal.ZERO;
+            if (txList != null) {
+                for (Transaction tx : txList) {
+                    if (tx != null && tx.getAmount() != null) {
+                        catAmount = catAmount.add(tx.getAmount());
+                    }
+                }
+            }
+            catAmount = catAmount.setScale(2, RoundingMode.HALF_UP);
 
             double pct = 0.0;
-            if (totalSpent.compareTo(BigDecimal.ZERO) > 0) {
+            if (totalSpent != null && totalSpent.compareTo(BigDecimal.ZERO) > 0) {
                 pct = catAmount.multiply(BigDecimal.valueOf(100))
                         .divide(totalSpent, 1, RoundingMode.HALF_UP)
                         .doubleValue();
             }
 
-            breakdown.add(new CategoryBreakdownDto(category, catAmount, pct, txList.size()));
+            breakdown.add(new CategoryBreakdownDto(category, catAmount, pct, txList != null ? txList.size() : 0));
         }
 
-        breakdown.sort(Comparator.comparing(CategoryBreakdownDto::amount).reversed());
+        breakdown.sort((a, b) -> {
+            if (a == null || a.amount() == null) return 1;
+            if (b == null || b.amount() == null) return -1;
+            return b.amount().compareTo(a.amount());
+        });
         return breakdown;
     }
 
@@ -239,12 +257,15 @@ public class SurvivalCalculatorService {
             DayOfWeek dow = d.getDayOfWeek();
             String dayName = dow.getDisplayName(TextStyle.SHORT, Locale.ENGLISH);
 
-            BigDecimal dayAmount = expenses.stream()
-                    .filter(t -> t.getDate() != null && t.getDate().isEqual(d))
-                    .map(Transaction::getAmount)
-                    .filter(Objects::nonNull)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add)
-                    .setScale(2, RoundingMode.HALF_UP);
+            BigDecimal dayAmount = BigDecimal.ZERO;
+            if (expenses != null) {
+                for (Transaction tx : expenses) {
+                    if (tx != null && tx.getDate() != null && tx.getDate().isEqual(d) && tx.getAmount() != null) {
+                        dayAmount = dayAmount.add(tx.getAmount());
+                    }
+                }
+            }
+            dayAmount = dayAmount.setScale(2, RoundingMode.HALF_UP);
 
             dailySpending.add(new DailySpendDto(d, dayName, dayAmount));
             weekTotal = weekTotal.add(dayAmount);
@@ -258,12 +279,18 @@ public class SurvivalCalculatorService {
         BigDecimal avgDaily = weekTotal.divide(BigDecimal.valueOf(7), 2, RoundingMode.HALF_UP);
 
         // Previous week total
-        BigDecimal prevWeekTotal = expenses.stream()
-                .filter(t -> t.getDate() != null && !t.getDate().isBefore(prevWeekStart) && !t.getDate().isAfter(prevWeekEnd))
-                .map(Transaction::getAmount)
-                .filter(Objects::nonNull)
-                .reduce(BigDecimal.ZERO, BigDecimal::add)
-                .setScale(2, RoundingMode.HALF_UP);
+        BigDecimal prevWeekTotal = BigDecimal.ZERO;
+        if (expenses != null) {
+            for (Transaction tx : expenses) {
+                if (tx != null && tx.getDate() != null
+                        && !tx.getDate().isBefore(prevWeekStart)
+                        && !tx.getDate().isAfter(prevWeekEnd)
+                        && tx.getAmount() != null) {
+                    prevWeekTotal = prevWeekTotal.add(tx.getAmount());
+                }
+            }
+        }
+        prevWeekTotal = prevWeekTotal.setScale(2, RoundingMode.HALF_UP);
 
         Double percentChange = null;
         if (prevWeekTotal.compareTo(BigDecimal.ZERO) > 0) {
@@ -274,13 +301,21 @@ public class SurvivalCalculatorService {
         }
 
         // Most expensive category this week
-        Map<String, BigDecimal> weekCats = expenses.stream()
-                .filter(t -> t.getDate() != null && !t.getDate().isBefore(weekStart) && !t.getDate().isAfter(weekEnd))
-                .filter(t -> t.getCategory() != null && !t.getCategory().isBlank())
-                .collect(Collectors.groupingBy(
-                        t -> t.getCategory().trim(),
-                        Collectors.reducing(BigDecimal.ZERO, Transaction::getAmount, BigDecimal::add)
-                ));
+        Map<String, BigDecimal> weekCats = new LinkedHashMap<>();
+        if (expenses != null) {
+            for (Transaction tx : expenses) {
+                if (tx != null && tx.getDate() != null
+                        && !tx.getDate().isBefore(weekStart)
+                        && !tx.getDate().isAfter(weekEnd)
+                        && tx.getCategory() != null
+                        && !tx.getCategory().isBlank()
+                        && tx.getAmount() != null) {
+                    String cat = tx.getCategory().trim();
+                    BigDecimal current = weekCats.getOrDefault(cat, BigDecimal.ZERO);
+                    weekCats.put(cat, current.add(tx.getAmount()));
+                }
+            }
+        }
 
         String topCat = "None";
         BigDecimal topCatAmount = BigDecimal.ZERO;
@@ -323,15 +358,21 @@ public class SurvivalCalculatorService {
     }
 
     public AllowanceResponse mapCycleToResponse(AllowanceCycle cycle, List<AllowanceEvent> events) {
-        List<AllowanceEventResponse> eventDtos = (events != null ? events : cycle.getEvents()).stream()
-                .map(e -> new AllowanceEventResponse(
-                        e.getId(),
-                        e.getAmount(),
-                        e.getDate(),
-                        e.getDescription(),
-                        e.getCreatedAt()
-                ))
-                .toList();
+        List<AllowanceEventResponse> eventDtos = new ArrayList<>();
+        List<AllowanceEvent> sourceEvents = events != null ? events : (cycle != null ? cycle.getEvents() : null);
+        if (sourceEvents != null) {
+            for (AllowanceEvent e : sourceEvents) {
+                if (e != null) {
+                    eventDtos.add(new AllowanceEventResponse(
+                            e.getId(),
+                            e.getAmount(),
+                            e.getDate(),
+                            e.getDescription(),
+                            e.getCreatedAt()
+                    ));
+                }
+            }
+        }
 
         return new AllowanceResponse(
                 cycle.getId(),
