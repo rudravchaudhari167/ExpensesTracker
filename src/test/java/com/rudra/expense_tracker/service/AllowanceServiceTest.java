@@ -184,6 +184,31 @@ class AllowanceServiceTest {
     }
 
     @Test
+    @DisplayName("Add top-up directly to active cycle when no ID provided")
+    void testAddTopUpToActiveCycle() {
+        when(cycleRepository.findFirstByActiveTrueOrderByStartDateDesc()).thenReturn(Optional.of(sampleCycle));
+        when(eventRepository.save(any(AllowanceEvent.class))).thenAnswer(invocation -> {
+            AllowanceEvent e = invocation.getArgument(0);
+            e.setId(102L);
+            return e;
+        });
+
+        AllowanceEventRequest request = new AllowanceEventRequest(
+                new BigDecimal("300.00"),
+                LocalDate.now(),
+                "Pocket money"
+        );
+
+        AllowanceEventResponse response = service.addTopUpToActiveCycle(request);
+
+        assertNotNull(response);
+        assertEquals(102L, response.id());
+        assertEquals(new BigDecimal("300.00"), response.amount());
+        assertEquals("Pocket money", response.description());
+        verify(eventRepository, times(1)).save(any(AllowanceEvent.class));
+    }
+
+    @Test
     @DisplayName("Throws 400 when start date is after end date")
     void testInvalidDates() {
         AllowanceRequest request = new AllowanceRequest(

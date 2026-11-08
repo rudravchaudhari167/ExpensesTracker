@@ -1,10 +1,15 @@
 .history-modal {
+  background: var(--color-surface, #FFFFFF);
+  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
+  border-radius: var(--radius-xl, 20px);
+  padding: 28px 32px;
   max-width: 680px;
   width: 92%;
   max-height: 85vh;
   display: flex;
   flex-direction: column;
-  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 48px -12px rgba(40, 30, 20, 0.22), 0 8px 16px -4px rgba(40, 30, 20, 0.08);
+  box-sizing: border-box;
 }
 
 .history-list {

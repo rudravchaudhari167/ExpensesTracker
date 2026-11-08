@@ -142,11 +142,12 @@ export function StudentSurvivalDashboard({
 
   // Handle Top-up Submission
   const handleAddTopUp = async (cycleId, topUpData) => {
-    await allowanceService.addTopUp(cycleId, topUpData);
+    const targetCycleId = cycleId || cycle?.id || dashboardData?.cycle?.id || null;
+    await allowanceService.addTopUp(targetCycleId, topUpData);
     if (onShowToast) {
       onShowToast('success', `Added ${formatCurrency(topUpData.amount, currency)} to your allowance!`, 'Allowance Top-up Recorded');
     }
-    await fetchSurvivalMetrics();
+    await fetchSurvivalMetrics(targetCycleId);
     await fetchHistory();
   };
 
@@ -722,7 +723,7 @@ export function StudentSurvivalDashboard({
         isOpen={isTopUpOpen}
         onClose={() => setIsTopUpOpen(false)}
         onSubmit={handleAddTopUp}
-        cycleId={cycle?.id}
+        cycleId={cycle?.id || dashboardData?.cycle?.id}
         currency={currency}
       />
 

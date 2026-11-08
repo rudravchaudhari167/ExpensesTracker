@@ -171,7 +171,17 @@ public class AllowanceService {
     // Add a top-up event (pocket money, freelance, extra allowance)
     public AllowanceEventResponse addTopUp(Long cycleId, AllowanceEventRequest request) {
         AllowanceCycle cycle = getCycleEntity(cycleId);
+        return saveTopUpEvent(cycle, request);
+    }
 
+    // Add a top-up event to the currently active cycle
+    public AllowanceEventResponse addTopUpToActiveCycle(AllowanceEventRequest request) {
+        AllowanceCycle activeCycle = cycleRepository.findFirstByActiveTrueOrderByStartDateDesc()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No active Student Survival allowance plan configured"));
+        return saveTopUpEvent(activeCycle, request);
+    }
+
+    private AllowanceEventResponse saveTopUpEvent(AllowanceCycle cycle, AllowanceEventRequest request) {
         AllowanceEvent event = new AllowanceEvent();
         event.setCycle(cycle);
         event.setAmount(request.amount());
@@ -197,7 +207,8 @@ public class AllowanceService {
 
     private AllowanceCycle getCycleEntity(Long id) {
         if (id == null || id <= 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid cycle ID: " + id);
+            return cycleRepository.findFirstByActiveTrueOrderByStartDateDesc()
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No active Student Survival allowance plan configured"));
         }
         return cycleRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Allowance cycle not found with ID: " + id));

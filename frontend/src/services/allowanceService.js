@@ -62,7 +62,7 @@ export const allowanceService = {
 
   /**
    * Add a top-up event (pocket money, freelance, extra money)
-   * @param {number|string} cycleId 
+   * @param {number|string|null} cycleId 
    * @param {Object} data - { amount, date, description }
    * @returns {Promise<Object>} AllowanceEventResponse
    */
@@ -72,7 +72,11 @@ export const allowanceService = {
       date: data.date,
       description: data.description?.trim() || 'Allowance Top-up',
     };
-    return api.post(`/allowances/${cycleId}/events`, payload);
+    if (cycleId && !isNaN(Number(cycleId)) && Number(cycleId) > 0) {
+      return api.post(`/allowances/${cycleId}/events`, payload);
+    }
+    // Fallback to active cycle endpoint
+    return api.post('/allowances/events', payload);
   },
 
   /**

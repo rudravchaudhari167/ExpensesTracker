@@ -72,13 +72,21 @@ public class AllowanceController {
         return service.updateCycle(id, request);
     }
 
-    // Add an allowance top-up (pocket money, freelance, extra cash)
+    // Add an allowance top-up (pocket money, freelance, extra cash) by cycle ID
     @PostMapping("/{id}/events")
     @ResponseStatus(HttpStatus.CREATED)
     public AllowanceEventResponse addTopUp(
             @PathVariable Long id,
             @Valid @RequestBody AllowanceEventRequest request) {
         return service.addTopUp(id, request);
+    }
+
+    // Add top-up directly to active cycle (supporting /events and /active/events)
+    @PostMapping({"/events", "/active/events"})
+    @ResponseStatus(HttpStatus.CREATED)
+    public AllowanceEventResponse addTopUpToActive(
+            @Valid @RequestBody AllowanceEventRequest request) {
+        return service.addTopUpToActiveCycle(request);
     }
 
     // Retrieve survival metrics for any cycle (including historical reviews)
