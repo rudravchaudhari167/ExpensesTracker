@@ -7,7 +7,7 @@ import Toast from './components/common/Toast';
 import ConfirmModal from './components/common/ConfirmModal';
 import { SummaryCardsSkeleton } from './components/common/Skeleton';
 
-// Pennywise Dashboard Views
+// Spendl Dashboard Views
 import HeroBanner from './components/dashboard/HeroBanner';
 import SummaryCards from './components/dashboard/SummaryCards';
 import GamificationQuestWidget from './components/dashboard/GamificationQuestWidget';

@@ -61,7 +61,7 @@ export function Sidebar({ activeTab, onSelectTab, transactionCount = 0 }) {
             </svg>
           </div>
           <div className="brand-text-block">
-            <h1 className="brand-title">Pennywise.</h1>
+            <h1 className="brand-title">Spendl.</h1>
             <p className="brand-tagline">Spend Smart. Live Better.</p>
           </div>
         </div>
