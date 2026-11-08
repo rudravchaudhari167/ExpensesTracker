@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Search, Bell, Plus, ChevronDown, CheckCircle2, Sparkles, X } from 'lucide-react';
 import { UserAvatar } from './UserAvatar';
 import './Header.css';
@@ -12,6 +12,8 @@ export function Header({
   user,
 }) {
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const profileRef = useRef(null);
   const [notifications, setNotifications] = useState([
     {
       id: 1,
@@ -34,6 +36,21 @@ export function Header({
   const markAllRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
   };
+
+  // Close profile menu on click outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
+    }
+    if (showProfileMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showProfileMenu]);
 
   return (
     <header className="pennywise-header">
@@ -123,13 +140,34 @@ export function Header({
           )}
         </div>
 
-        {/* Profile Avatar Pill */}
-        <div className="header-profile-pill" tabIndex={0} role="button">
-          <div className="profile-avatar-circle">
-            <UserAvatar user={user} size={36} />
-          </div>
-          <span className="profile-greeting-text">Hey, Buddy! 👋</span>
-          <ChevronDown size={15} className="profile-chevron" />
+        {/* Profile Avatar Pill & Dropdown */}
+        <div className="header-profile-container" ref={profileRef}>
+          <button
+            type="button"
+            className={`header-profile-pill ${showProfileMenu ? 'active' : ''}`}
+            onClick={() => setShowProfileMenu((prev) => !prev)}
+            aria-expanded={showProfileMenu}
+            aria-label="User Profile"
+          >
+            <div className="profile-avatar-circle">
+              <UserAvatar user={user} size={36} />
+            </div>
+            <span className="profile-greeting-text">Hey, Buddy! 👋</span>
+            <ChevronDown size={15} className={`profile-chevron ${showProfileMenu ? 'rotated' : ''}`} />
+          </button>
+
+          {showProfileMenu && (
+            <div className="profile-dropdown-card card-surface animate-scale-up">
+              <div className="profile-dropdown-avatar">
+                <UserAvatar user={user} size={64} />
+              </div>
+              <div className="profile-dropdown-details">
+                <h4 className="profile-dropdown-name">Hey, Buddy! 👋</h4>
+                <span className="profile-dropdown-badge">Spendl Smart Saver</span>
+                <p className="profile-dropdown-tagline">Spend Smart. Live Better.</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </header>
