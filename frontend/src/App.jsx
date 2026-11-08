@@ -10,7 +10,6 @@ import { SummaryCardsSkeleton } from './components/common/Skeleton';
 // Spendl Dashboard Views
 import HeroBanner from './components/dashboard/HeroBanner';
 import SummaryCards from './components/dashboard/SummaryCards';
-import GamificationQuestWidget from './components/dashboard/GamificationQuestWidget';
 import MiddleOverviewRow from './components/dashboard/MiddleOverviewRow';
 import BottomWidgetsRow from './components/dashboard/BottomWidgetsRow';
 
@@ -151,9 +150,6 @@ export function App() {
                   currency={currency}
                 />
               )}
-
-              {/* Gamification Level & Quests */}
-              <GamificationQuestWidget onShowToast={showToast} />
 
               {/* Middle Section: Spending Overview Donut & Bar + Student Survival Teaser */}
               <MiddleOverviewRow
