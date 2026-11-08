@@ -58,6 +58,20 @@
   color: var(--color-text-secondary);
 }
 
+.survival-hero-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.survival-hero-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 6px 14px rgba(217, 104, 50, 0.14));
+}
+
 .survival-hero-actions {
   display: flex;
   align-items: center;

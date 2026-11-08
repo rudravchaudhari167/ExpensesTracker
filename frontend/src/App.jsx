@@ -6,6 +6,7 @@ import MobileNav from './components/common/MobileNav';
 import Toast from './components/common/Toast';
 import ConfirmModal from './components/common/ConfirmModal';
 import { SummaryCardsSkeleton } from './components/common/Skeleton';
+import { UserAvatar } from './components/common/UserAvatar';
 
 // Spendl Dashboard Views
 import HeroBanner from './components/dashboard/HeroBanner';
@@ -174,11 +175,17 @@ export function App() {
           {/* Tab 2: Transactions Page */}
           {activeTab === 'transactions' && (
             <div className="tab-transactions animate-fade-in">
-              <div className="page-header-simple">
-                <h2 className="page-heading font-serif">Transactions Ledger</h2>
-                <p className="page-subheading">
-                  Browse, search, filter, edit, and delete your verified database records.
-                </p>
+              <div className="page-hero-banner card-surface">
+                <div className="page-hero-text">
+                  <span className="page-hero-badge">Verified Ledger</span>
+                  <h2 className="page-hero-title font-serif">Transactions Ledger</h2>
+                  <p className="page-hero-subtitle">
+                    Browse, search, filter, edit, and delete your verified database records.
+                  </p>
+                </div>
+                <div className="page-hero-avatar">
+                  <UserAvatar size={76} />
+                </div>
               </div>
 
               <TransactionTable

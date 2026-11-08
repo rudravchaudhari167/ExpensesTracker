@@ -8,6 +8,7 @@ import {
   X,
 } from 'lucide-react';
 import { CURRENCIES } from '../../utils/currency';
+import { UserAvatar } from '../common/UserAvatar';
 import './SettingsView.css';
 
 export function SettingsView({
@@ -36,14 +37,19 @@ export function SettingsView({
   return (
     <div className="settings-container animate-fade-in">
       <div className="settings-hero card-surface">
-        <div className="settings-badge">
-          <Settings size={14} />
-          <span>System Preferences</span>
+        <div className="settings-hero-text">
+          <div className="settings-badge">
+            <Settings size={14} />
+            <span>System Preferences</span>
+          </div>
+          <h2 className="settings-title font-serif">Preferences & System Settings</h2>
+          <p className="settings-subtitle">
+            Configure interface formatting and currency display preferences.
+          </p>
         </div>
-        <h2 className="settings-title font-serif">Preferences & System Settings</h2>
-        <p className="settings-subtitle">
-          Configure interface formatting and currency display preferences.
-        </p>
+        <div className="settings-hero-avatar">
+          <UserAvatar size={74} />
+        </div>
       </div>
 
       <div className="settings-grid">

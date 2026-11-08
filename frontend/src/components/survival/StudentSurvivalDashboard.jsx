@@ -39,6 +39,7 @@ import { formatCurrency, getCurrencySymbol } from '../../utils/currency';
 import AllowanceSetupModal from './AllowanceSetupModal';
 import AllowanceTopUpModal from './AllowanceTopUpModal';
 import AllowanceHistoryModal from './AllowanceHistoryModal';
+import { UserAvatar } from '../common/UserAvatar';
 import './StudentSurvivalDashboard.css';
 
 // Student Category Icon Helper
@@ -197,6 +198,9 @@ export function StudentSurvivalDashboard({
               Make your allowance last longer. Spend smarter. Live better.
             </p>
           </div>
+          <div className="survival-hero-avatar">
+            <UserAvatar size={74} />
+          </div>
         </div>
 
         {error && (
@@ -301,8 +305,12 @@ export function StudentSurvivalDashboard({
           </p>
         </div>
 
-        {/* Action Buttons */}
-        <div className="survival-hero-actions">
+        {/* Action Buttons & Companion Avatar */}
+        <div className="survival-hero-right">
+          <div className="survival-hero-avatar">
+            <UserAvatar size={74} />
+          </div>
+          <div className="survival-hero-actions">
           <button
             type="button"
             className="btn btn-primary btn-sm"
@@ -343,6 +351,7 @@ export function StudentSurvivalDashboard({
           </button>
         </div>
       </div>
+    </div>
 
       {/* 2. Four Core Summary Cards Grid */}
       <div className="survival-summary-grid">

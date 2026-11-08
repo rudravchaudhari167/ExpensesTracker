@@ -8,6 +8,22 @@
   padding: var(--space-6) var(--space-8);
   border-radius: var(--radius-xl);
   background: linear-gradient(135deg, #FAF7F2 0%, #F5EFE6 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.budgets-hero-text {
+  flex: 1;
+}
+
+.budgets-hero-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  filter: drop-shadow(0 6px 14px rgba(217, 104, 50, 0.14));
 }
 
 .budgets-badge {

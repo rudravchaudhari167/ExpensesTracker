@@ -8,6 +8,26 @@
   gap: var(--space-6);
 }
 
+.journal-hero-card {
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #FFFDFB 0%, #FFF5ED 100%);
+  border: 1px solid rgba(242, 139, 80, 0.18);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 24px -4px rgba(217, 104, 50, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.journal-hero-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 6px 14px rgba(217, 104, 50, 0.14));
+}
+
 .journal-layout-grid {
   display: grid;
   grid-template-columns: 1.1fr 1.3fr;

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
 import { Plus, CheckCircle2 } from 'lucide-react';
 import { formatCurrency } from '../../utils/currency';
+import { UserAvatar } from '../common/UserAvatar';
 import './SavingsGoalsView.css';
 
 export function SavingsGoalsView({ currency = 'INR', onShowToast }) {
@@ -86,7 +87,7 @@ export function SavingsGoalsView({ currency = 'INR', onShowToast }) {
 
   return (
     <div className="savings-goals-page animate-fade-in">
-      <div className="page-header-row">
+      <div className="page-header-row card-surface goals-hero-card">
         <div>
           <h2 className="page-main-heading">Savings Goals 🎯</h2>
           <p className="page-main-subheading">
@@ -94,14 +95,19 @@ export function SavingsGoalsView({ currency = 'INR', onShowToast }) {
           </p>
         </div>
 
-        <button
-          type="button"
-          className="btn btn-primary btn-add-goal"
-          onClick={() => setIsAdding((prev) => !prev)}
-        >
-          <Plus size={18} />
-          <span>New Goal</span>
-        </button>
+        <div className="goals-header-actions">
+          <div className="goals-hero-avatar">
+            <UserAvatar size={70} />
+          </div>
+          <button
+            type="button"
+            className="btn btn-primary btn-add-goal"
+            onClick={() => setIsAdding((prev) => !prev)}
+          >
+            <Plus size={18} />
+            <span>New Goal</span>
+          </button>
+        </div>
       </div>
 
       {/* New Goal Inline Form */}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { UserAvatar } from '../common/UserAvatar';
 import './MoneyJournalView.css';
 
 export function MoneyJournalView({ onShowToast }) {
@@ -64,12 +65,15 @@ export function MoneyJournalView({ onShowToast }) {
 
   return (
     <div className="money-journal-page animate-fade-in">
-      <div className="page-header-row">
+      <div className="page-header-row card-surface journal-hero-card">
         <div>
           <h2 className="page-main-heading">Money Journal 📝</h2>
           <p className="page-main-subheading">
             Reflect on your daily financial choices and celebrate mindful wins.
           </p>
+        </div>
+        <div className="journal-hero-avatar">
+          <UserAvatar size={70} />
         </div>
       </div>
 

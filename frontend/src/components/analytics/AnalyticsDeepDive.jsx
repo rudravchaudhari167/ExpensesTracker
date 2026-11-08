@@ -31,6 +31,7 @@ import {
   Activity,
   Layers,
 } from 'lucide-react';
+import { UserAvatar } from '../common/UserAvatar';
 import './AnalyticsDeepDive.css';
 
 /**
@@ -118,6 +119,9 @@ export function AnalyticsDeepDive({ transactions = [], summary = {}, currency = 
           <p className="analytics-hero-subtitle">
             Derived directly from your verified Spring Boot & MySQL transactions.
           </p>
+        </div>
+        <div className="analytics-hero-avatar">
+          <UserAvatar size={74} />
         </div>
       </div>
 

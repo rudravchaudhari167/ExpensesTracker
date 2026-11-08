@@ -39,6 +39,61 @@
   gap: var(--space-5);
 }
 
+.page-hero-banner {
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #FFFDFB 0%, #FFF5ED 100%);
+  border: 1px solid rgba(242, 139, 80, 0.18);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 8px 24px -4px rgba(217, 104, 50, 0.08);
+  margin-bottom: var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  position: relative;
+  overflow: hidden;
+}
+
+.page-hero-text {
+  flex: 1;
+}
+
+.page-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.725rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #D96832;
+  background: #FFEADB;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 6px;
+}
+
+.page-hero-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+  margin: 0 0 4px 0;
+}
+
+.page-hero-subtitle {
+  font-size: 0.925rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.page-hero-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  filter: drop-shadow(0 6px 14px rgba(217, 104, 50, 0.14));
+}
+
 .page-header-simple {
   margin-bottom: var(--space-5);
 }

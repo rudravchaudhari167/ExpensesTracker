@@ -1,6 +1,7 @@
 import React from 'react';
 import { Target, Layers, Sparkles, CheckCircle2, AlertCircle, ArrowUpRight } from 'lucide-react';
 import { formatCurrency } from '../../utils/currency';
+import { UserAvatar } from '../common/UserAvatar';
 import './BudgetsView.css';
 
 export function BudgetsView({ summary = {}, transactions = [], currency = 'USD' }) {
@@ -10,14 +11,19 @@ export function BudgetsView({ summary = {}, transactions = [], currency = 'USD' 
   return (
     <div className="budgets-container animate-fade-in">
       <div className="budgets-hero card-surface">
-        <div className="budgets-badge">
-          <Target size={14} />
-          <span>Backend Specification Notice</span>
+        <div className="budgets-hero-text">
+          <div className="budgets-badge">
+            <Target size={14} />
+            <span>Monthly Budgeting</span>
+          </div>
+          <h2 className="budgets-title font-serif">Monthly Budgets & Caps</h2>
+          <p className="budgets-subtitle">
+            Plan your category limits and stay disciplined throughout the month.
+          </p>
         </div>
-        <h2 className="budgets-title font-serif">Monthly Budgets & Caps</h2>
-        <p className="budgets-subtitle">
-          Budget caps and category thresholds are currently not configured in the Spring Boot backend REST API.
-        </p>
+        <div className="budgets-hero-avatar">
+          <UserAvatar size={74} />
+        </div>
       </div>
 
       <div className="budgets-info-card card-surface">

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import { formatCurrency } from '../../utils/currency';
+import { UserAvatar } from '../common/UserAvatar';
 import './WhatIfSimulatorView.css';
 
 export function WhatIfSimulatorView({ currency = 'INR' }) {
@@ -19,12 +20,15 @@ export function WhatIfSimulatorView({ currency = 'INR' }) {
 
   return (
     <div className="what-if-page animate-fade-in">
-      <div className="page-header-row">
+      <div className="page-header-row card-surface sim-hero-card">
         <div>
           <h2 className="page-main-heading">What If Simulator 💡</h2>
           <p className="page-main-subheading">
             Simulate small habit tweaks and watch them turn into serious wealth!
           </p>
+        </div>
+        <div className="sim-hero-avatar">
+          <UserAvatar size={70} />
         </div>
       </div>
 
