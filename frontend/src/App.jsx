@@ -244,10 +244,8 @@ export function App() {
               <SettingsView
                 currency={currency}
                 onCurrencyChange={setCurrency}
-                isBackendHealthy={isBackendHealthy}
                 isDemoMode={isDemoMode}
                 setDemoMode={setDemoMode}
-                onRefresh={refresh}
               />
             </div>
           )}
