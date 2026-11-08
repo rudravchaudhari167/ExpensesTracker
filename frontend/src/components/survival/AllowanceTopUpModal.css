@@ -117,6 +117,9 @@
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .input-currency-symbol,
@@ -130,10 +133,12 @@
   font-weight: 600;
   font-size: 0.95rem;
   pointer-events: none;
+  z-index: 2;
 }
 
 .form-input {
   width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   background: var(--color-surface-muted, #F8F6F2);
   border: 1.5px solid var(--color-border, rgba(0, 0, 0, 0.1));
@@ -145,7 +150,39 @@
 }
 
 .input-with-icon .form-input {
-  padding-left: 38px;
+  padding-left: 40px;
+  padding-right: 16px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Date input styling to ensure date text and calendar icon stay safely inside the box */
+input[type="date"].form-input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  padding-left: 40px;
+  padding-right: 14px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.7;
+  padding: 4px;
+  margin-right: 2px;
+  transition: opacity 0.15s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+input[type="date"]::-webkit-datetime-edit {
+  padding: 0;
 }
 
 .form-input:focus {

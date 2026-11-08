@@ -116,6 +116,9 @@
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .input-icon {
@@ -123,6 +126,7 @@
   left: 14px;
   color: var(--color-text-muted);
   pointer-events: none;
+  z-index: 2;
 }
 
 .input-currency-symbol {
@@ -264,6 +268,36 @@
 .form-input.error {
   border-color: var(--color-danger);
   background: #FFF8F8;
+}
+
+/* Date input styling — guaranteed never to overflow or misalign */
+input[type="date"].form-input,
+.input-date-field {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 10px 14px 10px 42px;
+  font-family: inherit;
+  font-size: 0.925rem;
+  color: var(--color-text-main);
+  background: var(--color-surface);
+  line-height: 1.5;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.7;
+  padding: 4px;
+  margin-right: 4px;
+  transition: opacity var(--transition-fast);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+input[type="date"]::-webkit-datetime-edit {
+  padding: 0;
 }
 
 .field-error {

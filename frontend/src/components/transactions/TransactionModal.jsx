@@ -347,97 +347,94 @@ export function TransactionModal({
             {errors.title && <span className="field-error">{errors.title}</span>}
           </div>
 
-          {/* Amount & Date 2-Column Row */}
-          <div className="form-row-2">
-            {/* Amount Field */}
-            <div className="form-group">
-              <div className="amount-label-row">
-                <label htmlFor="tx-amount" className="form-label">
-                  Amount <span className="required-star">*</span>
-                </label>
-                <span className="amount-currency-label">
-                  Currency: <strong>{selectedCurrencyConfig.code}</strong>
-                </span>
-              </div>
-
-              <div className="amount-input-composite">
-                {/* Currency Dropdown Selector Addon */}
-                <div className="currency-selector-addon" title="Select currency">
-                  <select
-                    id="tx-currency-select"
-                    className="currency-addon-select"
-                    value={activeCurrency}
-                    onChange={(e) => handleCurrencySelect(e.target.value)}
-                    aria-label="Select transaction currency"
-                  >
-                    {Object.values(CURRENCIES).map((c) => (
-                      <option key={c.code} value={c.code}>
-                        {c.symbol} {c.code} — {c.name}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown size={13} className="currency-addon-arrow" />
-                </div>
-
-                <input
-                  id="tx-amount"
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  className={`form-input composite-amount-input tabular-nums ${errors.amount ? 'error' : ''}`}
-                  placeholder="0.00"
-                  value={formData.amount}
-                  onChange={(e) => {
-                    setFormData({ ...formData, amount: e.target.value });
-                    if (errors.amount) setErrors({ ...errors, amount: undefined });
-                  }}
-                  disabled={isSubmitting}
-                />
-              </div>
-
-              {/* Quick Currency Switcher Chips */}
-              <div className="currency-chips-strip">
-                {Object.values(CURRENCIES).map((c) => {
-                  const isActive = activeCurrency === c.code;
-                  return (
-                    <button
-                      key={c.code}
-                      type="button"
-                      className={`currency-chip-btn ${isActive ? 'active' : ''}`}
-                      onClick={() => handleCurrencySelect(c.code)}
-                      title={c.label}
-                    >
-                      <span className="chip-symbol">{c.symbol}</span>
-                      <span className="chip-code">{c.code}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {errors.amount && <span className="field-error">{errors.amount}</span>}
-            </div>
-
-            {/* Date Field */}
-            <div className="form-group">
-              <label htmlFor="tx-date" className="form-label">
-                Date <span className="required-star">*</span>
+          {/* Amount Field with inline Currency Dropdown & Chips */}
+          <div className="form-group">
+            <div className="amount-label-row">
+              <label htmlFor="tx-amount" className="form-label">
+                Amount <span className="required-star">*</span>
               </label>
-              <div className="input-with-icon">
-                <Calendar size={17} className="input-icon" />
-                <input
-                  id="tx-date"
-                  type="date"
-                  className={`form-input ${errors.date ? 'error' : ''}`}
-                  value={formData.date}
-                  onChange={(e) => {
-                    setFormData({ ...formData, date: e.target.value });
-                    if (errors.date) setErrors({ ...errors, date: undefined });
-                  }}
-                  disabled={isSubmitting}
-                />
-              </div>
-              {errors.date && <span className="field-error">{errors.date}</span>}
+              <span className="amount-currency-label">
+                Currency: <strong>{selectedCurrencyConfig.code}</strong>
+              </span>
             </div>
+
+            <div className="amount-input-composite">
+              {/* Currency Dropdown Selector Addon */}
+              <div className="currency-selector-addon" title="Select currency">
+                <select
+                  id="tx-currency-select"
+                  className="currency-addon-select"
+                  value={activeCurrency}
+                  onChange={(e) => handleCurrencySelect(e.target.value)}
+                  aria-label="Select transaction currency"
+                >
+                  {Object.values(CURRENCIES).map((c) => (
+                    <option key={c.code} value={c.code}>
+                      {c.symbol} {c.code} — {c.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown size={13} className="currency-addon-arrow" />
+              </div>
+
+              <input
+                id="tx-amount"
+                type="number"
+                step="0.01"
+                min="0.01"
+                className={`form-input composite-amount-input tabular-nums ${errors.amount ? 'error' : ''}`}
+                placeholder="0.00"
+                value={formData.amount}
+                onChange={(e) => {
+                  setFormData({ ...formData, amount: e.target.value });
+                  if (errors.amount) setErrors({ ...errors, amount: undefined });
+                }}
+                disabled={isSubmitting}
+              />
+            </div>
+
+            {/* Quick Currency Switcher Chips */}
+            <div className="currency-chips-strip">
+              {Object.values(CURRENCIES).map((c) => {
+                const isActive = activeCurrency === c.code;
+                return (
+                  <button
+                    key={c.code}
+                    type="button"
+                    className={`currency-chip-btn ${isActive ? 'active' : ''}`}
+                    onClick={() => handleCurrencySelect(c.code)}
+                    title={c.label}
+                  >
+                    <span className="chip-symbol">{c.symbol}</span>
+                    <span className="chip-code">{c.code}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {errors.amount && <span className="field-error">{errors.amount}</span>}
+          </div>
+
+          {/* Date Field — Full width & perfectly spaced */}
+          <div className="form-group">
+            <label htmlFor="tx-date" className="form-label">
+              Date <span className="required-star">*</span>
+            </label>
+            <div className="input-with-icon">
+              <Calendar size={17} className="input-icon" />
+              <input
+                id="tx-date"
+                type="date"
+                className={`form-input input-date-field ${errors.date ? 'error' : ''}`}
+                value={formData.date}
+                onChange={(e) => {
+                  setFormData({ ...formData, date: e.target.value });
+                  if (errors.date) setErrors({ ...errors, date: undefined });
+                }}
+                disabled={isSubmitting}
+              />
+            </div>
+            {errors.date && <span className="field-error">{errors.date}</span>}
           </div>
 
           {/* Category Field */}

@@ -108,6 +108,25 @@
   gap: var(--space-3);
 }
 
+.setup-dates-grid > .form-group {
+  min-width: 0;
+  width: 100%;
+}
+
+.setup-dates-grid .input-with-icon {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.setup-dates-grid input[type="date"] {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding-left: 38px;
+  padding-right: 12px;
+}
+
 @media (max-width: 600px) {
   .setup-dates-grid {
     grid-template-columns: 1fr;
