@@ -5,10 +5,6 @@ import {
   Sparkles,
   Calendar,
   AlertCircle,
-  PiggyBank,
-  Shield,
-  Layers,
-  FileText,
 } from 'lucide-react';
 import { formatCurrency, getCurrencySymbol } from '../../utils/currency';
 import './AllowanceSetupModal.css';
@@ -37,8 +33,6 @@ export function AllowanceSetupModal({
     endDate: getMonthEnd(),
     openingBalance: '',
     emergencyReserve: '',
-    fixedExpenses: '',
-    notes: '',
   });
 
   const [errors, setErrors] = useState({});
@@ -54,8 +48,6 @@ export function AllowanceSetupModal({
         endDate: initialData.endDate || getMonthEnd(),
         openingBalance: initialData.openingBalance ? initialData.openingBalance.toString() : '',
         emergencyReserve: initialData.emergencyReserve ? initialData.emergencyReserve.toString() : '',
-        fixedExpenses: initialData.fixedExpenses ? initialData.fixedExpenses.toString() : '',
-        notes: initialData.notes || '',
       });
     } else {
       setFormData({
@@ -65,8 +57,6 @@ export function AllowanceSetupModal({
         endDate: getMonthEnd(),
         openingBalance: '0',
         emergencyReserve: '500',
-        fixedExpenses: '0',
-        notes: '',
       });
     }
     setErrors({});
@@ -79,9 +69,8 @@ export function AllowanceSetupModal({
   const parsedAllowance = parseFloat(formData.allowanceAmount) || 0;
   const parsedOpening = parseFloat(formData.openingBalance) || 0;
   const parsedReserve = parseFloat(formData.emergencyReserve) || 0;
-  const parsedFixed = parseFloat(formData.fixedExpenses) || 0;
 
-  const flexibleTotal = Math.max(0, parsedAllowance + parsedOpening - parsedReserve - parsedFixed);
+  const flexibleTotal = Math.max(0, parsedAllowance + parsedOpening - parsedReserve);
 
   // Calculate days in cycle
   let cycleDays = 30;
@@ -132,8 +121,8 @@ export function AllowanceSetupModal({
         endDate: formData.endDate,
         openingBalance: parsedOpening,
         emergencyReserve: parsedReserve,
-        fixedExpenses: parsedFixed,
-        notes: formData.notes.trim() || undefined,
+        fixedExpenses: 0,
+        notes: undefined,
       }, initialData?.id);
       onClose();
     } catch (err) {
@@ -334,41 +323,6 @@ export function AllowanceSetupModal({
               <p className="helper-caption">Locked for medical/urgent needs only</p>
               {errors.emergencyReserve && <span className="field-error">{errors.emergencyReserve}</span>}
             </div>
-          </div>
-
-          {/* Fixed Expenses */}
-          <div className="form-group">
-            <label className="form-label">
-              Committed Fixed Expenses <span style={{ color: 'var(--color-text-muted)', fontWeight: 400 }}>(Optional)</span>
-            </label>
-            <div className="input-with-icon">
-              <span className="input-currency-symbol font-mono">{getCurrencySymbol(currency)}</span>
-              <input
-                type="number"
-                step="1"
-                min="0"
-                className="form-input tabular-nums"
-                placeholder="e.g. 1500 (Mess fee, recharge, rent)"
-                value={formData.fixedExpenses}
-                onChange={(e) => setFormData({ ...formData, fixedExpenses: e.target.value })}
-              />
-            </div>
-            <p className="helper-caption">Pre-committed fees deducted before flexible spending begins</p>
-          </div>
-
-          {/* Notes */}
-          <div className="form-group">
-            <label className="form-label">
-              Survival Motto or Notes <span style={{ color: 'var(--color-text-muted)', fontWeight: 400 }}>(Optional)</span>
-            </label>
-            <textarea
-              className="form-textarea"
-              rows={2}
-              placeholder="e.g. Cook more in hostel, curb Swiggy orders, build emergency stash."
-              value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              maxLength={400}
-            />
           </div>
 
           {/* Live Calculation Preview Card */}
