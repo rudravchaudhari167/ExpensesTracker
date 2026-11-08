@@ -142,12 +142,16 @@ export function SettingsView({
                   className={`currency-option-btn ${isSelected ? 'selected' : ''}`}
                   onClick={() => onCurrencyChange(curr.code)}
                 >
-                  <span className="currency-sym">{curr.symbol}</span>
-                  <div className="currency-text-wrap">
-                    <span className="currency-code">{curr.code}</span>
-                    <span className="currency-name">{curr.label}</span>
+                  <div className="currency-sym-box">
+                    <span>{curr.symbol}</span>
                   </div>
-                  {isSelected && <CheckCircle2 size={16} className="selected-check" />}
+                  <div className="currency-text-wrap">
+                    <span className="currency-name">{curr.name}</span>
+                    <span className="currency-sub font-mono">
+                      {curr.symbol} {curr.code}
+                    </span>
+                  </div>
+                  {isSelected && <CheckCircle2 size={18} className="selected-check" />}
                 </button>
               );
             })}

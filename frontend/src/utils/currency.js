@@ -3,14 +3,14 @@
  */
 
 export const CURRENCIES = {
-  USD: { code: 'USD', symbol: '$', label: 'USD ($)', locale: 'en-US' },
-  INR: { code: 'INR', symbol: '₹', label: 'INR (₹)', locale: 'en-IN' },
-  EUR: { code: 'EUR', symbol: '€', label: 'EUR (€)', locale: 'de-DE' },
-  GBP: { code: 'GBP', symbol: '£', label: 'GBP (£)', locale: 'en-GB' },
-  CAD: { code: 'CAD', symbol: 'CA$', label: 'CAD (CA$)', locale: 'en-CA' },
-  AUD: { code: 'AUD', symbol: 'AU$', label: 'AUD (AU$)', locale: 'en-AU' },
-  JPY: { code: 'JPY', symbol: '¥', label: 'JPY (¥)', locale: 'ja-JP' },
-  AED: { code: 'AED', symbol: 'AED', label: 'AED (AED)', locale: 'en-AE' },
+  USD: { code: 'USD', symbol: '$', name: 'US Dollar', label: '$ USD • US Dollar', locale: 'en-US' },
+  INR: { code: 'INR', symbol: '₹', name: 'Indian Rupee', label: '₹ INR • Indian Rupee', locale: 'en-IN' },
+  EUR: { code: 'EUR', symbol: '€', name: 'Euro', label: '€ EUR • Euro', locale: 'en-IE' },
+  GBP: { code: 'GBP', symbol: '£', name: 'British Pound', label: '£ GBP • British Pound', locale: 'en-GB' },
+  CAD: { code: 'CAD', symbol: 'CA$', name: 'Canadian Dollar', label: 'CA$ CAD • Canadian Dollar', locale: 'en-CA' },
+  AUD: { code: 'AUD', symbol: 'AU$', name: 'Australian Dollar', label: 'AU$ AUD • Australian Dollar', locale: 'en-AU' },
+  JPY: { code: 'JPY', symbol: '¥', name: 'Japanese Yen', label: '¥ JPY • Japanese Yen', locale: 'ja-JP' },
+  AED: { code: 'AED', symbol: 'AED', name: 'UAE Dirham', label: 'AED AED • UAE Dirham', locale: 'en-AE' },
 };
 
 export const DEFAULT_CURRENCY = 'USD';

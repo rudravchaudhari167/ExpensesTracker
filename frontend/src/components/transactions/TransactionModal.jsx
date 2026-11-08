@@ -372,7 +372,7 @@ export function TransactionModal({
                   >
                     {Object.values(CURRENCIES).map((c) => (
                       <option key={c.code} value={c.code}>
-                        {c.symbol} {c.code}
+                        {c.symbol} {c.code} — {c.name}
                       </option>
                     ))}
                   </select>
