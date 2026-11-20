@@ -258,7 +258,7 @@ input, select, textarea {
 @media (max-width: 1024px) {
   .app-main {
     margin-left: 0;
-    padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
   }
 
   .app-content {
@@ -266,9 +266,15 @@ input, select, textarea {
   }
 }
 
+@media (max-width: 768px) {
+  .app-content {
+    padding: 16px 14px;
+  }
+}
+
 @media (max-width: 480px) {
   .app-content {
-    padding: 14px 10px;
+    padding: 12px 10px;
   }
 
   .card-surface {

@@ -498,13 +498,46 @@ input[type="date"]::-webkit-datetime-edit {
   min-width: 140px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .tx-modal-surface {
-    padding: var(--space-5);
+    padding: 22px 18px;
     max-height: calc(100dvh - 24px);
+    width: 95%;
   }
+
   .form-row-2 {
     grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .type-toggle-btn {
+    padding: 10px 14px;
+    font-size: 0.875rem;
+    min-height: 42px;
+  }
+
+  .form-input,
+  input[type="date"].form-input {
+    font-size: 16px !important;
+    min-height: 46px;
+  }
+
+  .category-chip {
+    padding: 7px 12px;
+    font-size: 0.8rem;
+    min-height: 34px;
+  }
+
+  .tx-modal-actions {
+    flex-direction: column-reverse;
+    gap: 10px;
+  }
+
+  .tx-modal-actions .btn {
+    width: 100%;
+    min-height: 46px;
+    font-size: 0.95rem;
+    justify-content: center;
   }
 }
 
@@ -516,14 +549,5 @@ input[type="date"]::-webkit-datetime-edit {
 
   .tx-modal-title {
     font-size: 1.25rem;
-  }
-
-  .tx-modal-actions {
-    flex-direction: column-reverse;
-  }
-
-  .tx-modal-actions .btn {
-    width: 100%;
-    justify-content: center;
   }
 }

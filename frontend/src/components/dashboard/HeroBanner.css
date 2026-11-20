@@ -133,53 +133,64 @@ originkit-avatar {
 /* Responsive */
 @media (max-width: 768px) {
   .pennywise-hero-card {
-    flex-direction: column-reverse;
-    align-items: flex-start;
-    padding: var(--space-2) 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-2) 0 var(--space-3);
     gap: var(--space-3);
-    overflow: hidden;
+    min-height: auto;
+  }
+
+  .hero-text-side {
+    flex: 1;
+    min-width: 0;
   }
 
   .hero-main-title {
-    font-size: clamp(1.4rem, 6vw, 1.85rem);
+    font-size: clamp(1.35rem, 5.5vw, 1.85rem);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 4px;
     word-break: break-word;
   }
 
   .hero-main-subtitle {
-    font-size: 0.925rem;
+    font-size: 0.875rem;
+    line-height: 1.4;
   }
 
   .hero-character-side {
-    align-self: center;
-    width: 100%;
-    max-width: 190px;
-    height: 120px;
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
   }
 
-  .character-main-img {
-    max-height: 120px;
+  .character-aura-glow {
+    width: 76px;
+    height: 76px;
+    top: 2px;
   }
 
-  .hero-doodle-loop {
+  .hero-doodle-loop,
+  .hero-sparkle {
     display: none;
   }
 }
 
 @media (max-width: 480px) {
   .hero-main-title {
-    font-size: clamp(1.3rem, 6.5vw, 1.6rem);
+    font-size: clamp(1.25rem, 5vw, 1.55rem);
   }
 
   .hero-main-subtitle {
-    font-size: 0.85rem;
+    font-size: 0.825rem;
   }
 
   .hero-character-side {
-    max-width: 160px;
-    height: 100px;
-  }
-
-  .hero-sparkle {
-    display: none;
+    width: 68px;
+    height: 68px;
   }
 }

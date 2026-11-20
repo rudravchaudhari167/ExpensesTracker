@@ -242,15 +242,40 @@ input[type="date"]::-webkit-datetime-edit {
   border-top: 1px solid var(--color-border, rgba(0, 0, 0, 0.08));
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .topup-modal {
     padding: 22px 18px;
     width: 95%;
+    max-height: calc(100dvh - 24px);
   }
+
+  .form-input,
+  input[type="date"].form-input {
+    font-size: 16px !important;
+    min-height: 46px;
+  }
+
+  .topup-preset-btn {
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    min-height: 38px;
+  }
+
   .modal-actions {
     flex-direction: column-reverse;
+    gap: 10px;
   }
+
   .modal-actions .btn {
     width: 100%;
+    min-height: 46px;
+    font-size: 0.95rem;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .topup-modal {
+    padding: 18px 14px;
   }
 }

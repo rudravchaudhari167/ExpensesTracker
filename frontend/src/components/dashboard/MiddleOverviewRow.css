@@ -462,15 +462,15 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .spending-overview-card {
-    padding: 18px 16px;
+    padding: 20px 18px;
   }
 
   .overview-body {
     flex-direction: column;
     align-items: stretch;
-    gap: 16px;
+    gap: 18px;
   }
 
   .donut-chart-section {
@@ -485,7 +485,15 @@
   .weekly-bars-section {
     width: 100%;
     margin-top: var(--space-2);
-    height: 130px;
+    height: 140px;
+  }
+
+  .bars-columns-wrapper {
+    gap: 6px;
+  }
+
+  .bar-track {
+    width: clamp(12px, 3.8vw, 18px);
   }
 
   .overview-dropdown-menu {
@@ -494,7 +502,18 @@
   }
 
   .survival-teaser-card {
-    padding: 18px 16px;
+    padding: 20px 18px;
+  }
+
+  .survival-teaser-content {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .survival-view-details-btn {
+    align-self: stretch;
+    text-align: center;
   }
 }
 

@@ -264,61 +264,77 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .bottom-widget-card {
-    padding: 16px 14px;
+    padding: 20px 18px;
   }
 
   .quick-actions-2x2 {
-    gap: 8px;
+    gap: 12px;
   }
 
   .quick-action-tile {
-    padding: 12px 6px;
-    gap: 6px;
+    padding: 16px 12px;
+    gap: 8px;
+    min-height: 72px;
+    border-radius: var(--radius-lg);
+  }
+
+  .quick-action-tile:active {
+    transform: scale(0.96);
   }
 
   .tile-icon-circle {
-    width: 30px;
-    height: 30px;
+    width: 38px;
+    height: 38px;
   }
 
   .tile-label {
-    font-size: 0.72rem;
+    font-size: 0.85rem;
+    font-weight: 700;
     text-align: center;
   }
 
   .recent-tx-item {
-    padding: 8px;
-    gap: 8px;
+    padding: 12px 14px;
+    gap: 12px;
   }
 
   .tx-icon-pill {
-    width: 32px;
-    height: 32px;
+    width: 38px;
+    height: 38px;
   }
 
   .tx-title-text {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .tx-subtitle-text {
+    font-size: 0.775rem;
   }
 
   .tx-amount-text {
-    font-size: 0.825rem;
+    font-size: 0.925rem;
     white-space: nowrap;
   }
 }
 
 @media (max-width: 360px) {
   .bottom-widget-card {
-    padding: 14px 10px;
+    padding: 16px 12px;
   }
 
   .quick-actions-2x2 {
-    gap: 6px;
+    gap: 8px;
   }
 
   .quick-action-tile {
-    padding: 10px 4px;
+    padding: 14px 8px;
+    min-height: 64px;
+  }
+
+  .tile-label {
+    font-size: 0.78rem;
   }
 }
 
