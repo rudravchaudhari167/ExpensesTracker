@@ -106,7 +106,7 @@ export function TransactionTable({
       <div className="tx-controls-card card-surface">
         <div className="tx-search-row">
           <div className="tx-search-input-wrap">
-            <Search size={18} className="search-icon" />
+            <Search size={18} className="tx-search-icon" />
             <input
               type="text"
               className="tx-search-input"

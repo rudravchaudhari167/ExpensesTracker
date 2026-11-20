@@ -57,11 +57,11 @@ export function Header({
       {/* Left: Pill Search Bar */}
       <div className="header-search-wrapper">
         <div className="header-search-pill">
-          <Search size={18} className="search-icon" />
+          <Search size={18} className="header-search-icon" />
           <input
             type="text"
-            className="search-input"
-            placeholder="Search transactions, categories..."
+            className="header-search-input"
+            placeholder="Search transactions..."
             value={searchQuery}
             onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
           />
