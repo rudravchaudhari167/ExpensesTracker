@@ -198,3 +198,25 @@
   }
 }
 
+@media (max-width: 600px) {
+  .journal-hero-card {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    padding: 16px 14px;
+    gap: 12px;
+  }
+
+  .new-journal-card {
+    padding: 18px 16px;
+  }
+
+  .tag-selector-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .journal-entry-card {
+    padding: 16px 14px;
+  }
+}
+

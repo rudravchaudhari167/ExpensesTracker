@@ -264,3 +264,61 @@
   }
 }
 
+@media (max-width: 480px) {
+  .bottom-widget-card {
+    padding: 16px 14px;
+  }
+
+  .quick-actions-2x2 {
+    gap: 8px;
+  }
+
+  .quick-action-tile {
+    padding: 12px 6px;
+    gap: 6px;
+  }
+
+  .tile-icon-circle {
+    width: 30px;
+    height: 30px;
+  }
+
+  .tile-label {
+    font-size: 0.72rem;
+    text-align: center;
+  }
+
+  .recent-tx-item {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .tx-icon-pill {
+    width: 32px;
+    height: 32px;
+  }
+
+  .tx-title-text {
+    font-size: 0.8rem;
+  }
+
+  .tx-amount-text {
+    font-size: 0.825rem;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 360px) {
+  .bottom-widget-card {
+    padding: 14px 10px;
+  }
+
+  .quick-actions-2x2 {
+    gap: 6px;
+  }
+
+  .quick-action-tile {
+    padding: 10px 4px;
+  }
+}
+

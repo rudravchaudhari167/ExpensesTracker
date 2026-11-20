@@ -118,3 +118,29 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 600px) {
+  .page-hero-banner {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    padding: 16px 14px;
+    gap: 12px;
+  }
+
+  .page-hero-avatar {
+    align-self: flex-start;
+  }
+
+  .page-hero-title {
+    font-size: clamp(1.35rem, 5vw, 1.65rem);
+    word-break: break-word;
+  }
+
+  .page-hero-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .error-banner-text {
+    min-width: 0;
+  }
+}

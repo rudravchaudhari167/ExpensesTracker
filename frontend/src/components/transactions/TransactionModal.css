@@ -501,8 +501,29 @@ input[type="date"]::-webkit-datetime-edit {
 @media (max-width: 600px) {
   .tx-modal-surface {
     padding: var(--space-5);
+    max-height: calc(100dvh - 24px);
   }
   .form-row-2 {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .tx-modal-surface {
+    padding: 18px 14px;
+    border-radius: var(--radius-lg);
+  }
+
+  .tx-modal-title {
+    font-size: 1.25rem;
+  }
+
+  .tx-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .tx-modal-actions .btn {
+    width: 100%;
+    justify-content: center;
   }
 }

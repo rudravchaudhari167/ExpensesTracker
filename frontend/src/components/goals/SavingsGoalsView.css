@@ -89,7 +89,7 @@
 /* Goals Grid */
 .goals-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
   gap: var(--space-5);
 }
 
@@ -197,5 +197,21 @@
 .deposit-pill:hover {
   background: var(--color-accent);
   color: #FFFFFF;
+}
+
+@media (max-width: 600px) {
+  .goals-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .goal-card {
+    padding: 18px 16px;
+  }
+
+  .goal-card-bottom {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 }
 

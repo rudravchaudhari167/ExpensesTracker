@@ -160,7 +160,17 @@
     gap: var(--space-3);
   }
 
+  .penny-summary-card {
+    padding: 14px 16px 12px;
+  }
+
   .card-amount {
-    font-size: 1.45rem;
+    font-size: clamp(1.25rem, 5.5vw, 1.55rem);
+  }
+}
+
+@media (max-width: 360px) {
+  .penny-summary-card {
+    padding: 12px 14px 10px;
   }
 }

@@ -428,3 +428,29 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 600px) {
+  .analytics-hero {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    padding: 16px 14px;
+    gap: 12px;
+  }
+
+  .analytics-hero-title {
+    font-size: clamp(1.35rem, 5.5vw, 1.65rem);
+  }
+
+  .insights-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .insight-card {
+    padding: 16px 14px;
+  }
+
+  .analytics-chart-box {
+    padding: 16px 14px;
+  }
+}

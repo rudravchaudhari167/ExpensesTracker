@@ -149,8 +149,12 @@ export function StudentSurvivalDashboard({
     if (onShowToast) {
       onShowToast('success', `Added ${formatCurrency(topUpData.amount, currency)} to your allowance!`, 'Allowance Top-up Recorded');
     }
-    await fetchSurvivalMetrics(targetCycleId);
-    await fetchHistory();
+    try {
+      await fetchSurvivalMetrics(targetCycleId);
+      await fetchHistory();
+    } catch (err) {
+      console.warn('Could not refresh survival metrics after top-up:', err);
+    }
   };
 
   // Quick Action triggers

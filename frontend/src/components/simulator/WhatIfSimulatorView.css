@@ -241,3 +241,40 @@
   }
 }
 
+@media (max-width: 600px) {
+  .sim-hero-card {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    padding: 16px 14px;
+    gap: 12px;
+  }
+
+  .simulator-card,
+  .projection-card {
+    padding: 18px 16px;
+  }
+
+  .sim-amount-slider-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .sim-slider-val {
+    min-width: 0;
+  }
+
+  .sim-range {
+    width: 100%;
+  }
+
+  .freq-pills-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .stat-pills-vertical {
+    gap: 10px;
+  }
+}
+

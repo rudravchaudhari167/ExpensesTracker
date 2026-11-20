@@ -463,14 +463,77 @@
 }
 
 @media (max-width: 640px) {
+  .spending-overview-card {
+    padding: 18px 16px;
+  }
+
   .overview-body {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .donut-chart-section {
+    align-self: center;
+  }
+
+  .category-legend-list {
+    max-width: 100%;
+    width: 100%;
   }
 
   .weekly-bars-section {
     width: 100%;
-    margin-top: var(--space-3);
+    margin-top: var(--space-2);
+    height: 130px;
+  }
+
+  .overview-dropdown-menu {
+    max-width: calc(100vw - 32px);
+    right: 0;
+  }
+
+  .survival-teaser-card {
+    padding: 18px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .spending-overview-card,
+  .survival-teaser-card {
+    padding: 16px 12px;
+  }
+
+  .overview-title {
+    font-size: 1.05rem;
+  }
+
+  .bars-y-axis {
+    width: 22px;
+    font-size: 0.625rem;
+  }
+
+  .bars-columns-wrapper {
+    gap: 2px;
+  }
+
+  .bar-track {
+    width: clamp(9px, 3.2vw, 13px);
+  }
+
+  .bar-day-label {
+    font-size: 0.675rem;
+  }
+
+  .survival-teaser-content {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .survival-view-details-btn {
+    align-self: stretch;
+    text-align: center;
   }
 }
 

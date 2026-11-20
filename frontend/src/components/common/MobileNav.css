@@ -4,13 +4,15 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 68px;
+  height: calc(64px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-top: 1px solid var(--color-border);
   z-index: 50;
-  padding: 0 var(--space-4);
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
   align-items: center;
   justify-content: space-around;
   box-shadow: 0 -4px 18px rgba(40, 40, 32, 0.06);
@@ -60,5 +62,28 @@
 @media (max-width: 1024px) {
   .mobile-nav-bar {
     display: flex;
+  }
+}
+
+@media (max-width: 380px) {
+  .mobile-nav-bar {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .mobile-nav-item {
+    padding: 6px 4px;
+    font-size: 0.65rem;
+    gap: 2px;
+  }
+
+  .mobile-nav-item svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .mobile-add-btn {
+    width: 46px;
+    height: 46px;
   }
 }
