@@ -73,6 +73,9 @@
 @media (max-width: 1024px) {
   .mobile-nav-bar {
     display: flex;
+    background: rgba(255, 252, 248, 0.98);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
   }
 }
 

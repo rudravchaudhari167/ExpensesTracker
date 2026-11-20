@@ -21,13 +21,23 @@ html {
 body {
   min-height: 100vh;
   background-color: var(--color-bg);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* GPU-accelerated background layer: prevents full-page repaints during scrolling */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
   background-image:
     radial-gradient(circle at 10% 20%, rgba(255, 216, 194, 0.35) 0%, transparent 40%),
     radial-gradient(circle at 90% 10%, rgba(232, 221, 244, 0.3) 0%, transparent 35%),
     radial-gradient(circle at 85% 85%, rgba(168, 201, 149, 0.22) 0%, transparent 45%),
     radial-gradient(circle at 15% 90%, rgba(254, 239, 219, 0.4) 0%, transparent 40%);
-  background-attachment: fixed;
-  overflow-x: hidden;
+  pointer-events: none;
+  z-index: -1;
+  transform: translateZ(0);
 }
 
 /* Custom Scrollbar */
