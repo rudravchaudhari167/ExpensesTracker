@@ -30,18 +30,6 @@ export function MobileNav({ activeTab, onSelectTab, onOpenAddModal }) {
         <span>Activity</span>
       </button>
 
-      {/* Floating Center Add Button */}
-      <div className="mobile-add-wrapper">
-        <button
-          id="btn-add-transaction-mobile"
-          className="mobile-add-btn"
-          onClick={onOpenAddModal}
-          aria-label="Add transaction"
-        >
-          <Plus size={22} strokeWidth={2.6} />
-        </button>
-      </div>
-
       <button
         id="mobile-nav-survival"
         className={`mobile-nav-item ${activeTab === 'survival' ? 'active' : ''}`}
@@ -68,6 +56,19 @@ export function MobileNav({ activeTab, onSelectTab, onOpenAddModal }) {
         <Settings size={20} />
         <span>Settings</span>
       </button>
+
+      {/* Primary Action Add (+) Button in the Right Corner */}
+      <div className="mobile-add-wrapper right-corner">
+        <button
+          id="btn-add-transaction-mobile"
+          className="mobile-add-btn"
+          onClick={onOpenAddModal}
+          aria-label="Add transaction"
+          title="Add Transaction"
+        >
+          <Plus size={22} strokeWidth={2.8} />
+        </button>
+      </div>
     </nav>
   );
 }
