@@ -458,6 +458,11 @@
     -webkit-backdrop-filter: none;
   }
 
+  /* Remove notification bell icon on mobile */
+  .header-notif-container {
+    display: none !important;
+  }
+
   .header-search-wrapper {
     flex: 1;
     min-width: 0;
@@ -528,11 +533,6 @@
     display: none;
   }
 
-  .header-bell-btn {
-    width: 36px;
-    height: 36px;
-  }
-
   .profile-avatar-circle {
     width: 32px;
     height: 32px;
@@ -540,12 +540,6 @@
 
   .profile-chevron {
     display: none;
-  }
-
-  .notif-dropdown {
-    width: calc(100vw - 20px);
-    max-width: 320px;
-    right: -36px;
   }
 
   .profile-dropdown-card {
