@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  TrendingUp,
   ArrowRight,
   Plus,
   Target,
@@ -147,41 +146,6 @@ export function BottomWidgetsRow({
             </div>
             <span className="tile-label">Add Money</span>
           </button>
-        </div>
-      </div>
-
-      {/* 3. Smart Insights */}
-      <div className="bottom-widget-card card-surface smart-insights-widget">
-        <div className="widget-header">
-          <div className="insights-header-title">
-            <h3 className="widget-title">Smart Insights</h3>
-          </div>
-          <div className="insights-trend-pill" aria-hidden="true">
-            <TrendingUp size={16} />
-          </div>
-        </div>
-
-        <div className="insights-list">
-          <div className="insight-bullet-item">
-            <span className="insight-indicator green-indicator">↑</span>
-            <span className="insight-text">
-              You spent <strong>15% less</strong> than last month!
-            </span>
-          </div>
-
-          <div className="insight-bullet-item">
-            <span className="insight-indicator food-indicator">🍴</span>
-            <span className="insight-text">
-              <strong>Food</strong> is your highest spending category.
-            </span>
-          </div>
-
-          <div className="insight-bullet-item">
-            <span className="insight-indicator star-indicator">⭐</span>
-            <span className="insight-text">
-              You have <strong>₹1,200</strong> left for this month.
-            </span>
-          </div>
         </div>
       </div>
     </div>

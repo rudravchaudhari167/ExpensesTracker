@@ -159,7 +159,7 @@ export function App() {
                 onNavigateSurvival={() => setActiveTab('survival')}
               />
 
-              {/* Bottom Section: Recent Transactions + Quick Actions 2x2 + Smart Insights */}
+              {/* Bottom Section: Recent Transactions + Quick Actions 2x2 */}
               <BottomWidgetsRow
                 transactions={transactions}
                 currency={currency}

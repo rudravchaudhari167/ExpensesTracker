@@ -1,10 +1,10 @@
 /* ========================================================
-   PENNYWISE BOTTOM WIDGETS ROW — Transactions, Actions, Insights
+   PENNYWISE BOTTOM WIDGETS ROW — Transactions & Actions
    ======================================================== */
 
 .bottom-widgets-grid {
   display: grid;
-  grid-template-columns: 1.25fr 1fr 1.15fr;
+  grid-template-columns: 1.25fr 1fr;
   gap: var(--space-4);
   margin-bottom: var(--space-6);
 }
@@ -201,60 +201,6 @@
 }
 .circle-money {
   background: #E07A3E;
-}
-
-/* 3. Smart Insights */
-.smart-insights-widget {
-  justify-content: space-between;
-}
-
-.insights-trend-pill {
-  color: #8A68D6;
-}
-
-.insights-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 4px;
-}
-
-.insight-bullet-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 0.85rem;
-  line-height: 1.4;
-  color: var(--color-text-main);
-}
-
-.insight-indicator {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  font-size: 0.85rem;
-  flex-shrink: 0;
-}
-
-.green-indicator {
-  background: #E5F4DC;
-  color: #3E792C;
-  font-weight: 800;
-}
-
-.food-indicator {
-  font-size: 0.95rem;
-}
-
-.star-indicator {
-  font-size: 0.95rem;
-}
-
-.insight-text strong {
-  color: #2A201A;
 }
 
 /* Responsive */
