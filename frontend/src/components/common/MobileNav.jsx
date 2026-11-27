@@ -2,9 +2,7 @@ import React from 'react';
 import {
   LayoutDashboard,
   ArrowLeftRight,
-  GraduationCap,
   Plus,
-  Target,
   Settings,
 } from 'lucide-react';
 import './MobileNav.css';
@@ -17,7 +15,7 @@ export function MobileNav({ activeTab, onSelectTab, onOpenAddModal }) {
         className={`mobile-nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
         onClick={() => onSelectTab('dashboard')}
       >
-        <LayoutDashboard size={20} />
+        <LayoutDashboard size={21} />
         <span>Home</span>
       </button>
 
@@ -26,26 +24,8 @@ export function MobileNav({ activeTab, onSelectTab, onOpenAddModal }) {
         className={`mobile-nav-item ${activeTab === 'transactions' ? 'active' : ''}`}
         onClick={() => onSelectTab('transactions')}
       >
-        <ArrowLeftRight size={20} />
+        <ArrowLeftRight size={21} />
         <span>Activity</span>
-      </button>
-
-      <button
-        id="mobile-nav-survival"
-        className={`mobile-nav-item ${activeTab === 'survival' ? 'active' : ''}`}
-        onClick={() => onSelectTab('survival')}
-      >
-        <GraduationCap size={20} />
-        <span>Survival</span>
-      </button>
-
-      <button
-        id="mobile-nav-goals"
-        className={`mobile-nav-item ${activeTab === 'goals' ? 'active' : ''}`}
-        onClick={() => onSelectTab('goals')}
-      >
-        <Target size={20} />
-        <span>Goals</span>
       </button>
 
       <button
@@ -53,7 +33,7 @@ export function MobileNav({ activeTab, onSelectTab, onOpenAddModal }) {
         className={`mobile-nav-item ${activeTab === 'settings' ? 'active' : ''}`}
         onClick={() => onSelectTab('settings')}
       >
-        <Settings size={20} />
+        <Settings size={21} />
         <span>Settings</span>
       </button>
 
@@ -66,7 +46,7 @@ export function MobileNav({ activeTab, onSelectTab, onOpenAddModal }) {
           aria-label="Add transaction"
           title="Add Transaction"
         >
-          <Plus size={22} strokeWidth={2.8} />
+          <Plus size={23} strokeWidth={2.8} />
         </button>
       </div>
     </nav>

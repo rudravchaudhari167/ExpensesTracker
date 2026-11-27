@@ -467,8 +467,7 @@
   }
 
   .btn-add-table {
-    width: 100%;
-    justify-content: center;
+    display: none;
   }
 
   .tx-filters-row {

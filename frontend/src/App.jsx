@@ -48,6 +48,7 @@ export function App() {
   } = useTransactions();
 
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalInitialData, setModalInitialData] = useState(null);
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
@@ -130,6 +131,13 @@ export function App() {
         <Header
           onOpenAddModal={handleOpenAddModal}
           isBackendHealthy={isBackendHealthy}
+          searchQuery={searchQuery}
+          onSearchChange={(q) => {
+            setSearchQuery(q);
+            if (q.trim() && activeTab !== 'transactions') {
+              setActiveTab('transactions');
+            }
+          }}
           activeTab={activeTab}
         />
 
@@ -191,6 +199,8 @@ export function App() {
               <TransactionTable
                 transactions={transactions}
                 currency={currency}
+                searchQuery={searchQuery}
+                onSearchChange={setSearchQuery}
                 onOpenAddModal={handleOpenAddModal}
                 onEdit={handleOpenEditModal}
                 onDelete={handleRequestDelete}

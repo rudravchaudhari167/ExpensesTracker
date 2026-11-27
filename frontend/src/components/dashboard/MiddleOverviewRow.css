@@ -502,24 +502,12 @@
   }
 
   .survival-teaser-card {
-    padding: 20px 18px;
-  }
-
-  .survival-teaser-content {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 16px;
-  }
-
-  .survival-view-details-btn {
-    align-self: stretch;
-    text-align: center;
+    display: none;
   }
 }
 
 @media (max-width: 480px) {
-  .spending-overview-card,
-  .survival-teaser-card {
+  .spending-overview-card {
     padding: 16px 12px;
   }
 
@@ -542,17 +530,6 @@
 
   .bar-day-label {
     font-size: 0.675rem;
-  }
-
-  .survival-teaser-content {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px;
-  }
-
-  .survival-view-details-btn {
-    align-self: stretch;
-    text-align: center;
   }
 }
 

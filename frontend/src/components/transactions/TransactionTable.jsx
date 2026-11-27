@@ -23,11 +23,16 @@ const ITEMS_PER_PAGE = 8;
 export function TransactionTable({
   transactions = [],
   currency = 'USD',
+  searchQuery: externalSearchQuery,
+  onSearchChange,
   onOpenAddModal,
   onEdit,
   onDelete,
 }) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [internalSearchQuery, setInternalSearchQuery] = useState('');
+  const isControlledSearch = externalSearchQuery !== undefined && typeof onSearchChange === 'function';
+  const searchQuery = isControlledSearch ? externalSearchQuery : internalSearchQuery;
+  const setSearchQuery = isControlledSearch ? onSearchChange : setInternalSearchQuery;
   const [typeFilter, setTypeFilter] = useState('ALL'); // ALL, INCOME, EXPENSE
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [sortBy, setSortBy] = useState('date-desc'); // date-desc, date-asc, amount-desc, amount-asc

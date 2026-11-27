@@ -156,29 +156,59 @@
 
 @media (max-width: 768px) {
   .summary-cards-row {
-    grid-template-columns: 1fr;
-    gap: var(--space-3);
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: var(--space-4);
   }
 
   .penny-summary-card {
-    padding: 16px 18px 14px;
+    padding: 13px 13px 10px;
+    min-width: 0;
+  }
+
+  .card-top-row {
+    margin-bottom: 8px;
+  }
+
+  .card-icon-pill {
+    width: 32px;
+    height: 32px;
+  }
+
+  .card-icon-pill svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .card-trend-badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
   }
 
   .card-amount {
-    font-size: clamp(1.4rem, 6vw, 1.75rem);
+    font-size: clamp(1.05rem, 4.4vw, 1.35rem);
+    word-break: break-word;
   }
 
   .card-label {
-    font-size: 0.85rem;
+    font-size: 0.76rem;
+  }
+
+  .card-sparkline-wrapper {
+    height: 24px;
   }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 340px) {
+  .summary-cards-row {
+    gap: 8px;
+  }
+
   .penny-summary-card {
-    padding: 12px 14px 10px;
+    padding: 10px 10px 8px;
   }
 
   .card-amount {
-    font-size: 1.35rem;
+    font-size: 1rem;
   }
 }

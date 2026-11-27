@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Plus, ChevronDown } from 'lucide-react';
+import { Search, Plus, ChevronDown, X } from 'lucide-react';
 import { UserAvatar } from './UserAvatar';
 import './Header.css';
 
@@ -42,6 +42,16 @@ export function Header({
             value={searchQuery}
             onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
           />
+          {searchQuery && (
+            <button
+              type="button"
+              className="header-search-clear"
+              onClick={() => onSearchChange && onSearchChange('')}
+              aria-label="Clear search"
+            >
+              <X size={15} />
+            </button>
+          )}
         </div>
       </div>
 
