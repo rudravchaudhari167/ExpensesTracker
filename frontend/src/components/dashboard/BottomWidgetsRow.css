@@ -211,10 +211,6 @@
 }
 
 @media (max-width: 768px) {
-  .quick-actions-widget {
-    display: none;
-  }
-
   .bottom-widget-card {
     padding: 20px 18px;
   }
